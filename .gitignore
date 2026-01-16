@@ -37,3 +37,4 @@ uploads/
 
 # Credentials (sensitive)
 VPS_CREDENTIALS.md
+static/radce/*.pdf
