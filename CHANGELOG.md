@@ -7,6 +7,34 @@ a projekt dodržuje [Semantic Versioning](https://semver.org/lang/cs/).
 
 ---
 
+## [0.11.0] - 2026-01-16
+
+### Infrastruktura - Kompletní migrace
+
+#### Nový server (vps3870)
+- **Migrace na nový VPS** - 37.46.209.22
+- **Čistá instalace** - Ubuntu 24.04 LTS, Docker, Nginx
+- **Bezpečnostní hardening:**
+  - SSH přístup pouze klíčem (hesla zakázána)
+  - UFW firewall (porty 22, 80, 443)
+  - Fail2ban ochrana proti brute-force
+  - Automatické security updates (unattended-upgrades)
+  - Silná hesla pro DB a JWT (uložena v .env)
+- **SSL certifikáty** - Let's Encrypt pro oba domény
+
+#### Nové GitHub repozitář
+- **Přesun na `FUTUROL-app-management`** - čistá historie bez citlivých dat
+- **CI/CD pipeline** - plně funkční automatický deployment
+  - Lint & Type Check → Build Test → Docker Build → Deploy
+  - GitHub Container Registry pro Docker images
+  - Automatické nasazení při push do main
+
+### Bezpečnost
+- Odstraněna kompromitovaná hesla z Git historie
+- Dokumentace `VPS_CREDENTIALS.md` již neobsahuje hesla
+
+---
+
 ## [0.10.0] - 2026-01-16
 
 ### Přidáno
