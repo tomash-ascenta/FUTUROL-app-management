@@ -1,0 +1,45 @@
+services:
+  app:
+    # Use local image (pulled from GHCR or built locally)
+    # Do NOT set build: . here - it triggers OOM on VPS
+    image: futurol-app:latest
+    container_name: futurol-app
+    restart: always
+    ports:
+      - "8081:3000"
+    environment:
+      - DATABASE_URL=postgresql://futurol:${DB_PASSWORD:-futurol_secret}@db:5432/futurol
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-change-me-in-production-too}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  db:
+    image: postgres:16-alpine
+    container_name: futurol-db
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=futurol
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-futurol_secret}
+      - POSTGRES_DB=futurol
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U futurol"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
