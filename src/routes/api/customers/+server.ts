@@ -7,7 +7,7 @@ const createCustomerSchema = z.object({
 	fullName: z.string().min(2, 'Jméno musí mít alespoň 2 znaky'),
 	email: z.string().email('Neplatný email').optional().or(z.literal('')),
 	phone: z.string().min(9, 'Telefon musí mít alespoň 9 znaků'),
-	company: z.string().optional().or(z.literal('')),
+	companyName: z.string().optional().or(z.literal('')),
 	note: z.string().optional().or(z.literal('')),
 	// Lokace (volitelná)
 	location: z.object({
@@ -41,7 +41,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 						{ fullName: { contains: search, mode: 'insensitive' as const } },
 						{ email: { contains: search, mode: 'insensitive' as const } },
 						{ phone: { contains: search, mode: 'insensitive' as const } },
-						{ company: { contains: search, mode: 'insensitive' as const } }
+						{ companyName: { contains: search, mode: 'insensitive' as const } }
 					]
 				}
 			: {};
@@ -105,14 +105,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			);
 		}
 
-		const { location, email, company, note, ...customerData } = result.data;
+		const { location, email, companyName, note, ...customerData } = result.data;
 
 		// Create customer with optional location
 		const customer = await db.customer.create({
 			data: {
 				...customerData,
 				email: email || null,
-				company: company || null,
+				companyName: companyName || null,
 				note: note || null,
 				source: 'manual',
 				locations: location

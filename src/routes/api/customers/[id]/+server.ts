@@ -7,7 +7,7 @@ const updateCustomerSchema = z.object({
 	fullName: z.string().min(2, 'Jméno musí mít alespoň 2 znaky').optional(),
 	email: z.string().email('Neplatný email').optional().or(z.literal('')).nullable(),
 	phone: z.string().min(9, 'Telefon musí mít alespoň 9 znaků').optional(),
-	company: z.string().optional().or(z.literal('')).nullable(),
+	companyName: z.string().optional().or(z.literal('')).nullable(),
 	note: z.string().optional().or(z.literal('')).nullable()
 });
 
@@ -34,10 +34,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 					orderBy: { createdAt: 'desc' },
 					take: 5
 				},
-				leads: {
-					orderBy: { createdAt: 'desc' },
-					take: 5
-				}
+				originLead: true
 			}
 		});
 
@@ -91,7 +88,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 			data: {
 				...result.data,
 				email: result.data.email || null,
-				company: result.data.company || null,
+				companyName: result.data.companyName || null,
 				note: result.data.note || null
 			},
 			include: {

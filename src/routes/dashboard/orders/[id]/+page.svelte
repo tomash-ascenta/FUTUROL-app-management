@@ -400,21 +400,23 @@
                             </span>
                         </dd>
                     </div>
-                    <div>
-                        <dt class="text-sm text-slate-500">
-                            Předběžná hodnota
-                        </dt>
-                        <dd class="font-medium text-slate-900">
-                            {formatCurrency(data.order.estimatedValue)}
-                        </dd>
-                    </div>
-                    {#if data.order.finalValue}
+                    {#if data.order.quotes.length > 0}
+                        {@const latestQuote = data.order.quotes[0]}
                         <div>
                             <dt class="text-sm text-slate-500">
-                                Finální hodnota
+                                Hodnota nabídky
                             </dt>
                             <dd class="font-medium text-slate-900">
-                                {formatCurrency(data.order.finalValue)}
+                                {formatCurrency(latestQuote.amount)}
+                                {#if latestQuote.status === "approved"}
+                                    <span class="ml-1 text-xs text-green-600"
+                                        >(schváleno)</span
+                                    >
+                                {:else if latestQuote.status === "sent"}
+                                    <span class="ml-1 text-xs text-blue-600"
+                                        >(odesláno)</span
+                                    >
+                                {/if}
                             </dd>
                         </div>
                     {/if}

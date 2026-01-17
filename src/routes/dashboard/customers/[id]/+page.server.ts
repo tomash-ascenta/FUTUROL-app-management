@@ -69,8 +69,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			})),
 			orders: customer.orders.map((o) => ({
 				...o,
-				estimatedValue: o.estimatedValue ? Number(o.estimatedValue) : null,
-				finalValue: o.finalValue ? Number(o.finalValue) : null,
 				createdAt: o.createdAt.toISOString(),
 				updatedAt: o.updatedAt.toISOString(),
 				deadlineAt: o.deadlineAt?.toISOString() || null,

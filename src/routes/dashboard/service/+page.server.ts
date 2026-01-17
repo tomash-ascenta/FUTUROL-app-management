@@ -50,7 +50,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		resolvedAt: ticket.resolvedAt?.toISOString() || null,
 		order: ticket.order ? {
 			...ticket.order,
-			estimatedValue: ticket.order.estimatedValue ? Number(ticket.order.estimatedValue) : null,
 			createdAt: ticket.order.createdAt.toISOString(),
 			updatedAt: ticket.order.updatedAt.toISOString()
 		} : null

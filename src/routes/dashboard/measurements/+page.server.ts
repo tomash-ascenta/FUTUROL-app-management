@@ -82,8 +82,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		measurements: measurements.map(m => ({
 			...m,
 			order: m.order ? {
-				...m.order,
-				estimatedValue: m.order.estimatedValue ? Number(m.order.estimatedValue) : null
+				...m.order
 			} : null
 		})),
 		pagination: {

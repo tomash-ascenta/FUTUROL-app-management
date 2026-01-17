@@ -146,11 +146,11 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 			where: { id: params.id }
 		});
 
-		// Update order status back to measurement_scheduled if it was measurement_done
-		if (measurement.order.status === 'measurement_done') {
+		// Update order status back to quote_sent if it was in measurement phase
+		if (measurement.order.status === 'measurement') {
 			await db.order.update({
 				where: { id: measurement.orderId },
-				data: { status: 'measurement_scheduled' }
+				data: { status: 'quote_sent' }
 			});
 		}
 

@@ -5,7 +5,7 @@ import { db } from '$lib/server/db';
 export const POST: RequestHandler = async ({ request }) => {
     try {
         const body = await request.json();
-        const { email, source } = body;
+        const { email, source, name, phone } = body;
 
         if (!email) {
             return json({ error: 'Email je povinný' }, { status: 400 });
@@ -20,7 +20,9 @@ export const POST: RequestHandler = async ({ request }) => {
         // Create lead with minimal required data
         const lead = await db.lead.create({
             data: {
-                email,
+                originalName: name || 'Neznámý',
+                originalPhone: phone || '',
+                originalEmail: email,
                 answers: {},
                 scores: {},
                 recommendedProduct: source || 'pdf_guide',

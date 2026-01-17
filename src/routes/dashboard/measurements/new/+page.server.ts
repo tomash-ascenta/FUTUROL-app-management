@@ -14,11 +14,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw redirect(302, '/dashboard');
 	}
 
-	// Get orders that need measurement (status = measurement_scheduled or contacted)
+	// Get orders that need measurement (status = quote_sent or customer)
 	const ordersRaw = await db.order.findMany({
 		where: {
 			status: {
-				in: ['contacted', 'measurement_scheduled']
+				in: ['customer', 'quote_sent']
 			},
 			measurement: null // No measurement yet
 		},
@@ -37,10 +37,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 		orderBy: { createdAt: 'desc' }
 	});
 
-	// Convert Decimal to number for serialization
+	// Convert orders for serialization
 	const orders = ordersRaw.map(order => ({
-		...order,
-		estimatedValue: order.estimatedValue ? Number(order.estimatedValue) : null
+		...order
 	}));
 
 	return {

@@ -193,10 +193,10 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			}
 		});
 
-		// Update order status to measurement_done
+		// Update order status to measurement
 		await db.order.update({
 			where: { id: orderId },
-			data: { status: 'measurement_done' }
+			data: { status: 'measurement' }
 		});
 
 		// Create status history
@@ -204,7 +204,7 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
 			data: {
 				order: { connect: { id: orderId! } },
 				fromStatus: order.status,
-				toStatus: 'measurement_done',
+				toStatus: 'measurement',
 				changedBy: { connect: { id: locals.user.employeeId } },
 				note: 'Zaměření dokončeno'
 			}

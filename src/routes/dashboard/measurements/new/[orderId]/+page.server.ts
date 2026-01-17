@@ -39,10 +39,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		throw redirect(302, `/dashboard/measurements/${orderRaw.measurement.id}`);
 	}
 
-	// Convert Decimal to number for serialization
+	// Prepare order for serialization
 	const order = {
-		...orderRaw,
-		estimatedValue: orderRaw.estimatedValue ? Number(orderRaw.estimatedValue) : null
+		...orderRaw
 	};
 
 	return {

@@ -46,8 +46,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	return {
 		order: {
 			...order,
-			estimatedValue: order.estimatedValue ? Number(order.estimatedValue) : null,
-			finalValue: order.finalValue ? Number(order.finalValue) : null,
 			createdAt: order.createdAt.toISOString(),
 			updatedAt: order.updatedAt.toISOString(),
 			deadlineAt: order.deadlineAt?.toISOString() || null,

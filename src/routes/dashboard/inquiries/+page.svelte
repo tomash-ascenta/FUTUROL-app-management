@@ -41,6 +41,7 @@
         convertedById: string | null;
         convertedAt: string | null;
         createdAt: string;
+        updatedAt: string;
         customer: {
             id: string;
             fullName: string | null;
@@ -375,9 +376,7 @@
 
     <!-- Error message -->
     {#if errorMessage}
-        <div
-            class="p-4 bg-red-50 border border-red-200 rounded text-red-700"
-        >
+        <div class="p-4 bg-red-50 border border-red-200 rounded text-red-700">
             {errorMessage}
         </div>
     {/if}

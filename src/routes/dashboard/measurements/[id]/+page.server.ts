@@ -70,8 +70,6 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			updatedAt: measurement.updatedAt.toISOString(),
 			order: measurement.order ? {
 				...measurement.order,
-				estimatedValue: measurement.order.estimatedValue ? Number(measurement.order.estimatedValue) : null,
-				finalValue: measurement.order.finalValue ? Number(measurement.order.finalValue) : null,
 				createdAt: measurement.order.createdAt.toISOString(),
 				updatedAt: measurement.order.updatedAt.toISOString(),
 				deadlineAt: measurement.order.deadlineAt?.toISOString() || null,

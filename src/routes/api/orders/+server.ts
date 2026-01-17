@@ -149,10 +149,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			data: {
 				orderNumber,
 				customer: { connect: { id: data.customerId } },
+				owner: { connect: { id: locals.user.employeeId } },
 				...(data.locationId && { location: { connect: { id: data.locationId } } }),
 				...(data.productId && { product: { connect: { id: data.productId } } }),
 				priority: data.priority,
-				estimatedValue: data.estimatedValue,
 				deadlineAt: data.deadlineAt ? new Date(data.deadlineAt) : undefined,
 				status: 'lead'
 			},
