@@ -5,7 +5,9 @@ Centrální datová platforma pro správu zákazníků, zakázek, zaměření pe
 > **Vlastník software:** Ascenta Lab s.r.o. | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
 
 🌐 **Produkce:** https://futurol.ascentalab.cz  
-🎯 **Rádce:** https://radce.ascentalab.cz
+🧪 **Stage:** https://stage.futurol.ascentalab.cz  
+🎯 **Rádce:** https://radce.ascentalab.cz  
+🎯 **Rádce Stage:** https://stage.radce.ascentalab.cz
 
 ---
 
@@ -26,6 +28,27 @@ Centrální datová platforma pro správu zákazníků, zakázek, zaměření pe
   - Lead capture s PDF průvodcem
 - ✅ **Role a oprávnění** - admin, ředitel, obchodník, zaměřovač, technik
 - ✅ **Bezpečnost** - JWT auth, bcrypt, rate limiting, HTTPS
+- ✅ **Feature Flags** - licenční tiering (Basic/Full) via ENV variable
+
+---
+
+## 🎚️ Licenční verze (Feature Flags)
+
+Aplikace podporuje dva licenční režimy přepínatelné pomocí ENV variable `LICENSE_TIER`:
+
+| Modul | Basic | Full |
+|-------|:-----:|:----:|
+| Rádce | ✅ | ✅ |
+| Zákazníci | ✅ | ✅ |
+| Zaměření | ✅ | ✅ |
+| Poptávky | ✅ | ✅ |
+| Zakázky | ❌ | ✅ |
+| Servis | ❌ | ✅ |
+| Reporty | ❌ | ✅ |
+| Dashboard KPI | ❌ | ✅ |
+| Max uživatelů | 3 | 6 |
+
+Více v [FEATURE_FLAGS_SPEC.md](./FEATURE_FLAGS_SPEC.md)
 
 ---
 
@@ -60,6 +83,7 @@ Centrální datová platforma pro správu zákazníků, zakázek, zaměření pe
 | Dokument | Popis |
 |----------|-------|
 | [DEPLOYMENT.md](./DEPLOYMENT.md) | 🚀 Deployment guide (VPS setup, update, rollback) |
+| [FEATURE_FLAGS_SPEC.md](./FEATURE_FLAGS_SPEC.md) | 🎚️ Licenční tiering (Basic/Full) |
 | [.github/SETUP_CICD.md](./.github/SETUP_CICD.md) | ⚙️ CI/CD automatizace (GitHub Actions) |
 | [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) | 🔧 Řešení běžných problémů |
 | [VPS_CREDENTIALS.md](./VPS_CREDENTIALS.md) | 🔑 Přístupy k serveru |
@@ -143,15 +167,28 @@ Aplikace běží na http://localhost:8081
 
 ### Produkční deploy (automatický)
 
-**Push do `main` větve automaticky spustí deployment:**
+**Git Branching Strategy:**
+```
+main (produkce)     ← merge přes PR, deploy na produkci
+  ↑
+develop (stage)     ← běžný vývoj, automatický deploy na Stage
+  ↑
+feature/xyz         ← feature branches (volitelné)
+```
 
-1. GitHub Actions sestaví Docker image (na GitHub serverech - dostatek RAM)
-2. Image se uloží do GitHub Container Registry (ghcr.io)
-3. VPS stáhne hotový image a restartuje kontejner
-
+**Push do `develop` větve → deploy na Stage:**
 ```bash
-# Stačí pushnout do main
+git checkout develop
+git push origin develop
+# → Automatický deploy na stage.futurol.ascentalab.cz
+```
+
+**Push do `main` větve → deploy na Produkci:**
+```bash
+git checkout main
+git merge develop
 git push origin main
+# → Automatický deploy na futurol.ascentalab.cz
 ```
 
 **Ruční deploy (v případě potřeby):**

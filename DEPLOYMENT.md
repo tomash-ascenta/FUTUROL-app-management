@@ -6,6 +6,20 @@ Kompletní průvodce nasazením Futurol App do produkčního prostředí.
 
 ---
 
+## 🌍 Prostředí
+
+| Prostředí | URL | Branch | Server |
+|-----------|-----|--------|--------|
+| **Produkce** | https://futurol.ascentalab.cz | `main` | 37.46.209.22 |
+| **Stage** | https://stage.futurol.ascentalab.cz | `develop` | 37.46.209.39 |
+
+### Stage prostředí
+- Automatický deploy při push na `develop` branch
+- Noční synchronizace dat z produkce (3:00) s anonymizací
+- Slouží k testování před nasazením na produkci
+
+---
+
 ## 🏗️ CI/CD Architektura
 
 ```
@@ -14,17 +28,20 @@ Kompletní průvodce nasazením Futurol App do produkčního prostředí.
 │    Repo     │─────▶│   (Build Job)    │─────▶│   Container     │─────▶│  (Deploy)   │
 │             │      │   7GB RAM ✓      │      │   Registry      │      │             │
 └─────────────┘      └──────────────────┘      └─────────────────┘      └─────────────┘
+
+develop branch → :develop tag → Stage server (37.46.209.39)
+main branch    → :latest tag  → Production server (37.46.209.22)
 ```
 
 **Proč tato architektura?**
 - ✅ Build probíhá na GitHub Actions (7GB RAM) - žádné OOM problémy
 - ✅ VPS pouze stahuje hotový image - šetří RAM a čas
 - ✅ GHCR package je veřejný - nepotřebuje autentizaci
-- ✅ Automatický deploy při push do main
+- ✅ Automatický deploy při push do main nebo develop
 - ✅ **Automatická migrace** - `prisma migrate deploy` se spouští při startu kontejneru
 
 **Klíčové soubory:**
-- `.github/workflows/deploy.yml` - CI/CD workflow
+- `.github/workflows/ci-cd.yml` - CI/CD workflow
 - `docker-compose.yml` - kontejnerová orchestrace
 - `Dockerfile` - build instrukce (včetně automatické migrace)
 
@@ -34,12 +51,72 @@ Kompletní průvodce nasazením Futurol App do produkčního prostředí.
 
 - [Prerequisites](#prerequisites)
 - [VPS Initial Setup](#vps-initial-setup)
+- [Stage Environment](#stage-environment)
+- [Feature Flags](#feature-flags)
 - [První nasazení](#první-nasazení)
 - [Aktualizace aplikace](#aktualizace-aplikace)
 - [Rollback](#rollback)
 - [Monitoring & Logs](#monitoring--logs)
 - [Backup & Restore](#backup--restore)
 - [Troubleshooting](#troubleshooting)
+
+---
+
+## 🎚️ Feature Flags
+
+Aplikace podporuje licenční tiering (Basic/Full) pomocí ENV variable:
+
+```bash
+# V docker-compose.yml
+LICENSE_TIER=full   # nebo "basic"
+```
+
+### Přepnutí licence:
+```bash
+# 1. Změň v docker-compose.yml
+sed -i 's/LICENSE_TIER=full/LICENSE_TIER=basic/g' docker-compose.yml
+
+# 2. Restart (musí být down + up pro načtení nové ENV)
+docker compose down && docker compose up -d
+```
+
+### Rozdíly mezi verzemi:
+| Funkce | Basic | Full |
+|--------|:-----:|:----:|
+| Zákazníci, Zaměření, Poptávky | ✅ | ✅ |
+| Zakázky, Servis, Reporty | ❌ | ✅ |
+| Max uživatelů | 3 | 6 |
+
+Více v [FEATURE_FLAGS_SPEC.md](./FEATURE_FLAGS_SPEC.md)
+
+---
+
+## 🧪 Stage Environment
+
+Stage server slouží k testování před nasazením na produkci.
+
+### Přístupy:
+- **URL:** https://stage.futurol.ascentalab.cz
+- **Server:** 37.46.209.39
+- **SSH:** `ssh -i ~/.ssh/futurol-stage vpsuser@37.46.209.39`
+- **App path:** `/opt/futurol-stage`
+
+### Automatický deploy:
+```bash
+# Push na develop = deploy na Stage
+git checkout develop
+git push origin develop
+```
+
+### Noční synchronizace dat:
+- Každý den ve 3:00 se spouští CRON job
+- Stáhne data z produkce a anonymizuje citlivé údaje
+- Log: `/var/log/futurol-sync.log`
+
+```bash
+# Manuální spuštění sync
+ssh -i ~/.ssh/futurol-stage vpsuser@37.46.209.39 "/opt/scripts/sync-from-production.sh"
+```
 
 ---
 

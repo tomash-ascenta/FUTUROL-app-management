@@ -9,6 +9,46 @@ a projekt dodržuje [Semantic Versioning](https://semver.org/lang/cs/).
 
 ---
 
+## [0.13.0] - 2026-01-17
+
+### Přidáno - Stage Environment & Feature Flags
+
+#### Stage prostředí
+- **Stage server** - https://stage.futurol.ascentalab.cz (37.46.209.39)
+- **CI/CD rozšíření** - `develop` branch → automatický deploy na Stage
+- **Noční sync dat** - CRON ve 3:00 kopíruje data z produkce s anonymizací
+- **SSH klíč** - `~/.ssh/futurol-stage` pro přístup na Stage server
+
+#### Feature Flags (licenční tiering)
+- **`LICENSE_TIER` ENV variable** - přepínání mezi `basic` a `full` verzí
+- **Centrální konfigurace** - `src/lib/server/features.ts`
+- **Sidebar filtrování** - moduly se zobrazují dle licence
+- **API guards** - `requireFeature()` pro API endpointy
+- **Page redirecty** - `requireFeatureOrRedirect()` pro stránky
+- **Badge "Basic verze"** - zobrazuje se v sidebar pro Basic licenci
+
+#### Rozdíly verzí
+| Funkce | Basic | Full |
+|--------|:-----:|:----:|
+| Zákazníci, Zaměření, Poptávky | ✅ | ✅ |
+| Zakázky, Servis, Reporty | ❌ | ✅ |
+| Max uživatelů | 3 | 6 |
+
+### Změněno
+
+#### CI/CD workflow
+- **Nový trigger** - `develop` branch spouští build a deploy
+- **Docker tagy** - `:develop` pro Stage, `:latest` pro Production
+- **Nový job** - `deploy-stage` pro automatický deploy na Stage
+
+#### Dokumentace
+- **README.md** - přidány Stage URLs a Feature Flags info
+- **DEPLOYMENT.md** - přidány sekce Stage a Feature Flags
+- **VPS_CREDENTIALS.md** - přidány Stage server přístupy
+- **ARCHITECTURE.md** - přidány diagramy pro Stage a Feature Flags
+
+---
+
 ## [0.12.1] - 2026-01-17
 
 ### Opraveno - TypeScript compatibility

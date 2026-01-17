@@ -87,6 +87,67 @@ graph TB
 
 ```mermaid
 graph LR
+    subgraph "GitHub"
+        A[develop branch] -->|push| B[GitHub Actions]
+        C[main branch] -->|push| B
+    end
+    
+    subgraph "Build"
+        B -->|build| D[GHCR :develop]
+        B -->|build| E[GHCR :latest]
+    end
+    
+    subgraph "Stage (37.46.209.39)"
+        D -->|pull| F[Stage App]
+        F --> G[(Stage DB)]
+    end
+    
+    subgraph "Production (37.46.209.22)"
+        E -->|pull| H[Prod App]
+        H --> I[(Prod DB)]
+    end
+    
+    G -.->|nightly sync| I
+    
+    style A fill:#fff4e6
+    style C fill:#e8f5e9
+    style F fill:#e1f5ff
+    style H fill:#f3e5f5
+```
+
+### Environments
+
+| Environment | URL | Branch | Server IP |
+|-------------|-----|--------|-----------|
+| Production | futurol.ascentalab.cz | `main` | 37.46.209.22 |
+| Stage | stage.futurol.ascentalab.cz | `develop` | 37.46.209.39 |
+
+### Feature Flags Architecture
+
+```mermaid
+graph TB
+    A[ENV: LICENSE_TIER] -->|basic/full| B[features.ts]
+    B --> C{hasFeature?}
+    C -->|yes| D[Show Module]
+    C -->|no| E[Hide/Redirect]
+    
+    subgraph "Basic Tier"
+        F[Zákazníci]
+        G[Zaměření]
+        H[Poptávky]
+    end
+    
+    subgraph "Full Tier"
+        I[Zakázky]
+        J[Servis]
+        K[Reporty]
+    end
+```
+
+### Original Architecture
+
+```mermaid
+graph LR
     A[Client Browser] -->|HTTPS| B[Nginx]
     B -->|Reverse Proxy| C[SvelteKit App<br/>Port 8081]
     C -->|Prisma| D[(PostgreSQL<br/>Port 5433)]
