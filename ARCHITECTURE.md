@@ -2,6 +2,8 @@
 
 Architektura Futurol App - Centrální datová platforma pro správu zákazníků, zakázek a zaměření pergol.
 
+> **Vlastník software:** Ascenta Lab s.r.o. | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
+
 ---
 
 ## 📋 Obsah

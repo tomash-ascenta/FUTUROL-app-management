@@ -1,6 +1,8 @@
 # Futurol App
 
-Centrální datová platforma pro firmu Futurol.cz – správa zákazníků, zakázek, zaměření pergol a servisů.
+Centrální datová platforma pro správu zákazníků, zakázek, zaměření pergol a servisů.
+
+> **Vlastník software:** Ascenta Lab s.r.o. | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
 
 🌐 **Produkce:** https://futurol.ascentalab.cz  
 🎯 **Rádce:** https://radce.ascentalab.cz
@@ -194,4 +196,6 @@ Více informací v [VPS_CREDENTIALS.md](./VPS_CREDENTIALS.md)
 
 ## 📄 Licence
 
-Proprietární - FARDAL s.r.o.
+Proprietární software © Ascenta Lab s.r.o.
+
+Licencováno pro: FARDAL s.r.o. (Futurol.cz)

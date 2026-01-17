@@ -6,10 +6,19 @@
 
 ---
 
+## Vlastnictví
+
+| Role | Subjekt |
+|------|--------|
+| **Vlastník software** | Ascenta Lab s.r.o. |
+| **Zákazník (licence)** | FARDAL s.r.o. (Futurol.cz) |
+
+---
+
 ## 1. Přehled projektu
 
 ### Vize
-Centrální datová platforma pro firmu Futurol.cz – správa zákazníků, zakázek, zaměření, servisů a firemních KPI. Data vstupují z různých zdrojů (mobilní app, Excel import, B2C rádce) do jednotné databáze.
+Centrální datová platforma pro správu zákazníků, zakázek, zaměření, servisů a firemních KPI. Vyvinuto pro zákazníka Futurol.cz. Data vstupují z různých zdrojů (mobilní app, Excel import, B2C rádce) do jednotné databáze.
 
 ### Klíčové vlastnosti
 - 📱 Responzivní web-app (mobil, tablet, desktop)

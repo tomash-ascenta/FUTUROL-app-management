@@ -2,6 +2,8 @@
 
 Kompletní průvodce nasazením Futurol App do produkčního prostředí.
 
+> **Vlastník software:** Ascenta Lab s.r.o. | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
+
 ---
 
 ## 🏗️ CI/CD Architektura

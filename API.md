@@ -2,6 +2,8 @@
 
 Futurol App REST API dokumentace.
 
+> **Vlastník software:** Ascenta Lab s.r.o. | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
+
 **Base URL:** 
 - Lokální: `http://localhost:5173/api`
 - Produkce: `https://futurol.ascentalab.cz/api`

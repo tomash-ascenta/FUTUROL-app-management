@@ -1,8 +1,10 @@
-# Specifikace Licenčního Serveru FUTUROL
+# Specifikace Licenčního Serveru Futurol
+
+> **Vlastník software:** Ascenta Lab s.r.o. | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
 
 ## Přehled
 
-Tento dokument popisuje požadavky na vytvoření centrálního licenčního serveru pro správu a validaci licencí aplikace FUTUROL.
+Tento dokument popisuje požadavky na vytvoření centrálního licenčního serveru pro správu a validaci licencí aplikace Futurol App.
 
 ---
 

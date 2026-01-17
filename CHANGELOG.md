@@ -2,6 +2,8 @@
 
 Všechny významné změny projektu Futurol App budou dokumentovány v tomto souboru.
 
+> **Vlastník software:** Ascenta Lab s.r.o. | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
+
 Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.0.0/),
 a projekt dodržuje [Semantic Versioning](https://semver.org/lang/cs/).
 

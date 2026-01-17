@@ -1,12 +1,16 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/server/db';
+import { requireFeature } from '$lib/server/features';
 
 // GET - List all service tickets
 export const GET: RequestHandler = async ({ locals }) => {
 	if (!locals.user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
+
+	// Feature flag check - Servis je pouze pro Full verzi
+	requireFeature('service');
 
 	const allowedRoles = ['admin', 'manager', 'sales', 'technician'];
 	const hasPermission = locals.user.roles.some((role: string) => allowedRoles.includes(role));
@@ -40,6 +44,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
+
+	// Feature flag check - Servis je pouze pro Full verzi
+	requireFeature('service');
 
 	const allowedRoles = ['admin', 'sales', 'technician'];
 	const hasPermission = locals.user.roles.some((role: string) => allowedRoles.includes(role));

@@ -17,8 +17,22 @@
         ScrollText,
         KeyRound,
         MessageSquare,
+        Crown,
     } from "lucide-svelte";
     import type { Snippet } from "svelte";
+
+    // Typ pro Feature (musí odpovídat server/features.ts)
+    type Feature =
+        | "radce"
+        | "customers"
+        | "measurements"
+        | "inquiries"
+        | "orders"
+        | "service"
+        | "dashboard_basic"
+        | "dashboard_full"
+        | "reports"
+        | "audit_logs";
 
     interface Props {
         children: Snippet;
@@ -29,6 +43,14 @@
                 fullName: string;
                 roles: string[];
             } | null;
+            license: {
+                tier: "basic" | "full";
+                tierLabel: string;
+                features: Feature[];
+                maxUsers: number;
+                isBasic: boolean;
+                isFull: boolean;
+            };
         };
     }
 
@@ -37,49 +59,56 @@
     let sidebarOpen = $state(false);
     let userMenuOpen = $state(false);
 
-    // Hlavní navigace - business moduly
+    // Hlavní navigace - business moduly s feature požadavky
     const navigation = [
         {
             name: "Dashboard",
             href: "/dashboard",
             icon: LayoutDashboard,
             roles: ["manager", "sales", "production_manager", "technician"],
+            feature: "dashboard_basic" as Feature,
         },
         {
             name: "Poptávky",
             href: "/dashboard/inquiries",
             icon: MessageSquare,
             roles: ["manager", "sales"],
+            feature: "inquiries" as Feature,
         },
         {
             name: "Zákazníci",
             href: "/dashboard/customers",
             icon: Users,
             roles: ["manager", "sales", "production_manager", "technician"],
+            feature: "customers" as Feature,
         },
         {
             name: "Zakázky",
             href: "/dashboard/orders",
             icon: ClipboardList,
             roles: ["manager", "sales", "production_manager", "technician"],
+            feature: "orders" as Feature,
         },
         {
             name: "Zaměření",
             href: "/dashboard/measurements",
             icon: Ruler,
             roles: ["manager", "sales", "production_manager", "technician"],
+            feature: "measurements" as Feature,
         },
         {
             name: "Servis",
             href: "/dashboard/service",
             icon: Wrench,
             roles: ["manager", "sales", "technician"],
+            feature: "service" as Feature,
         },
         {
             name: "Reporty",
             href: "/dashboard/reports",
             icon: FileText,
             roles: ["manager"],
+            feature: "reports" as Feature,
         },
     ];
 
@@ -102,6 +131,7 @@
             href: "/dashboard/admin/logs",
             icon: ScrollText,
             roles: ["admin"],
+            feature: "audit_logs" as Feature,
         },
         {
             name: "Nastavení systému",
@@ -111,11 +141,22 @@
         },
     ];
 
-    function hasAccess(roles: string[]): boolean {
+    // Kontrola přístupu - role + feature
+    function hasAccess(roles: string[], feature?: Feature): boolean {
         if (!data.user) return false;
-        // Admin má přístup ke všemu
-        if (data.user.roles.includes("admin")) return true;
-        return data.user.roles.some((r) => roles.includes(r));
+
+        // Kontrola role
+        const hasRole =
+            data.user.roles.includes("admin") ||
+            data.user.roles.some((r) => roles.includes(r));
+        if (!hasRole) return false;
+
+        // Kontrola feature (pokud je definována)
+        if (feature && !data.license.features.includes(feature)) {
+            return false;
+        }
+
+        return true;
     }
 
     function isActive(href: string): boolean {
@@ -187,9 +228,26 @@
 
         <!-- Navigation -->
         <nav class="p-4 space-y-1 flex-1 overflow-y-auto">
+            <!-- License badge -->
+            {#if data.license.isBasic}
+                <div
+                    class="mb-4 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg"
+                >
+                    <div
+                        class="flex items-center gap-2 text-amber-700 text-xs font-medium"
+                    >
+                        <Crown class="w-4 h-4" />
+                        <span>Basic verze</span>
+                    </div>
+                    <p class="text-[10px] text-amber-600 mt-1">
+                        Některé funkce jsou omezeny
+                    </p>
+                </div>
+            {/if}
+
             <!-- Business moduly -->
             {#each navigation as item}
-                {#if hasAccess(item.roles)}
+                {#if hasAccess(item.roles, item.feature)}
                     <a
                         href={item.href}
                         class="flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all
@@ -213,17 +271,19 @@
                         Administrace
                     </p>
                     {#each adminNavigation as item}
-                        <a
-                            href={item.href}
-                            class="flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all
-                                {isActive(item.href)
-                                ? 'bg-futurol-green text-white shadow-soft'
-                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}"
-                            onclick={() => (sidebarOpen = false)}
-                        >
-                            <item.icon class="w-5 h-5" />
-                            {item.name}
-                        </a>
+                        {#if !item.feature || data.license.features.includes(item.feature)}
+                            <a
+                                href={item.href}
+                                class="flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all
+                                    {isActive(item.href)
+                                    ? 'bg-futurol-green text-white shadow-soft'
+                                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}"
+                                onclick={() => (sidebarOpen = false)}
+                            >
+                                <item.icon class="w-5 h-5" />
+                                {item.name}
+                            </a>
+                        {/if}
                     {/each}
                 </div>
             {/if}

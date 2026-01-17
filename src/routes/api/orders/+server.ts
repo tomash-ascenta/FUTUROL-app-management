@@ -1,5 +1,6 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
+import { requireFeature } from '$lib/server/features';
 import { z } from 'zod';
 
 // Schema pro vytvoření zakázky
@@ -17,6 +18,9 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	if (!locals.user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
+
+	// Feature flag check - Zakázky jsou pouze pro Full verzi
+	requireFeature('orders');
 
 	try {
 		const search = url.searchParams.get('search') || '';
@@ -107,6 +111,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
+
+	// Feature flag check - Zakázky jsou pouze pro Full verzi
+	requireFeature('orders');
 
 	// Check role permissions - only admin and sales can create orders
 	const allowedRoles = ['admin', 'sales'];
