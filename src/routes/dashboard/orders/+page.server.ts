@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { redirect } from '@sveltejs/kit';
-import { requireFeature } from '$lib/server/features';
+import { requireFeatureOrRedirect } from '$lib/server/features';
 
 export const load: PageServerLoad = async ({ url, locals }) => {
 	if (!locals.user) {
@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	}
 
 	// Feature flag check - Zakázky jsou pouze pro Full verzi
-	requireFeature('orders');
+	requireFeatureOrRedirect('orders');
 
 	// Check role permissions
 	const allowedRoles = ['admin', 'manager', 'sales', 'production_manager', 'technician'];

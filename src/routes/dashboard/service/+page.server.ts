@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { redirect } from '@sveltejs/kit';
-import { requireFeature } from '$lib/server/features';
+import { requireFeatureOrRedirect } from '$lib/server/features';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) {
@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Feature flag check - Servis je pouze pro Full verzi
-	requireFeature('service');
+	requireFeatureOrRedirect('service');
 
 	// Check role permissions - sales can view and create service tickets
 	const allowedRoles = ['admin', 'manager', 'sales', 'technician'];

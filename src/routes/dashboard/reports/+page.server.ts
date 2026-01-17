@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
-import { requireFeature } from '$lib/server/features';
+import { requireFeatureOrRedirect } from '$lib/server/features';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.user) {
@@ -8,7 +8,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	// Feature flag check - Reporty jsou pouze pro Full verzi
-	requireFeature('reports');
+	requireFeatureOrRedirect('reports');
 
 	// Check role permissions - only manager and admin can access reports
 	const allowedRoles = ['admin', 'manager'];

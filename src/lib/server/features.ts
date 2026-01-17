@@ -7,7 +7,7 @@
  */
 
 import { env } from '$env/dynamic/private';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 
 // ---------------------------------------------
 // Typy
@@ -81,13 +81,22 @@ export function hasFeature(feature: Feature): boolean {
 }
 
 /**
- * Vyhodí 403 error pokud feature není dostupná
+ * Vyhodí 403 error pokud feature není dostupná (pro API)
  */
 export function requireFeature(feature: Feature): void {
 	if (!hasFeature(feature)) {
 		error(403, {
 			message: `Funkce "${getFeatureLabel(feature)}" není dostupná ve vaší licenci. Pro aktivaci přejděte na verzi Full.`
 		});
+	}
+}
+
+/**
+ * Přesměruje na dashboard pokud feature není dostupná (pro pages)
+ */
+export function requireFeatureOrRedirect(feature: Feature): void {
+	if (!hasFeature(feature)) {
+		redirect(302, '/dashboard?license_error=' + feature);
 	}
 }
 
