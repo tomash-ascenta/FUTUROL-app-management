@@ -1,10 +1,28 @@
 # Feature Flags Specifikace
 
-*Verze: 1.0 | Datum: 17. ledna 2026*
+*Verze: 1.1 | Datum: 17. ledna 2026*
 
 > **Vlastník software:** Ascenta Lab s.r.o. | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
 
 > **Zadání pro vývojáře: Implementace licenčního tiering systému pro Futurol App**
+
+---
+
+## ✅ Status implementace
+
+| Komponenta | Stav | Soubor |
+|------------|------|--------|
+| **Core konfigurace** | ✅ Implementováno | `src/lib/server/features.ts` |
+| **Sidebar filtering** | ✅ Implementováno | `src/routes/dashboard/+layout.svelte` |
+| **Layout data** | ✅ Implementováno | `src/routes/dashboard/+layout.server.ts` |
+| **API guards - Orders** | ✅ Implementováno | `src/routes/api/orders/+server.ts` |
+| **API guards - Service** | ✅ Implementováno | `src/routes/api/service-tickets/+server.ts` |
+| **Page guards - Orders** | ✅ Implementováno | `src/routes/dashboard/orders/+page.server.ts` |
+| **Page guards - Service** | ✅ Implementováno | `src/routes/dashboard/service/+page.server.ts` |
+| **Page guards - Reports** | ✅ Implementováno | `src/routes/dashboard/reports/+page.server.ts` |
+| **ENV variable** | ✅ V provozu | Stage + Production |
+
+**Testováno:** Stage server s LICENSE_TIER=basic ověřen 17.1.2026
 
 ---
 

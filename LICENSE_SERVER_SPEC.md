@@ -2,6 +2,29 @@
 
 > **Vlastník software:** Ascenta Lab s.r.o. | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
 
+## ⏳ Status: Plánováno (Fáze 2)
+
+Tento dokument popisuje **budoucí** centrální licenční server pro vzdálenou správu licencí.
+
+### Aktuální řešení (Fáze 1) - Implementováno ✅
+
+Pro Fázi 1 je implementován **lokální Feature Flags systém** pomocí ENV variable:
+
+```bash
+# V .env souboru na serveru
+LICENSE_TIER=basic   # nebo "full"
+```
+
+Viz: [`FEATURE_FLAGS_SPEC.md`](./FEATURE_FLAGS_SPEC.md)
+
+Tento přístup je jednoduchý a postačuje pro začátek, kdy má každý zákazník vlastní instanci. Centrální licenční server bude implementován v Fázi 2, když bude potřeba:
+- Vzdálená správa licencí bez SSH přístupu
+- Automatická expirace licencí
+- Dashboard pro správu všech zákazníků
+- Telemetrie a usage analytics
+
+---
+
 ## Přehled
 
 Tento dokument popisuje požadavky na vytvoření centrálního licenčního serveru pro správu a validaci licencí aplikace Futurol App.

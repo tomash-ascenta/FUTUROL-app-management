@@ -1,6 +1,6 @@
 # Futurol App - Projektová specifikace
 
-*Verze: 1.1 | Datum: 14. ledna 2026*
+*Verze: 1.2 | Datum: 17. ledna 2026*
 
 > **📌 Tento dokument je "source of truth" pro projekt Futurol App.**
 
@@ -1260,30 +1260,33 @@ PUBLIC_ADVISOR_URL="https://radce.futurol.cz"
 
 ## 11. Roadmap
 
-### Fáze 1: MVP (4-6 týdnů)
+### Fáze 1: MVP ✅ DOKONČENO
 - [x] Projektová specifikace
-- [ ] Setup projektu (SvelteKit + Fastify + Prisma)
-- [ ] Autentizace (PIN login)
-- [ ] CRUD Zákazníci
-- [ ] CRUD Zakázky (základní workflow)
-- [ ] Role a permissions
-- [ ] Deployment na VPS
+- [x] Setup projektu (SvelteKit + Prisma)
+- [x] Autentizace (PIN login + JWT)
+- [x] CRUD Zákazníci
+- [x] CRUD Zakázky (12-stavový workflow)
+- [x] Role a permissions
+- [x] Deployment na VPS
+- [x] Stage environment + CI/CD
+- [x] Feature Flags (Basic/Full licensing)
 
-### Fáze 2: Core Features (4-6 týdnů)
-- [ ] Formulář zaměření (kompletní)
+### Fáze 2: Core Features (v realizaci)
+- [x] Formulář zaměření (kompletní)
 - [ ] PDF generování
 - [ ] Google Drive integrace (fotky)
-- [ ] Rádce B2C (dotazník)
+- [x] Rádce B2C (dotazník) ✅
 - [ ] Push notifikace
-- [ ] Servisní modul
+- [x] Servisní modul (základní)
 
-### Fáze 3: Advanced (4 týdny)
+### Fáze 3: Advanced (plánováno)
 - [ ] Excel import
 - [ ] Dashboard s KPI
 - [ ] Reporty a export
 - [ ] Mapa úkolů (zaměřovač/technik)
+- [ ] Centrální licenční server (viz LICENSE_SERVER_SPEC.md)
 
-### Fáze 4: Polish (2 týdny)
+### Fáze 4: Polish (plánováno)
 - [ ] PWA optimalizace
 - [ ] Testování
 - [ ] Dokumentace
