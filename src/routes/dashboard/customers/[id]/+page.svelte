@@ -482,9 +482,7 @@
         <!-- Main info -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Contacts -->
-            <div
-                class="bg-white rounded border border-slate-200 p-6 shadow-sm"
-            >
+            <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-medium text-slate-800">
                         Kontaktní osoby
@@ -589,9 +587,7 @@
             {/if}
 
             <!-- Locations -->
-            <div
-                class="bg-white rounded border border-slate-200 p-6 shadow-sm"
-            >
+            <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-medium text-slate-800">Adresy</h2>
                     {#if data.canEdit}
@@ -662,9 +658,7 @@
             </div>
 
             <!-- Orders -->
-            <div
-                class="bg-white rounded border border-slate-200 p-6 shadow-sm"
-            >
+            <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <h2
                         class="text-lg font-medium text-slate-800 flex items-center gap-2"
@@ -717,9 +711,7 @@
             </div>
 
             <!-- Service tickets -->
-            <div
-                class="bg-white rounded border border-slate-200 p-6 shadow-sm"
-            >
+            <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <h2
                         class="text-lg font-medium text-slate-800 flex items-center gap-2"
@@ -771,9 +763,7 @@
             </div>
 
             <!-- Activities Timeline -->
-            <div
-                class="bg-white rounded border border-slate-200 p-6 shadow-sm"
-            >
+            <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <h2
                         class="text-lg font-medium text-slate-800 flex items-center gap-2"
@@ -800,6 +790,7 @@
                     >
                         <div class="flex gap-2 mb-3">
                             {#each activityTypes as typeOption}
+                                {@const TypeIcon = typeOption.icon}
                                 <button
                                     type="button"
                                     onclick={() =>
@@ -809,10 +800,7 @@
                                         ? 'bg-futurol-green text-white'
                                         : 'bg-white border border-slate-200 text-slate-600 hover:border-slate-300'}"
                                 >
-                                    <svelte:component
-                                        this={typeOption.icon}
-                                        class="w-4 h-4"
-                                    />
+                                    <TypeIcon class="w-4 h-4" />
                                     {typeOption.label}
                                 </button>
                             {/each}
@@ -880,8 +868,7 @@
                                 <div
                                     class="flex-shrink-0 w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center"
                                 >
-                                    <svelte:component
-                                        this={ActivityIcon}
+                                    <ActivityIcon
                                         class="w-4 h-4 text-slate-500"
                                     />
                                 </div>
@@ -972,9 +959,7 @@
         <!-- Sidebar -->
         <div class="space-y-6">
             <!-- Meta info -->
-            <div
-                class="bg-white rounded border border-slate-200 p-6 shadow-sm"
-            >
+            <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
                 <h2 class="text-lg font-medium text-slate-800 mb-4">
                     Informace
                 </h2>
@@ -1002,9 +987,7 @@
             </div>
 
             <!-- Quick stats -->
-            <div
-                class="bg-white rounded border border-slate-200 p-6 shadow-sm"
-            >
+            <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
                 <h2 class="text-lg font-medium text-slate-800 mb-4">
                     Statistiky
                 </h2>

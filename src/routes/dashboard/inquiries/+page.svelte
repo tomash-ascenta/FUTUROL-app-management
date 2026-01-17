@@ -458,6 +458,7 @@
                         statusConfig[lead.status] || statusConfig.new}
                     {@const source =
                         sourceConfig[lead.source] || sourceConfig.web}
+                    {@const SourceIcon = source.icon}
                     <div class="p-4 hover:bg-slate-50 transition-colors">
                         <div class="flex items-start gap-4">
                             <!-- Avatar -->
@@ -529,10 +530,7 @@
                                     <span
                                         class="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium {source.color}"
                                     >
-                                        <svelte:component
-                                            this={source.icon}
-                                            class="w-3 h-3"
-                                        />
+                                        <SourceIcon class="w-3 h-3" />
                                         {source.label}
                                         {#if lead.channel}
                                             <span class="opacity-70"
@@ -679,9 +677,10 @@
                     {/if}
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2"
-                        >Typ zákazníka</label
+                <fieldset>
+                    <legend
+                        class="block text-sm font-medium text-slate-700 mb-2"
+                        >Typ zákazníka</legend
                     >
                     <div class="flex gap-3">
                         <button
@@ -731,7 +730,7 @@
                             <p class="text-xs text-slate-500">Firma / OSVČ</p>
                         </button>
                     </div>
-                </div>
+                </fieldset>
 
                 {#if customerType === "B2B"}
                     <div class="space-y-3">
@@ -839,9 +838,10 @@
                     </p>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-2"
-                        >Důvod zamítnutí *</label
+                <fieldset>
+                    <legend
+                        class="block text-sm font-medium text-slate-700 mb-2"
+                        >Důvod zamítnutí *</legend
                     >
                     <div class="grid grid-cols-2 gap-2">
                         {#each Object.entries(lostReasons) as [key, label]}
@@ -857,7 +857,7 @@
                             </button>
                         {/each}
                     </div>
-                </div>
+                </fieldset>
 
                 <div>
                     <label
