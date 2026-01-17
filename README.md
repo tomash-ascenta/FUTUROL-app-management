@@ -9,8 +9,13 @@ Centrální datová platforma pro firmu Futurol.cz – správa zákazníků, zak
 
 ## ✨ Hlavní funkce
 
-- ✅ **Správa zákazníků** - evidence kontaktů, adres, historie
+- ✅ **Dashboard pro obchodníky** - přehled klíčových metrik
+  - Pipeline zakázek (8 fází: Lead → Předání)
+  - KPI karty (konverze, follow-upy, smlouvy, servisy)
+  - Follow-upy na tento týden
+- ✅ **Správa zákazníků** - evidence kontaktů, adres, historie aktivit
 - ✅ **Správa zakázek** - workflow od poptávky po realizaci
+- ✅ **CRM aktivity** - poznámky, hovory, emaily, schůzky s follow-upy
 - ✅ **Protokol zaměření** - 7-krokový formulář s inline editací
 - ✅ **Export do PDF** - protokol zaměření ke stažení s českou diakritikou
 - ✅ **B2C Rádce výběru pergoly** - interaktivní dotazník s doporučením produktu

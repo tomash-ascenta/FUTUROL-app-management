@@ -7,6 +7,68 @@ a projekt dodržuje [Semantic Versioning](https://semver.org/lang/cs/).
 
 ---
 
+## [0.12.0] - 2026-01-17
+
+### Přidáno - Dashboard redesign
+
+#### Pipeline zakázek
+- **Vizuální pipeline** - 8 fází obchodního procesu
+  - Lead → Zákazník → Nabídka → Zaměření → Smlouva → Výroba → Montáž → Předání
+  - Barevné rozlišení každé fáze
+  - Počty zakázek v reálném čase z databáze
+  - Šipky mezi fázemi pro intuitivní orientaci
+
+#### Stats karty (KPI)
+- **Konverze tento měsíc** - počet leadů konvertovaných na zákazníky v aktuálním měsíci
+- **Čekající follow-upy** - nesplněné follow-upy s datem do dneška
+- **Podepsané smlouvy** - zakázky ve fázi smlouvy (před výrobou)
+- **Otevřené servisy** - servisní tikety k vyřízení
+- Barvy sjednocené s pipeline (slate, amber, green, orange)
+
+#### Follow-upy sekce
+- **Nahrazuje "Nedávná aktivita"** - praktičtější pro obchodníky
+- Zobrazuje nesplněné follow-upy na tento týden
+- Ikony podle typu aktivity (telefon, email, schůzka)
+- Barevné rozlišení urgence (dnes = červená, zítra = oranžová)
+- Odkaz na detail zákazníka
+
+### Přidáno - API endpointy
+
+#### Activities API
+- `GET /api/activities` - seznam aktivit s filtrací
+- `POST /api/activities` - vytvoření nové aktivity
+- `PUT /api/activities/[id]` - aktualizace aktivity
+- `DELETE /api/activities/[id]` - smazání aktivity
+
+#### Leads API
+- `POST /api/leads/[id]/convert` - konverze leadu na zákazníka
+- `POST /api/leads/[id]/reject` - zamítnutí leadu
+
+### Změněno - OrderStatus enum
+- **Nové fáze zakázky** - přizpůsobeno reálnému workflow
+  - `lead` - nový lead
+  - `customer` - kontaktovaný zákazník
+  - `quote_sent` - odeslaná nabídka
+  - `measurement` - naplánované zaměření
+  - `contract` - podepsaná smlouva
+  - `production` - ve výrobě
+  - `installation` - montáž
+  - `handover` - předáno zákazníkovi
+  - `cancelled` - zrušeno
+
+### Změněno - UI Design
+- **Technický vzhled** - menší zaoblení rohů
+  - `rounded-xl` → `rounded` (4px)
+  - `rounded-md` → `rounded-sm` (2px)
+- Konzistentní design across celé aplikace
+
+### Databáze
+- **Prisma migrace** `20260117101133_init`
+- Aktualizovaný seed s novými statusy zakázek
+- 10 leadů v různých stavech pro testování
+
+---
+
 ## [0.11.0] - 2026-01-16
 
 ### Infrastruktura - Kompletní migrace

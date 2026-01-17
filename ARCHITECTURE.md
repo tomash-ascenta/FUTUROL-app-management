@@ -268,7 +268,7 @@ enum Role {
   customerId: uuid FK
   locationId: uuid FK
   productId?: uuid FK
-  status: OrderStatus (12 stavů)
+  status: OrderStatus (9 stavů)
   priority: Priority
   estimatedValue?: decimal
   finalValue?: decimal
@@ -281,11 +281,15 @@ enum Role {
 }
 
 enum OrderStatus {
-  lead → contacted → measurement_scheduled → 
-  measurement_done → quote_sent → quote_approved → 
-  in_production → production_done → 
-  installation_scheduled → installed → 
-  completed / cancelled
+  lead →           // Nový lead
+  customer →       // Kontaktovaný zákazník
+  quote_sent →     // Odeslaná nabídka
+  measurement →    // Naplánované zaměření
+  contract →       // Podepsaná smlouva
+  production →     // Ve výrobě
+  installation →   // Montáž
+  handover |       // Předáno zákazníkovi
+  cancelled        // Zrušeno
 }
 ```
 

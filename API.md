@@ -477,6 +477,220 @@ Uložení leadu (pro PDF download apod.).
 
 ---
 
+### POST /api/leads/[id]/convert
+
+Konverze leadu na zákazníka.
+
+**Path Parameters:**
+| Param | Typ | Popis |
+|-------|-----|-------|
+| id | uuid | ID leadu |
+
+**Request Body (volitelné pro B2B):**
+```json
+{
+  "type": "B2B",
+  "companyName": "Firma s.r.o.",
+  "ico": "12345678",
+  "dic": "CZ12345678"
+}
+```
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "customerId": "uuid",
+  "message": "Zákazník úspěšně vytvořen"
+}
+```
+
+**Errors:**
+- `401` - Nepřihlášen
+- `403` - Nemáte oprávnění (povoleno: admin, sales)
+- `404` - Lead nenalezen
+- `400` - Lead již byl konvertován
+
+**Oprávnění:** admin, sales
+
+---
+
+### POST /api/leads/[id]/reject
+
+Zamítnutí leadu.
+
+**Path Parameters:**
+| Param | Typ | Popis |
+|-------|-----|-------|
+| id | uuid | ID leadu |
+
+**Request Body:**
+```json
+{
+  "reason": "not_interested",
+  "note": "Zákazník zvolil konkurenci"
+}
+```
+
+**Dostupné důvody (reason):**
+- `not_interested` - Nemá zájem
+- `budget` - Rozpočet
+- `competition` - Zvolil konkurenci
+- `unreachable` - Nekontaktní
+- `duplicate` - Duplicitní
+- `other` - Jiný důvod
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "message": "Lead byl zamítnut"
+}
+```
+
+**Errors:**
+- `401` - Nepřihlášen
+- `403` - Nemáte oprávnění
+- `404` - Lead nenalezen
+- `400` - Lead již byl konvertován nebo zamítnut
+
+**Oprávnění:** admin, sales
+
+---
+
+## Activity Endpoints
+
+### GET /api/activities
+
+Seznam aktivit s filtrací.
+
+**Query Parameters:**
+| Param | Typ | Default | Popis |
+|-------|-----|---------|-------|
+| customerId | uuid | - | Filtr dle zákazníka |
+| orderId | uuid | - | Filtr dle zakázky |
+| followUp | boolean | false | Pouze nesplněné follow-upy |
+| limit | number | 50 | Max. počet záznamů |
+
+**Response (200):**
+```json
+[
+  {
+    "id": "uuid",
+    "type": "call",
+    "content": "Domluveno zaměření na pondělí",
+    "followUpDate": "2026-01-20T10:00:00Z",
+    "followUpDone": false,
+    "createdAt": "2026-01-17T14:30:00Z",
+    "createdBy": {
+      "id": "uuid",
+      "fullName": "Jan Novák"
+    },
+    "order": {
+      "id": "uuid",
+      "orderNumber": "FUT-2026-0001"
+    }
+  }
+]
+```
+
+**Oprávnění:** Vyžaduje přihlášení
+
+---
+
+### POST /api/activities
+
+Vytvoření nové aktivity.
+
+**Request Body:**
+```json
+{
+  "customerId": "uuid",
+  "orderId": "uuid",
+  "type": "call",
+  "content": "Zákazník potvrdil zájem o nabídku",
+  "followUpDate": "2026-01-20T10:00:00Z"
+}
+```
+
+**Typy aktivit:**
+- `note` - Poznámka
+- `call` - Telefonát
+- `email` - Email
+- `meeting` - Schůzka
+- `status_change` - Změna stavu (systémová)
+- `system` - Systémová událost
+
+**Povinná pole:** `customerId`, `content`
+
+**Response (201):**
+```json
+{
+  "id": "uuid",
+  "type": "call",
+  "content": "Zákazník potvrdil zájem o nabídku",
+  "followUpDate": "2026-01-20T10:00:00Z",
+  "followUpDone": false,
+  "createdAt": "2026-01-17T14:30:00Z"
+}
+```
+
+**Oprávnění:** admin, sales, technician, production_manager
+
+---
+
+### PUT /api/activities/[id]
+
+Aktualizace aktivity (např. označení follow-upu jako splněného).
+
+**Path Parameters:**
+| Param | Typ | Popis |
+|-------|-----|-------|
+| id | uuid | ID aktivity |
+
+**Request Body:**
+```json
+{
+  "followUpDone": true,
+  "content": "Aktualizovaná poznámka"
+}
+```
+
+**Response (200):**
+```json
+{
+  "id": "uuid",
+  "type": "call",
+  "content": "Aktualizovaná poznámka",
+  "followUpDone": true,
+  "updatedAt": "2026-01-17T15:00:00Z"
+}
+```
+
+**Oprávnění:** admin, sales, technician, production_manager
+
+---
+
+### DELETE /api/activities/[id]
+
+Smazání aktivity.
+
+**Path Parameters:**
+| Param | Typ | Popis |
+|-------|-----|-------|
+| id | uuid | ID aktivity |
+
+**Response (200):**
+```json
+{
+  "success": true
+}
+```
+
+**Oprávnění:** admin
+
+---
+
 ## Order Endpoints
 
 ### GET /api/orders

@@ -57,41 +57,47 @@ Průvodce pro zaměstnance firmy Futurol - jak používat interní aplikaci.
 
 ## Dashboard
 
-Po přihlášení vidíš hlavní přehled dle své role:
+Po přihlášení vidíš hlavní přehled s klíčovými metrikami:
 
-### Admin / Ředitel
-```
-┌─────────────────────────────────────┐
-│ 📊 Statistiky                       │
-├─────────────────────────────────────┤
-│ • Zákazníci celkem: 156             │
-│ • Aktivní zakázky: 23               │
-│ • Zaměření tento měsíc: 12          │
-│ • Nové poptávky: 8                  │
-└─────────────────────────────────────┘
-```
+### Přehledové karty (KPI)
 
-### Obchodník
+Na vrcholu dashboardu jsou 4 karty s klíčovými čísly:
+
+| Karta | Co znamená |
+|-------|-----------|
+| **Konverze tento měsíc** | Počet leadů konvertovaných na zákazníky v aktuálním měsíci |
+| **Čekající follow-upy** | Nesplněné follow-upy s datem do dneška (musíš jednat!) |
+| **Podepsané smlouvy** | Zakázky ve fázi "Smlouva" - čekají na výrobu |
+| **Otevřené servisy** | Servisní tikety, které je třeba vyřídit |
+
+### Pipeline zakázek
+
+Vizuální přehled všech aktivních zakázek podle fáze:
+
 ```
-┌─────────────────────────────────────┐
-│ 📋 Moje úkoly                       │
-├─────────────────────────────────────┤
-│ • Nové leady: 5                     │
-│ • Čekající nabídky: 3               │
-│ • Follow-up: 2                      │
-└─────────────────────────────────────┘
+Lead → Zákazník → Nabídka → Zaměření → Smlouva → Výroba → Montáž → Předání
+ (2)      (1)       (3)       (1)        (2)       (1)      (0)      (0)
 ```
 
-### Zaměřovač
-```
-┌─────────────────────────────────────┐
-│ 📐 Naplánovaná zaměření             │
-├─────────────────────────────────────┤
-│ • Dnes: 2                           │
-│ • Tento týden: 7                    │
-│ • Dokončená: 45                     │
-└─────────────────────────────────────┘
-```
+**Co jednotlivé fáze znamenají:**
+- **Lead** - nový kontakt, zatím nekomunikovaný
+- **Zákazník** - kontaktovaný zákazník, čekáme na další krok
+- **Nabídka** - odeslaná cenová nabídka, čekáme na rozhodnutí
+- **Zaměření** - naplánované/provedené zaměření
+- **Smlouva** - podepsaná smlouva, čekáme na výrobu
+- **Výroba** - pergola se vyrábí
+- **Montáž** - probíhá instalace u zákazníka
+- **Předání** - zakázka dokončena a předána zákazníkovi
+
+### Follow-upy
+
+Sekce "Follow-up připomínky" zobrazuje zákazníky, které je třeba kontaktovat:
+
+- 🔴 **Červené** - dnes nebo po termínu (urgentní!)
+- 🟠 **Oranžové** - zítra
+- ⚪ **Šedé** - později tento týden
+
+**Kliknutím na zákazníka** se dostaneš do jeho detailu.
 
 ---
 
