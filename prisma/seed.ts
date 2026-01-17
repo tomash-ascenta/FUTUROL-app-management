@@ -1,327 +1,512 @@
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-// Bcrypt hash function - same as in auth.ts
-const BCRYPT_ROUNDS = 10;
-async function hashPin(pin: string): Promise<string> {
-	return bcrypt.hash(pin, BCRYPT_ROUNDS);
-}
-
 async function main() {
-	console.log('🌱 Seeding database...');
-	
-	// Pre-hash the default PIN
-	const defaultPinHash = await hashPin('123456');
+  console.log('');
+  console.log('═══════════════════════════════════════');
+  console.log('🌱 FUTUROL Database Seed v2.0');
+  console.log('═══════════════════════════════════════');
+  console.log('');
 
-	// Create admin user (only system admin, no business access)
-	const admin = await prisma.employee.upsert({
-		where: { personalNumber: '0001' },
-		update: {
-			pin: defaultPinHash,
-			roles: ['admin'],
-			fullName: 'Systém Admin'
-		},
-		create: {
-			personalNumber: '0001',
-			pin: defaultPinHash,
-			fullName: 'Systém Admin',
-			email: 'admin@futurol.cz',
-			roles: ['admin'],
-			isActive: true
-		}
-	});
-	console.log('✅ Admin created:', admin.personalNumber, '(pouze správa systému)');
+  // Hash PIN (všichni mají 123456)
+  const hashedPin = await bcrypt.hash('123456', 10);
 
-	// Create manager (full read access to everything)
-	const manager = await prisma.employee.upsert({
-		where: { personalNumber: '0010' },
-		update: {
-			pin: defaultPinHash,
-			roles: ['manager'],
-			fullName: 'Jan Manažer'
-		},
-		create: {
-			personalNumber: '0010',
-			pin: defaultPinHash,
-			fullName: 'Jan Manažer',
-			email: 'manazer@futurol.cz',
-			phone: '+420 777 000 001',
-			roles: ['manager'],
-			isActive: true
-		}
-	});
-	console.log('✅ Manager created:', manager.personalNumber, '(vidí vše)');
+  // ========================================
+  // EMPLOYEES
+  // ========================================
+  console.log('👤 Creating employees...');
 
-	// Create sample employees
-	const technician = await prisma.employee.upsert({
-		where: { personalNumber: '0002' },
-		update: { pin: defaultPinHash, roles: ['technician'], fullName: 'Jan Technik' },
-		create: {
-			personalNumber: '0002',
-			pin: defaultPinHash,
-			fullName: 'Jan Technik',
-			email: 'technik@futurol.cz',
-			phone: '+420 777 111 222',
-			roles: ['technician'],
-			isActive: true
-		}
-	});
-	console.log('✅ Technician created:', technician.personalNumber);
+  const admin = await prisma.employee.create({
+    data: {
+      personalNumber: '0001',
+      pin: hashedPin,
+      fullName: 'Admin Systému',
+      email: 'admin@futurol.cz',
+      phone: '+420777000001',
+      roles: ['admin'],
+    },
+  });
 
-	const sales = await prisma.employee.upsert({
-		where: { personalNumber: '0003' },
-		update: { pin: defaultPinHash },
-		create: {
-			personalNumber: '0003',
-			pin: defaultPinHash,
-			fullName: 'Petr Obchodník',
-			email: 'obchodnik@futurol.cz',
-			phone: '+420 777 333 444',
-			roles: ['sales'],
-			isActive: true
-		}
-	});
-	console.log('✅ Sales created:', sales.personalNumber);
+  const sales1 = await prisma.employee.create({
+    data: {
+      personalNumber: '0010',
+      pin: hashedPin,
+      fullName: 'Jan Novák',
+      email: 'novak@futurol.cz',
+      phone: '+420777000010',
+      roles: ['sales'],
+    },
+  });
 
-	// Create products
-	const products = [
-		{ code: 'KLIMO', name: 'Klimo', description: 'Bioklimatická pergola s otočnými lamelami' },
-		{ code: 'HORIZONTAL', name: 'Horizontal', description: 'Horizontální stínění s rolovacím mechanismem' },
-		{ code: 'KLASIK', name: 'Klasik', description: 'Klasická pergola s pevnou střechou' },
-		{ code: 'SCREEN', name: 'Screen', description: 'Vertikální screenové stínění' },
-		{ code: 'ZIP', name: 'Zip Screen', description: 'ZIP screenové stínění' }
-	];
+  const sales2 = await prisma.employee.create({
+    data: {
+      personalNumber: '0011',
+      pin: hashedPin,
+      fullName: 'Petra Svobodová',
+      email: 'svobodova@futurol.cz',
+      phone: '+420777000011',
+      roles: ['sales'],
+    },
+  });
 
-	for (const product of products) {
-		await prisma.product.upsert({
-			where: { code: product.code },
-			update: {},
-			create: product
-		});
-	}
-	console.log('✅ Products created:', products.length);
+  const production = await prisma.employee.create({
+    data: {
+      personalNumber: '0020',
+      pin: hashedPin,
+      fullName: 'Martin Výroba',
+      email: 'vyroba@futurol.cz',
+      phone: '+420777000020',
+      roles: ['production_manager'],
+    },
+  });
 
-	// Create sample customers
-	const customersData = [
-		{
-			id: 'customer-1',
-			fullName: 'Karel Novák',
-			email: 'karel.novak@email.cz',
-			phone: '+420 602 123 456',
-			company: null,
-			note: 'Dobrý zákazník, rychle platí',
-			source: 'manual' as const,
-			location: { street: 'Zahradní 15', city: 'Praha', zip: '14000' }
-		},
-		{
-			id: 'customer-2',
-			fullName: 'Marie Svobodová',
-			email: 'marie.svobodova@gmail.com',
-			phone: '+420 731 456 789',
-			company: null,
-			note: null,
-			source: 'advisor' as const,
-			location: { street: 'Lesní 42', city: 'Brno', zip: '60200' }
-		},
-		{
-			id: 'customer-3',
-			fullName: 'Jakub Dvořák',
-			email: 'j.dvorak@firma.cz',
-			phone: '+420 777 888 999',
-			company: 'Dvořák & syn s.r.o.',
-			note: 'B2B zákazník - sleva 10%',
-			source: 'manual' as const,
-			location: { street: 'Průmyslová 8', city: 'Ostrava', zip: '70200' }
-		},
-		{
-			id: 'customer-4',
-			fullName: 'Eva Černá',
-			email: null,
-			phone: '+420 608 111 222',
-			company: null,
-			note: 'Preferuje komunikaci přes telefon',
-			source: 'web' as const,
-			location: { street: 'Na Kopci 3', city: 'Plzeň', zip: '30100' }
-		},
-		{
-			id: 'customer-5',
-			fullName: 'Tomáš Veselý',
-			email: 'vesely.tomas@centrum.cz',
-			phone: '+420 604 333 444',
-			company: 'Hotel Veselý',
-			note: 'Velký projekt - 4 pergoly',
-			source: 'manual' as const,
-			location: { street: 'Hlavní náměstí 1', city: 'Liberec', zip: '46001' }
-		},
-		{
-			id: 'customer-6',
-			fullName: 'Jana Procházková',
-			email: 'jana.p@email.cz',
-			phone: '+420 721 555 666',
-			company: null,
-			note: null,
-			source: 'advisor' as const,
-			location: { street: 'Polní 28', city: 'Olomouc', zip: '77900' }
-		},
-		{
-			id: 'customer-7',
-			fullName: 'Petr Horák',
-			email: 'petr.horak@seznam.cz',
-			phone: '+420 606 777 888',
-			company: 'Restaurace U Horáků',
-			note: 'Zájem o bioklimatickou pergolu na terasu',
-			source: 'web' as const,
-			location: { street: 'U Potoka 55', city: 'České Budějovice', zip: '37001' }
-		},
-		{
-			id: 'customer-8',
-			fullName: 'Lucie Malá',
-			email: 'lucie.mala@gmail.com',
-			phone: '+420 739 999 000',
-			company: null,
-			note: null,
-			source: 'import' as const,
-			location: { street: 'Krátká 7', city: 'Hradec Králové', zip: '50002' }
-		}
-	];
+  const technician = await prisma.employee.create({
+    data: {
+      personalNumber: '0030',
+      pin: hashedPin,
+      fullName: 'Pavel Technik',
+      email: 'technik@futurol.cz',
+      phone: '+420777000030',
+      roles: ['technician'],
+    },
+  });
 
-	for (const c of customersData) {
-		await prisma.customer.upsert({
-			where: { id: c.id },
-			update: {},
-			create: {
-				id: c.id,
-				fullName: c.fullName,
-				email: c.email,
-				phone: c.phone,
-				company: c.company,
-				note: c.note,
-				source: c.source,
-				locations: {
-					create: {
-						street: c.location.street,
-						city: c.location.city,
-						zip: c.location.zip,
-						country: 'CZ'
-					}
-				}
-			}
-		});
-	}
-	console.log('✅ Sample customers created:', customersData.length);
+  const manager = await prisma.employee.create({
+    data: {
+      personalNumber: '0040',
+      pin: hashedPin,
+      fullName: 'Eva Manažerová',
+      email: 'manager@futurol.cz',
+      phone: '+420777000040',
+      roles: ['manager'],
+    },
+  });
 
-	// Create sample inquiries
-	const inquiriesData = [
-		{
-			fullName: 'Martin Nový',
-			email: 'martin.novy@email.cz',
-			phone: '+420777888999',
-			note: 'Mám zájem o pergolu na terasu, cca 4x5m',
-			purpose: 'dining',
-			size: 'medium',
-			roofType: 'bioclimatic',
-			extras: ['led', 'heating'],
-			budget: 'premium',
-			recommendedProduct: 'FUTUROL Premium Bioclimatic',
-			status: 'new' as const
-		},
-		{
-			fullName: 'Eva Svobodová',
-			email: 'eva.svobodova@seznam.cz',
-			phone: '+420666777888',
-			note: null,
-			purpose: 'relax',
-			size: 'small',
-			roofType: 'retractable',
-			extras: ['led'],
-			budget: 'standard',
-			recommendedProduct: 'FUTUROL Classic',
-			status: 'contacted' as const
-		},
-		{
-			fullName: 'Jakub Černý',
-			email: 'jakub@firma.cz',
-			phone: '+420555666777',
-			note: 'Potřebuji zastřešit bazén 6x10m',
-			purpose: 'pool',
-			size: 'xl',
-			roofType: 'fixed',
-			extras: ['heating', 'blinds', 'sensors'],
-			budget: 'luxury',
-			recommendedProduct: 'FUTUROL Solid Roof',
-			status: 'new' as const
-		}
-	];
+  console.log('   ✓ 6 employees\n');
 
-	for (const inquiry of inquiriesData) {
-		await prisma.inquiry.create({
-			data: inquiry
-		});
-	}
-	console.log('✅ Sample inquiries created:', inquiriesData.length);
+  // ========================================
+  // PRODUCTS
+  // ========================================
+  console.log('📦 Creating products...');
 
-	// Get locations for orders
-	const locations = await prisma.location.findMany();
-	const horizontalProduct = await prisma.product.findFirst({ where: { code: 'HORIZONTAL' } });
-	const klasikProduct = await prisma.product.findFirst({ where: { code: 'KLASIK' } });
+  const klimo = await prisma.product.create({
+    data: {
+      code: 'KLIMO',
+      name: 'Pergola KLIMO',
+      description: 'Bioklimatická pergola s otočnými lamelami',
+    },
+  });
 
-	// Create sample orders ready for measurement
-	if (locations.length >= 3 && horizontalProduct && klasikProduct) {
-		const ordersData = [
-			{
-				orderNumber: 'FUT-2026-0001',
-				customerId: 'customer-1',
-				locationId: locations[0].id,
-				productId: horizontalProduct.id,
-				status: 'measurement_scheduled' as const,
-				priority: 'normal' as const,
-				estimatedValue: 285000
-			},
-			{
-				orderNumber: 'FUT-2026-0002',
-				customerId: 'customer-2',
-				locationId: locations[1].id,
-				productId: klasikProduct.id,
-				status: 'contacted' as const,
-				priority: 'high' as const,
-				estimatedValue: 195000
-			},
-			{
-				orderNumber: 'FUT-2026-0003',
-				customerId: 'customer-3',
-				locationId: locations[2].id,
-				productId: horizontalProduct.id,
-				status: 'measurement_scheduled' as const,
-				priority: 'urgent' as const,
-				estimatedValue: 520000
-			}
-		];
+  const klasik = await prisma.product.create({
+    data: {
+      code: 'KLASIK',
+      name: 'Pergola KLASIK',
+      description: 'Klasická pergola s pevnou střechou',
+    },
+  });
 
-		for (const order of ordersData) {
-			await prisma.order.upsert({
-				where: { orderNumber: order.orderNumber },
-				update: {},
-				create: order
-			});
-		}
-		console.log('✅ Sample orders created:', ordersData.length);
-	}
+  const horizontal = await prisma.product.create({
+    data: {
+      code: 'HORIZONTAL',
+      name: 'Pergola HORIZONTAL',
+      description: 'Pergola s horizontálními lamelami',
+    },
+  });
 
-	console.log('\n🎉 Seed completed!');
-	console.log('\n📝 Test credentials (všichni PIN: 123456):');
-	console.log('   0001 - Systém Admin (správa uživatelů, logy)');
-	console.log('   0010 - Ředitel (všechny dashboardy a reporty)');
-	console.log('   0002 - Zaměřovač + Technik');
-	console.log('   0003 - Obchodník');
+  const artio = await prisma.product.create({
+    data: {
+      code: 'ARTIO',
+      name: 'Pergola ARTIO',
+      description: 'Designová pergola',
+    },
+  });
+
+  console.log('   ✓ 4 products\n');
+
+  // ========================================
+  // LEADS
+  // ========================================
+  console.log('🎯 Creating leads...');
+
+  await prisma.lead.create({
+    data: {
+      originalName: 'Karel Zájemce',
+      originalPhone: '+420602111222',
+      originalEmail: 'karel@email.cz',
+      source: 'advisor',
+      answers: { q1: [1, 3], q2: [2], q3: [1] },
+      scores: { KLIMO: 12, HORIZONTAL: 8, KLASIK: 5 },
+      recommendedProduct: 'KLIMO',
+      status: 'new',
+    },
+  });
+
+  await prisma.lead.create({
+    data: {
+      originalName: 'Marie Nová',
+      originalPhone: '+420603222333',
+      originalEmail: 'marie@email.cz',
+      source: 'web',
+      channel: 'kontaktní formulář',
+      status: 'new',
+    },
+  });
+
+  await prisma.lead.create({
+    data: {
+      originalName: 'Petr Starý',
+      originalPhone: '+420604333444',
+      source: 'phone',
+      channel: 'telefonát',
+      status: 'lost',
+      lostReason: 'price',
+      lostNote: 'Příliš drahé, vybral konkurenci',
+    },
+  });
+
+  await prisma.lead.create({
+    data: {
+      originalName: 'Firma ABC s.r.o.',
+      originalPhone: '+420605444555',
+      originalEmail: 'info@abc.cz',
+      originalCompany: 'ABC s.r.o.',
+      source: 'referral',
+      status: 'new',
+    },
+  });
+
+  console.log('   ✓ 4 leads\n');
+
+  // ========================================
+  // CUSTOMERS
+  // ========================================
+  console.log('👥 Creating customers...');
+
+  // B2C zákazník
+  const customer1 = await prisma.customer.create({
+    data: {
+      type: 'B2C',
+      source: 'manual',
+      ownerId: sales1.id,
+      contacts: {
+        create: {
+          fullName: 'Jan Novotný',
+          phone: '+420601100100',
+          email: 'novotny@email.cz',
+          isPrimary: true,
+        },
+      },
+      locations: {
+        create: {
+          name: 'Rodinný dům',
+          street: 'Zahradní 123',
+          city: 'Praha 4',
+          zip: '14000',
+          gpsLat: 50.0405,
+          gpsLng: 14.4513,
+        },
+      },
+    },
+    include: { contacts: true, locations: true },
+  });
+
+  // B2C zákazník 2
+  const customer2 = await prisma.customer.create({
+    data: {
+      type: 'B2C',
+      source: 'advisor',
+      ownerId: sales1.id,
+      contacts: {
+        create: {
+          fullName: 'Eva Malá',
+          phone: '+420602200200',
+          email: 'mala@email.cz',
+          isPrimary: true,
+        },
+      },
+      locations: {
+        create: {
+          name: 'Chata',
+          street: 'U lesa 45',
+          city: 'Brno',
+          zip: '60200',
+        },
+      },
+    },
+    include: { contacts: true, locations: true },
+  });
+
+  // B2B zákazník s více kontakty
+  const customer3 = await prisma.customer.create({
+    data: {
+      type: 'B2B',
+      companyName: 'Hotel Panorama s.r.o.',
+      ico: '12345678',
+      dic: 'CZ12345678',
+      source: 'manual',
+      ownerId: sales2.id,
+      contacts: {
+        createMany: {
+          data: [
+            {
+              fullName: 'Ing. Tomáš Ředitel',
+              phone: '+420603300300',
+              email: 'reditel@hotelpanorama.cz',
+              role: 'jednatel',
+              isPrimary: true,
+            },
+            {
+              fullName: 'Jana Provozní',
+              phone: '+420603300301',
+              email: 'provoz@hotelpanorama.cz',
+              role: 'provozní',
+              isPrimary: false,
+            },
+          ],
+        },
+      },
+      locations: {
+        createMany: {
+          data: [
+            {
+              name: 'Hlavní budova',
+              street: 'Horská 789',
+              city: 'Špindlerův Mlýn',
+              zip: '54351',
+              gpsLat: 50.7269,
+              gpsLng: 15.6094,
+            },
+            {
+              name: 'Wellness centrum',
+              street: 'Horská 791',
+              city: 'Špindlerův Mlýn',
+              zip: '54351',
+            },
+          ],
+        },
+      },
+    },
+    include: { contacts: true, locations: true },
+  });
+
+  console.log('   ✓ 3 customers (1 B2B with 2 contacts)\n');
+
+  // ========================================
+  // ORDERS
+  // ========================================
+  console.log('📋 Creating orders...');
+
+  const order1 = await prisma.order.create({
+    data: {
+      orderNumber: 'FUT-2026-0001',
+      customerId: customer1.id,
+      contactId: customer1.contacts[0].id,
+      locationId: customer1.locations[0].id,
+      productId: klimo.id,
+      ownerId: sales1.id,
+      status: 'measurement_done',
+      priority: 'normal',
+    },
+  });
+
+  const order2 = await prisma.order.create({
+    data: {
+      orderNumber: 'FUT-2026-0002',
+      customerId: customer2.id,
+      contactId: customer2.contacts[0].id,
+      locationId: customer2.locations[0].id,
+      productId: klasik.id,
+      ownerId: sales1.id,
+      status: 'quote_sent',
+      priority: 'high',
+      deadlineAt: new Date('2026-03-01'),
+    },
+  });
+
+  const order3 = await prisma.order.create({
+    data: {
+      orderNumber: 'FUT-2026-0003',
+      customerId: customer3.id,
+      contactId: customer3.contacts[1].id, // Provozní (ne jednatel)
+      locationId: customer3.locations[0].id,
+      productId: klimo.id,
+      ownerId: sales2.id,
+      status: 'in_production',
+      priority: 'urgent',
+      deadlineAt: new Date('2026-02-15'),
+    },
+  });
+
+  console.log('   ✓ 3 orders\n');
+
+  // ========================================
+  // QUOTES
+  // ========================================
+  console.log('💰 Creating quotes...');
+
+  await prisma.quote.create({
+    data: {
+      quoteNumber: 'NAB-2026-0001-v1',
+      orderId: order1.id,
+      version: 1,
+      amount: 250000,
+      status: 'draft',
+      note: 'První kalkulace',
+      createdById: sales1.id,
+    },
+  });
+
+  await prisma.quote.create({
+    data: {
+      quoteNumber: 'NAB-2026-0002-v1',
+      orderId: order2.id,
+      version: 1,
+      amount: 180000,
+      status: 'sent',
+      note: 'Standardní nabídka',
+      createdById: sales1.id,
+    },
+  });
+
+  await prisma.quote.create({
+    data: {
+      quoteNumber: 'NAB-2026-0002-v2',
+      orderId: order2.id,
+      version: 2,
+      amount: 165000,
+      status: 'sent',
+      note: 'Sleva 8%',
+      createdById: sales1.id,
+    },
+  });
+
+  await prisma.quote.create({
+    data: {
+      quoteNumber: 'NAB-2026-0003-v1',
+      orderId: order3.id,
+      version: 1,
+      amount: 320000,
+      status: 'approved',
+      note: 'Premium varianta, schváleno',
+      createdById: sales2.id,
+    },
+  });
+
+  console.log('   ✓ 4 quotes\n');
+
+  // ========================================
+  // MEASUREMENT
+  // ========================================
+  console.log('📐 Creating measurements...');
+
+  await prisma.measurement.create({
+    data: {
+      orderId: order1.id,
+      employeeId: technician.id,
+      pergolaType: 'KLIMO',
+      width: 4500,
+      depth: 3200,
+      height: 2800,
+      clearanceHeight: 2400,
+      details: {
+        roofPanels: 4,
+        legCount: 2,
+        colorFrame: 'RAL 7016',
+        colorRoof: 'RAL 9003',
+        wallType: 'cihla',
+        accessories: { led: { type: 'COB 4000K', count: 2 }, motor: 'IO' },
+        screens: { front: { width: 4500, fabric: 'SE6-007007' } },
+      },
+      photos: [],
+      gpsLat: 50.0755,
+      gpsLng: 14.4378,
+    },
+  });
+
+  console.log('   ✓ 1 measurement\n');
+
+  // ========================================
+  // SERVICE TICKETS
+  // ========================================
+  console.log('🔧 Creating service tickets...');
+
+  await prisma.serviceTicket.create({
+    data: {
+      ticketNumber: 'SRV-2026-0001',
+      customerId: customer1.id,
+      contactId: customer1.contacts[0].id,
+      orderId: order1.id,
+      assignedToId: technician.id,
+      type: 'warranty',
+      category: 'motor',
+      priority: 'high',
+      status: 'scheduled',
+      description: 'Motor střechy hlučí',
+      scheduledAt: new Date('2026-01-20T09:00:00'),
+    },
+  });
+
+  await prisma.serviceTicket.create({
+    data: {
+      ticketNumber: 'SRV-2026-0002',
+      customerId: customer3.id,
+      contactId: customer3.contacts[1].id,
+      type: 'maintenance',
+      category: 'textile',
+      priority: 'normal',
+      status: 'new_ticket',
+      description: 'Údržba screenů před sezónou',
+    },
+  });
+
+  console.log('   ✓ 2 service tickets\n');
+
+  // ========================================
+  // ORDER STATUS HISTORY
+  // ========================================
+  console.log('📜 Creating order history...');
+
+  await prisma.orderStatusHistory.createMany({
+    data: [
+      { orderId: order1.id, fromStatus: null, toStatus: 'lead', changedById: sales1.id },
+      { orderId: order1.id, fromStatus: 'lead', toStatus: 'contacted', changedById: sales1.id },
+      { orderId: order1.id, fromStatus: 'contacted', toStatus: 'measurement_scheduled', changedById: sales1.id },
+      { orderId: order1.id, fromStatus: 'measurement_scheduled', toStatus: 'measurement_done', changedById: technician.id },
+    ],
+  });
+
+  console.log('   ✓ 4 status history records\n');
+
+  // ========================================
+  // DONE
+  // ========================================
+  console.log('═══════════════════════════════════════');
+  console.log('✅ Seed completed!');
+  console.log('═══════════════════════════════════════');
+  console.log('');
+  console.log('📊 Summary:');
+  console.log('   Employees:       6');
+  console.log('   Products:        4');
+  console.log('   Leads:           4');
+  console.log('   Customers:       3');
+  console.log('   Contacts:        4');
+  console.log('   Locations:       4');
+  console.log('   Orders:          3');
+  console.log('   Quotes:          4');
+  console.log('   Measurements:    1');
+  console.log('   Service Tickets: 2');
+  console.log('');
+  console.log('🔐 PIN pro všechny: 123456');
+  console.log('');
 }
 
 main()
-	.catch((e) => {
-		console.error('❌ Seed failed:', e);
-		process.exit(1);
-	})
-	.finally(async () => {
-		await prisma.$disconnect();
-	});
+  .catch((e) => {
+    console.error('❌ Seed failed:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

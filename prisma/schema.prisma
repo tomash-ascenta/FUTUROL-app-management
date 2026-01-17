@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
@@ -27,10 +27,15 @@ model Employee {
   updatedAt      DateTime @updatedAt
 
   // Relations
-  measurements   Measurement[]
-  serviceTickets ServiceTicket[] @relation("AssignedTickets")
-  auditLogs      AuditLog[]
-  statusChanges  OrderStatusHistory[]
+  measurements       Measurement[]
+  serviceTickets     ServiceTicket[]      @relation("AssignedTickets")
+  auditLogs          AuditLog[]
+  statusChanges      OrderStatusHistory[]
+  ownedCustomers     Customer[]           @relation("CustomerOwner")
+  ownedOrders        Order[]              @relation("OrderOwner")
+  convertedLeads     Lead[]               @relation("LeadConverter")
+  quotes             Quote[]
+  attachments        Attachment[]
 
   @@map("employees")
 }
@@ -47,24 +52,41 @@ enum Role {
 // CUSTOMER - Zákazník
 // ============================================
 model Customer {
-  id        String         @id @default(uuid())
-  fullName  String
-  email     String?
-  phone     String
-  company   String?
-  note      String?
-  source    CustomerSource @default(manual)
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id          String       @id @default(uuid())
+  type        CustomerType @default(B2C)
+  companyName String?      // Pro B2B
+  ico         String?      // IČO pro B2B
+  dic         String?      // DIČ pro B2B
+  note        String?
+  source      CustomerSource @default(manual)
+
+  // Vlastník (obchodník)
+  ownerId String
+  owner   Employee @relation("CustomerOwner", fields: [ownerId], references: [id])
+
+  // Původ z leadu
+  originLeadId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
+  contacts       Contact[]
   locations      Location[]
   orders         Order[]
-  leads          Lead[]
   serviceTickets ServiceTicket[]
   inquiries      Inquiry[]
+  ownerHistory   CustomerOwnerHistory[]
 
+  @@index([ownerId])
+  @@index([type])
+  @@index([createdAt])
   @@map("customers")
+}
+
+enum CustomerType {
+  B2C
+  B2B
 }
 
 enum CustomerSource {
@@ -75,17 +97,65 @@ enum CustomerSource {
 }
 
 // ============================================
+// CONTACT - Kontaktní osoba zákazníka
+// ============================================
+model Contact {
+  id         String   @id @default(uuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  fullName  String
+  phone     String
+  email     String?
+  role      String?  // Funkce (jednatel, provozní, ...)
+  isPrimary Boolean  @default(false)
+  isActive  Boolean  @default(true)
+  note      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  orders         Order[]         @relation("OrderContact")
+  serviceTickets ServiceTicket[] @relation("TicketContact")
+
+  @@index([customerId])
+  @@index([isPrimary])
+  @@map("contacts")
+}
+
+// ============================================
+// CUSTOMER OWNER HISTORY
+// ============================================
+model CustomerOwnerHistory {
+  id         String   @id @default(uuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  fromOwnerId String?
+  toOwnerId   String
+  reason      String?
+  changedById String
+
+  createdAt DateTime @default(now())
+
+  @@index([customerId])
+  @@map("customer_owner_history")
+}
+
+// ============================================
 // LOCATION - Místo realizace
 // ============================================
 model Location {
   id         String   @id @default(uuid())
   customerId String
-  customer   Customer @relation(fields: [customerId], references: [id])
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
+  name    String?  // Název lokace (sídlo, provozovna, ...)
   street  String
   city    String
   zip     String
-  country String  @default("CZ")
+  country String   @default("CZ")
   gpsLat  Float?
   gpsLng  Float?
   note    String?
@@ -95,6 +165,7 @@ model Location {
   // Relations
   orders Order[]
 
+  @@index([customerId])
   @@map("locations")
 }
 
@@ -115,6 +186,80 @@ model Product {
 }
 
 // ============================================
+// LEAD - Lead/Poptávka
+// ============================================
+model Lead {
+  id String @id @default(uuid())
+
+  // Původní kontaktní údaje
+  originalName    String
+  originalPhone   String
+  originalEmail   String?
+  originalCompany String?
+
+  // Zdroj
+  source  LeadSource @default(advisor)
+  channel String?    // web form, telefon, email, ...
+
+  // Výsledek rádce (pokud source=advisor)
+  answers            Json?  // { q1: [1,3], q2: [2], ... }
+  scores             Json?  // { KLIMO: 12, HORIZONTAL: 8, ... }
+  recommendedProduct String?
+
+  customerNote String?
+
+  // Stav
+  status     LeadStatus  @default(new)
+  lostReason LostReason?
+  lostNote   String?
+
+  // Konverze
+  convertedById String?
+  convertedBy   Employee? @relation("LeadConverter", fields: [convertedById], references: [id])
+  convertedAt   DateTime?
+
+  // Metadata
+  ipAddress   String?
+  userAgent   String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([source])
+  @@index([createdAt])
+  @@map("leads")
+}
+
+enum LeadSource {
+  advisor
+  web
+  phone
+  email
+  referral
+  event
+  import
+}
+
+enum LeadStatus {
+  new
+  converted
+  lost
+}
+
+enum LostReason {
+  price
+  competitor
+  timing
+  no_response
+  not_relevant
+  other
+}
+
+// ============================================
 // ORDER - Zakázka
 // ============================================
 model Order {
@@ -124,17 +269,22 @@ model Order {
   customerId String
   customer   Customer @relation(fields: [customerId], references: [id])
 
+  // Kontaktní osoba (pokud jiná než primární)
+  contactId String?
+  contact   Contact? @relation("OrderContact", fields: [contactId], references: [id])
+
   locationId String?
   location   Location? @relation(fields: [locationId], references: [id])
 
   productId String?
   product   Product? @relation(fields: [productId], references: [id])
 
+  // Vlastník zakázky (obchodník)
+  ownerId String
+  owner   Employee @relation("OrderOwner", fields: [ownerId], references: [id])
+
   status   OrderStatus @default(lead)
   priority Priority    @default(normal)
-
-  estimatedValue Decimal?
-  finalValue     Decimal?
 
   deadlineAt DateTime?
   createdAt  DateTime  @default(now())
@@ -144,7 +294,14 @@ model Order {
   measurement    Measurement?
   serviceTickets ServiceTicket[]
   statusHistory  OrderStatusHistory[]
+  quotes         Quote[]
+  attachments    Attachment[]
 
+  @@index([customerId])
+  @@index([ownerId])
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
   @@map("orders")
 }
 
@@ -171,13 +328,70 @@ enum Priority {
 }
 
 // ============================================
+// QUOTE - Cenová nabídka
+// ============================================
+model Quote {
+  id          String @id @default(uuid())
+  quoteNumber String @unique // NAB-2026-0001-v1
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  version  Int         @default(1)
+  amount   Decimal
+  currency String      @default("CZK")
+  status   QuoteStatus @default(draft)
+  note     String?
+  pdfUrl   String?
+
+  createdById String
+  createdBy   Employee @relation(fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([status])
+  @@map("quotes")
+}
+
+enum QuoteStatus {
+  draft
+  sent
+  approved
+  rejected
+}
+
+// ============================================
+// ATTACHMENT - Přílohy k zakázce
+// ============================================
+model Attachment {
+  id      String @id @default(uuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  name     String
+  url      String
+  mimeType String?
+  size     Int?
+
+  uploadedById String
+  uploadedBy   Employee @relation(fields: [uploadedById], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@map("attachments")
+}
+
+// ============================================
 // ORDER STATUS HISTORY
 // ============================================
 model OrderStatusHistory {
   id String @id @default(uuid())
 
   orderId String
-  order   Order  @relation(fields: [orderId], references: [id])
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   fromStatus  OrderStatus?
   toStatus    OrderStatus
@@ -186,6 +400,8 @@ model OrderStatusHistory {
   note        String?
   createdAt   DateTime     @default(now())
 
+  @@index([orderId])
+  @@index([createdAt])
   @@map("order_status_history")
 }
 
@@ -196,7 +412,7 @@ model Measurement {
   id String @id @default(uuid())
 
   orderId String @unique
-  order   Order  @relation(fields: [orderId], references: [id])
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   employeeId String
   employee   Employee @relation(fields: [employeeId], references: [id])
@@ -205,9 +421,9 @@ model Measurement {
 
   // Core fields
   pergolaType     String
-  width           Int // mm
-  depth           Int // mm
-  height          Int // mm
+  width           Int  // mm
+  depth           Int  // mm
+  height          Int  // mm
   clearanceHeight Int? // mm
 
   // Flexible details (JSONB)
@@ -222,7 +438,7 @@ model Measurement {
   gpsLng     Float?
 
   // PDF
-  pdfUrl        String?
+  pdfUrl         String?
   pdfGeneratedAt DateTime?
 
   createdAt DateTime @default(now())
@@ -238,18 +454,23 @@ model ServiceTicket {
   id           String @id @default(uuid())
   ticketNumber String @unique // SRV-2026-0001
 
-  orderId String?
-  order   Order?  @relation(fields: [orderId], references: [id])
-
   customerId String
   customer   Customer @relation(fields: [customerId], references: [id])
+
+  // Kontaktní osoba (pokud jiná než primární)
+  contactId String?
+  contact   Contact? @relation("TicketContact", fields: [contactId], references: [id])
+
+  orderId String?
+  order   Order?  @relation(fields: [orderId], references: [id])
 
   assignedToId String?
   assignedTo   Employee? @relation("AssignedTickets", fields: [assignedToId], references: [id])
 
   type     ServiceType
-  status   ServiceStatus @default(new_ticket)
-  priority Priority      @default(normal)
+  category ServiceCategory?
+  status   ServiceStatus    @default(new_ticket)
+  priority Priority         @default(normal)
 
   description String
   resolution  String?
@@ -260,6 +481,14 @@ model ServiceTicket {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([customerId])
+  @@index([orderId])
+  @@index([assignedToId])
+  @@index([status])
+  @@index([type])
+  @@index([priority])
+  @@index([createdAt])
+  @@index([scheduledAt])
   @@map("service_tickets")
 }
 
@@ -268,6 +497,14 @@ enum ServiceType {
   paid
   maintenance
   complaint
+}
+
+enum ServiceCategory {
+  motor
+  construction
+  electrical
+  textile
+  other
 }
 
 enum ServiceStatus {
@@ -280,37 +517,49 @@ enum ServiceStatus {
 }
 
 // ============================================
-// LEAD - Lead z Rádce
+// INQUIRY - Poptávka z rádce (zachováno pro API)
 // ============================================
-model Lead {
+model Inquiry {
   id String @id @default(uuid())
 
-  name  String?
-  email String?
-  phone String?
+  // Kontaktní údaje
+  fullName String
+  email    String
+  phone    String?
+  note     String?
 
-  // Výsledek rádce
-  answers            Json // { q1: [1,3], q2: [2], ... }
-  scores             Json // { KLIMO: 12, HORIZONTAL: 8, ... }
+  // Odpovědi z rádce
+  purpose  String   // relax, dining, pool, parking
+  size     String   // small, medium, large, xl
+  roofType String   // bioclimatic, fixed, retractable, glass
+  extras   String[] // led, heating, blinds, sensors
+  budget   String   // economy, standard, premium, luxury
+
+  // Doporučený produkt
   recommendedProduct String
 
-  customerNote String?
+  // Stav zpracování
+  status     InquiryStatus @default(new)
+  assignedTo String?       // Employee ID
 
-  // Konverze
+  // Konverze na zákazníka
   customerId  String?
   customer    Customer? @relation(fields: [customerId], references: [id])
   convertedAt DateTime?
 
-  // Metadata
-  ipAddress   String?
-  userAgent   String?
-  utmSource   String?
-  utmMedium   String?
-  utmCampaign String?
-
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@map("leads")
+  @@index([status])
+  @@index([createdAt])
+  @@map("inquiries")
+}
+
+enum InquiryStatus {
+  new
+  contacted
+  converted // Zpracováno - vytvořen zákazník
+  lost
 }
 
 // ============================================
@@ -334,6 +583,10 @@ model AuditLog {
 
   createdAt DateTime @default(now())
 
+  @@index([employeeId])
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([createdAt])
   @@map("audit_logs")
 }
 
@@ -380,48 +633,4 @@ model PushSubscription {
   createdAt DateTime @default(now())
 
   @@map("push_subscriptions")
-}
-
-// ============================================
-// INQUIRY - Poptávka z rádce
-// ============================================
-model Inquiry {
-  id        String        @id @default(uuid())
-  
-  // Kontaktní údaje
-  fullName  String
-  email     String
-  phone     String?
-  note      String?
-  
-  // Odpovědi z rádce
-  purpose   String        // relax, dining, pool, parking
-  size      String        // small, medium, large, xl
-  roofType  String        // bioclimatic, fixed, retractable, glass
-  extras    String[]      // led, heating, blinds, sensors
-  budget    String        // economy, standard, premium, luxury
-  
-  // Doporučený produkt
-  recommendedProduct String
-  
-  // Stav zpracování
-  status    InquiryStatus @default(new)
-  assignedTo String?      // Employee ID
-  
-  // Konverze na zákazníka
-  customerId  String?
-  customer    Customer?   @relation(fields: [customerId], references: [id])
-  convertedAt DateTime?
-  
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  
-  @@map("inquiries")
-}
-
-enum InquiryStatus {
-  new
-  contacted
-  converted  // Zpracováno - vytvořen zákazník
-  lost
 }

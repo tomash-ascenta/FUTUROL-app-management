@@ -38,3 +38,6 @@ uploads/
 # Credentials (sensitive)
 VPS_CREDENTIALS.md
 static/radce/*.pdf
+
+# Production backup (contains secrets)
+.backup-v0.11.0/
