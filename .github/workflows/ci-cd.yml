@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - develop
     paths:
       - 'src/**'
       - 'prisma/**'
@@ -20,6 +21,7 @@ on:
   pull_request:
     branches:
       - main
+      - develop
   workflow_dispatch:
 
 # Zruší předchozí běžící workflow při novém push
@@ -100,8 +102,8 @@ jobs:
     name: 🐳 Build Docker Image
     runs-on: ubuntu-latest
     needs: build-test
-    # Pouze na main branch (ne na PR)
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # Build pro main i develop branch (ne na PR)
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') && github.event_name == 'push'
     permissions:
       contents: read
       packages: write
@@ -130,7 +132,8 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=sha,prefix=
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=develop,enable=${{ github.ref == 'refs/heads/develop' }}
 
       - name: 🔨 Build and push Docker image
         uses: docker/build-push-action@v6
@@ -228,3 +231,66 @@ jobs:
       - name: ❌ Deployment Failed
         if: failure()
         run: echo "❌ Deployment failed! Check logs above."
+
+  # ============================================
+  # 5. Deploy to Stage
+  # ============================================
+  deploy-stage:
+    name: 🧪 Deploy to Stage
+    runs-on: ubuntu-latest
+    needs: docker-build
+    # Pouze na develop branch
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    environment:
+      name: staging
+      url: https://stage.futurol.ascentalab.cz
+    
+    steps:
+      - name: 🧪 Deploy to Stage VPS
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_STAGE_HOST }}
+          username: ${{ secrets.VPS_STAGE_USER }}
+          key: ${{ secrets.VPS_STAGE_SSH_KEY }}
+          port: 22
+          script: |
+            echo "🧪 Starting Stage deployment..."
+            cd /opt/futurol-stage
+            
+            # Login to GHCR
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u tomash-ascenta --password-stdin
+            
+            # Pull develop image
+            echo "📥 Pulling develop image from GHCR..."
+            docker pull ghcr.io/tomash-ascenta/futurol-app-management:develop
+            
+            # Update image in docker-compose if needed
+            sed -i 's|image:.*futurol-app.*|image: ghcr.io/tomash-ascenta/futurol-app-management:develop|g' docker-compose.yml
+            
+            # Restart containers
+            echo "🔄 Restarting containers..."
+            docker compose down
+            docker compose up -d
+            
+            # Wait for app to start
+            echo "⏳ Waiting for application to start..."
+            sleep 15
+            
+            # Check status
+            docker compose ps
+            
+            # Cleanup old images
+            echo "🧹 Cleaning up old images..."
+            docker image prune -f
+            
+            echo "✨ Stage deployment completed!"
+      
+      - name: ✅ Stage Deployment Success
+        if: success()
+        run: |
+          echo "✅ Successfully deployed to Stage!"
+          echo "🌐 URL: https://stage.futurol.ascentalab.cz"
+      
+      - name: ❌ Stage Deployment Failed
+        if: failure()
+        run: echo "❌ Stage deployment failed! Check logs above."
