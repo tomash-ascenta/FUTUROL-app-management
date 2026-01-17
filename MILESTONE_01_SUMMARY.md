@@ -2,7 +2,7 @@
 
 *Datum dokončení: 10. ledna 2026 | Verze: 0.2.0*
 
-> **Vlastník software:** Ascenta Lab s.r.o. | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
+> **Vlastník software:** Ascenta Lab | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
 
 ---
 

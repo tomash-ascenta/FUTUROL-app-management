@@ -40,6 +40,10 @@
         lostNote: string | null;
         convertedById: string | null;
         convertedAt: string | null;
+        convertedBy: {
+            id: string;
+            fullName: string;
+        } | null;
         createdAt: string;
         updatedAt: string;
         customer: {
@@ -510,16 +514,37 @@
                                         </div>
                                     </div>
                                     <div
-                                        class="flex items-center gap-2 flex-shrink-0"
+                                        class="flex flex-col items-end gap-1 flex-shrink-0"
                                     >
-                                        <span
-                                            class="px-2.5 py-1 rounded-full text-xs font-medium {status.color}"
-                                        >
-                                            {status.label}
-                                        </span>
-                                        <span class="text-xs text-slate-400">
-                                            {getRelativeTime(lead.createdAt)}
-                                        </span>
+                                        <div class="flex items-center gap-2">
+                                            <span
+                                                class="px-2.5 py-1 rounded-full text-xs font-medium {status.color}"
+                                            >
+                                                {status.label}
+                                            </span>
+                                            <span
+                                                class="text-xs text-slate-400"
+                                            >
+                                                {getRelativeTime(
+                                                    lead.createdAt,
+                                                )}
+                                            </span>
+                                        </div>
+                                        {#if lead.convertedBy && (lead.status === "converted" || lead.status === "lost")}
+                                            <span
+                                                class="text-xs text-slate-500"
+                                            >
+                                                {lead.status === "converted"
+                                                    ? "Konvertoval"
+                                                    : "Zamítl"}: {lead
+                                                    .convertedBy.fullName}
+                                                {#if lead.convertedAt}
+                                                    • {formatDate(
+                                                        lead.convertedAt,
+                                                    )}
+                                                {/if}
+                                            </span>
+                                        {/if}
                                     </div>
                                 </div>
 

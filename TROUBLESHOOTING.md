@@ -2,7 +2,7 @@
 
 Řešení běžných problémů při vývoji a provozu Futurol App.
 
-> **Vlastník software:** Ascenta Lab s.r.o. | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
+> **Vlastník software:** Ascenta Lab | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
 
 ---
 

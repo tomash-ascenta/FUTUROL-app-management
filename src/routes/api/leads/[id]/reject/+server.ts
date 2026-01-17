@@ -53,6 +53,8 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
                 status: 'lost',
                 lostReason: reason,
                 lostNote: note || null,
+                convertedById: locals.user.employeeId,
+                convertedAt: new Date(),
             }
         });
 

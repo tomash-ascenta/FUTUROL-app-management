@@ -30,12 +30,12 @@ const permissionMatrix: Record<Role, Record<Module, Permission[]>> = {
   admin: {
     settings: ['read', 'write', 'delete'],
     users: ['read', 'write', 'delete'],
-    leads: [],
-    customers: [],
-    orders: [],
-    measurements: [],
-    service: [],
-    reports: [],
+    leads: ['read', 'write', 'delete'],
+    customers: ['read', 'write', 'delete'],
+    orders: ['read', 'write', 'delete'],
+    measurements: ['read', 'write', 'delete'],
+    service: ['read', 'write', 'delete'],
+    reports: ['read', 'write', 'delete'],
   },
   
   sales: {

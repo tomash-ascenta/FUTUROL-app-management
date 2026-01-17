@@ -27,6 +27,12 @@ export const load: PageServerLoad = async ({ locals }) => {
                     companyName: true,
                     type: true
                 }
+            },
+            convertedBy: {
+                select: {
+                    id: true,
+                    fullName: true
+                }
             }
         }
     });

@@ -2,7 +2,7 @@
 
 Průvodce pro zaměstnance - jak používat interní aplikaci Futurol App.
 
-> **Software:** © Ascenta Lab s.r.o. | **Provozovatel:** FARDAL s.r.o. (Futurol.cz)
+> **Software:** © Ascenta Lab | **Provozovatel:** FARDAL s.r.o. (Futurol.cz)
 
 ---
 

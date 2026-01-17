@@ -2,7 +2,7 @@
 
 *Verze: 1.1 | Datum: 17. ledna 2026*
 
-> **Vlastník software:** Ascenta Lab s.r.o. | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
+> **Vlastník software:** Ascenta Lab | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
 
 > **Zadání pro vývojáře: Implementace licenčního tiering systému pro Futurol App**
 

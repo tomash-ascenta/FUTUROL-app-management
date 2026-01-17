@@ -2,7 +2,7 @@
 
 Průvodce pro přispěvatele do projektu Futurol App.
 
-> **Vlastník software:** Ascenta Lab s.r.o. | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
+> **Vlastník software:** Ascenta Lab | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
 
 ## Rychlý start
 

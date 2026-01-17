@@ -2,7 +2,7 @@
 
 ## Přehled zabezpečení
 
-Futurol App je interní aplikace přístupná přes veřejnou URL, vyvinutá společností **Ascenta Lab s.r.o.** pro zákazníka **FARDAL s.r.o. (Futurol.cz)**. Tento dokument popisuje bezpečnostní opatření a postupy.
+Futurol App je interní aplikace přístupná přes veřejnou URL, vyvinutá společností **Ascenta Lab** pro zákazníka **FARDAL s.r.o. (Futurol.cz)**. Tento dokument popisuje bezpečnostní opatření a postupy.
 
 ## Architektura zabezpečení
 

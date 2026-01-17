@@ -2,10 +2,30 @@
 
 Všechny významné změny projektu Futurol App budou dokumentovány v tomto souboru.
 
-> **Vlastník software:** Ascenta Lab s.r.o. | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
+> **Vlastník software:** Ascenta Lab | **Zákazník:** FARDAL s.r.o. (Futurol.cz)
 
 Formát vychází z [Keep a Changelog](https://keepachangelog.com/cs/1.0.0/),
 a projekt dodržuje [Semantic Versioning](https://semver.org/lang/cs/).
+
+---
+
+## [0.13.1] - 2026-01-17
+
+### Přidáno
+
+#### Admin plný přístup
+- **Admin role** - nyní má plná oprávnění (read, write, delete) ke všem business modulům
+- **Sidebar navigace** - admin vidí všechny položky: Poptávky, Zákazníci, Zakázky, Zaměření, Servis, Reporty
+
+#### Poptávky - zobrazení zpracovatele
+- **Sekce Zpracováno** - u konvertovaných a zamítnutých leadů se zobrazuje jméno zpracovatele a datum
+- **API reject** - při zamítnutí se nyní ukládá `convertedById` a `convertedAt`
+- **Formát zobrazení** - "Konvertoval: Jan Novák • 17. led. 2026" / "Zamítl: Jan Novák • 17. led. 2026"
+
+### Změněno
+
+#### Dokumentace
+- **Vlastník software** - změněno z "Ascenta Lab s.r.o." na "Ascenta Lab" ve všech dokumentech
 
 ---
 

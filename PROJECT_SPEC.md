@@ -10,7 +10,7 @@
 
 | Role | Subjekt |
 |------|--------|
-| **Vlastník software** | Ascenta Lab s.r.o. |
+| **Vlastník software** | Ascenta Lab |
 | **Zákazník (licence)** | FARDAL s.r.o. (Futurol.cz) |
 
 ---
