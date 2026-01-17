@@ -96,7 +96,7 @@
     </div>
 
     <!-- Profile info -->
-    <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+    <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
         <div class="flex items-center gap-4 mb-6">
             <div
                 class="w-16 h-16 bg-futurol-green/10 rounded-full flex items-center justify-center border border-futurol-green/20"
@@ -134,10 +134,10 @@
     </div>
 
     <!-- Change PIN -->
-    <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+    <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
         <div class="flex items-center gap-3 mb-6">
             <div
-                class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center"
+                class="w-10 h-10 bg-orange-100 rounded flex items-center justify-center"
             >
                 <KeyRound class="w-5 h-5 text-orange-600" />
             </div>
@@ -151,7 +151,7 @@
 
         {#if error}
             <div
-                class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700"
+                class="mb-4 p-3 bg-red-50 border border-red-200 rounded flex items-center gap-2 text-red-700"
             >
                 <AlertCircle class="w-5 h-5 flex-shrink-0" />
                 <span class="text-sm">{error}</span>
@@ -160,7 +160,7 @@
 
         {#if success}
             <div
-                class="mb-4 p-3 bg-futurol-green/10 border border-futurol-green/20 rounded-lg flex items-center gap-2 text-futurol-green"
+                class="mb-4 p-3 bg-futurol-green/10 border border-futurol-green/20 rounded flex items-center gap-2 text-futurol-green"
             >
                 <CheckCircle class="w-5 h-5 flex-shrink-0" />
                 <span class="text-sm">{success}</span>
@@ -188,7 +188,7 @@
                     maxlength="6"
                     pattern="\d{6}"
                     placeholder="••••••"
-                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green font-mono text-center text-lg tracking-widest"
+                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green font-mono text-center text-lg tracking-widest"
                 />
             </div>
 
@@ -206,7 +206,7 @@
                     maxlength="6"
                     pattern="\d{6}"
                     placeholder="••••••"
-                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green font-mono text-center text-lg tracking-widest"
+                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green font-mono text-center text-lg tracking-widest"
                 />
             </div>
 
@@ -224,7 +224,7 @@
                     maxlength="6"
                     pattern="\d{6}"
                     placeholder="••••••"
-                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green font-mono text-center text-lg tracking-widest"
+                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green font-mono text-center text-lg tracking-widest"
                 />
             </div>
 
@@ -233,7 +233,7 @@
                 disabled={loading ||
                     newPin.length !== 6 ||
                     confirmPin.length !== 6}
-                class="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-medium text-white transition-colors
+                class="w-full flex items-center justify-center gap-2 py-3 rounded font-medium text-white transition-colors
 					{loading || newPin.length !== 6 || confirmPin.length !== 6
                     ? 'bg-slate-300 cursor-not-allowed text-slate-500'
                     : 'bg-futurol-green hover:bg-futurol-green/90 shadow-sm'}"

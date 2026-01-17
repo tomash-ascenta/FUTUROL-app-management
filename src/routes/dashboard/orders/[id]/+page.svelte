@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from "$app/stores";
     import {
         ArrowLeft,
         User,
@@ -11,6 +12,7 @@
         Edit,
     } from "lucide-svelte";
     import type { PageData } from "./$types";
+    import { getCustomerDisplayName, getPrimaryContact } from "$lib/utils";
 
     interface Props {
         data: PageData;
@@ -18,29 +20,35 @@
 
     let { data }: Props = $props();
 
+    // Dynamic back URL based on where user came from
+    const backUrl = $derived(
+        $page.url.searchParams.get("from") === "customer" &&
+            $page.url.searchParams.get("customerId")
+            ? `/dashboard/customers/${$page.url.searchParams.get("customerId")}`
+            : "/dashboard/orders",
+    );
+
     const statusLabels: Record<string, string> = {
-        lead: "Nový lead",
-        contacted: "Kontaktováno",
-        quote_sent: "Nabídka odeslána",
-        quote_approved: "Nabídka schválena",
-        measurement_scheduled: "Zaměření naplánováno",
-        in_production: "Ve výrobě",
-        ready_for_installation: "Připraveno k montáži",
-        installed: "Namontováno",
-        completed: "Dokončeno",
+        lead: "Lead",
+        customer: "Zákazník",
+        quote_sent: "Nabídka",
+        measurement: "Zaměření",
+        contract: "Smlouva",
+        production: "Výroba",
+        installation: "Montáž",
+        handover: "Předání",
         cancelled: "Zrušeno",
     };
 
     const statusColors: Record<string, string> = {
         lead: "bg-slate-100 text-slate-700",
-        contacted: "bg-blue-100 text-blue-700",
-        quote_sent: "bg-purple-100 text-purple-700",
-        quote_approved: "bg-indigo-100 text-indigo-700",
-        measurement_scheduled: "bg-amber-100 text-amber-700",
-        in_production: "bg-orange-100 text-orange-700",
-        ready_for_installation: "bg-cyan-100 text-cyan-700",
-        installed: "bg-teal-100 text-teal-700",
-        completed: "bg-green-100 text-green-700",
+        customer: "bg-blue-100 text-blue-700",
+        quote_sent: "bg-amber-100 text-amber-700",
+        measurement: "bg-purple-100 text-purple-700",
+        contract: "bg-green-100 text-green-700",
+        production: "bg-orange-100 text-orange-700",
+        installation: "bg-teal-100 text-teal-700",
+        handover: "bg-emerald-100 text-emerald-700",
         cancelled: "bg-red-100 text-red-700",
     };
 
@@ -93,8 +101,8 @@
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
             <a
-                href="/dashboard/orders"
-                class="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                href={backUrl}
+                class="p-2 hover:bg-slate-100 rounded transition-colors"
             >
                 <ArrowLeft class="w-5 h-5 text-slate-600" />
             </a>
@@ -116,7 +124,7 @@
             {#if data.canEdit}
                 <a
                     href="/dashboard/orders/{data.order.id}/edit"
-                    class="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                    class="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded hover:bg-slate-50 transition-colors"
                 >
                     <Edit class="w-4 h-4" />
                     Upravit
@@ -129,40 +137,43 @@
         <!-- Main content -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Customer & Location -->
-            <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
-            >
+            <div class="bg-white rounded shadow-sm border border-slate-200 p-6">
                 <h2 class="text-lg font-semibold text-slate-800 mb-4">
                     Zákazník a místo realizace
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="flex items-start gap-3">
-                        <div
-                            class="w-10 h-10 bg-futurol-green/10 rounded-lg flex items-center justify-center"
-                        >
-                            <User class="w-5 h-5 text-futurol-green" />
-                        </div>
-                        <div>
-                            <p class="text-sm text-slate-500">Zákazník</p>
-                            <a
-                                href="/dashboard/customers/{data.order.customer
-                                    .id}"
-                                class="font-medium text-slate-900 hover:text-futurol-green"
+                    {#if data.order.customer}
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="w-10 h-10 bg-futurol-green/10 rounded flex items-center justify-center"
                             >
-                                {data.order.customer.fullName}
-                            </a>
-                            {#if data.order.customer.phone}
-                                <p class="text-sm text-slate-500">
-                                    {data.order.customer.phone}
-                                </p>
-                            {/if}
+                                <User class="w-5 h-5 text-futurol-green" />
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-500">Zákazník</p>
+                                <a
+                                    href="/dashboard/customers/{data.order
+                                        .customer.id}"
+                                    class="font-medium text-slate-900 hover:text-futurol-green"
+                                >
+                                    {getCustomerDisplayName(
+                                        data.order.customer,
+                                    )}
+                                </a>
+                                {#if getPrimaryContact(data.order.customer)?.phone}
+                                    <p class="text-sm text-slate-500">
+                                        {getPrimaryContact(data.order.customer)
+                                            ?.phone}
+                                    </p>
+                                {/if}
+                            </div>
                         </div>
-                    </div>
+                    {/if}
 
                     {#if data.order.location}
                         <div class="flex items-start gap-3">
                             <div
-                                class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center"
+                                class="w-10 h-10 bg-blue-50 rounded flex items-center justify-center"
                             >
                                 <MapPin class="w-5 h-5 text-blue-600" />
                             </div>
@@ -182,7 +193,7 @@
                     {:else}
                         <div class="flex items-start gap-3">
                             <div
-                                class="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center"
+                                class="w-10 h-10 bg-amber-50 rounded flex items-center justify-center"
                             >
                                 <MapPin class="w-5 h-5 text-amber-600" />
                             </div>
@@ -202,14 +213,14 @@
             <!-- Product -->
             {#if data.order.product}
                 <div
-                    class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+                    class="bg-white rounded shadow-sm border border-slate-200 p-6"
                 >
                     <h2 class="text-lg font-semibold text-slate-800 mb-4">
                         Produkt
                     </h2>
                     <div class="flex items-start gap-3">
                         <div
-                            class="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center"
+                            class="w-10 h-10 bg-purple-50 rounded flex items-center justify-center"
                         >
                             <Package class="w-5 h-5 text-purple-600" />
                         </div>
@@ -233,7 +244,7 @@
             <!-- Measurement -->
             {#if data.order.measurement}
                 <div
-                    class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+                    class="bg-white rounded shadow-sm border border-slate-200 p-6"
                 >
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-lg font-semibold text-slate-800">
@@ -290,13 +301,13 @@
                 </div>
             {:else}
                 <div
-                    class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+                    class="bg-white rounded shadow-sm border border-slate-200 p-6"
                 >
                     <h2 class="text-lg font-semibold text-slate-800 mb-4">
                         Zaměření
                     </h2>
                     <div
-                        class="text-center py-6 text-slate-500 bg-slate-50 rounded-lg"
+                        class="text-center py-6 text-slate-500 bg-slate-50 rounded"
                     >
                         <Ruler class="w-8 h-8 mx-auto mb-2 text-slate-400" />
                         <p>Zatím nebylo provedeno zaměření</p>
@@ -314,9 +325,7 @@
             {/if}
 
             <!-- Status History -->
-            <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
-            >
+            <div class="bg-white rounded shadow-sm border border-slate-200 p-6">
                 <h2 class="text-lg font-semibold text-slate-800 mb-4">
                     Historie změn
                 </h2>
@@ -375,9 +384,7 @@
         <!-- Sidebar -->
         <div class="space-y-6">
             <!-- Info card -->
-            <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
-            >
+            <div class="bg-white rounded shadow-sm border border-slate-200 p-6">
                 <h3 class="font-semibold text-slate-800 mb-4">Informace</h3>
                 <dl class="space-y-4">
                     <div>
@@ -436,28 +443,28 @@
             </div>
 
             <!-- Quick actions -->
-            <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
-            >
+            <div class="bg-white rounded shadow-sm border border-slate-200 p-6">
                 <h3 class="font-semibold text-slate-800 mb-4">Rychlé akce</h3>
                 <div class="space-y-2">
                     {#if !data.order.measurement && data.canCreateMeasurement}
                         <a
                             href="/dashboard/measurements/new/{data.order.id}"
-                            class="flex items-center gap-2 w-full px-4 py-2 text-left rounded-lg hover:bg-slate-50 transition-colors"
+                            class="flex items-center gap-2 w-full px-4 py-2 text-left rounded hover:bg-slate-50 transition-colors"
                         >
                             <Ruler class="w-4 h-4 text-slate-500" />
                             <span>Přidat zaměření</span>
                         </a>
                     {/if}
-                    <a
-                        href="/dashboard/service/new?customerId={data.order
-                            .customer.id}&orderId={data.order.id}"
-                        class="flex items-center gap-2 w-full px-4 py-2 text-left rounded-lg hover:bg-slate-50 transition-colors"
-                    >
-                        <FileText class="w-4 h-4 text-slate-500" />
-                        <span>Vytvořit servisní požadavek</span>
-                    </a>
+                    {#if data.order.customer}
+                        <a
+                            href="/dashboard/service/new?customerId={data.order
+                                .customer.id}&orderId={data.order.id}"
+                            class="flex items-center gap-2 w-full px-4 py-2 text-left rounded hover:bg-slate-50 transition-colors"
+                        >
+                            <FileText class="w-4 h-4 text-slate-500" />
+                            <span>Vytvořit servisní požadavek</span>
+                        </a>
+                    {/if}
                 </div>
             </div>
         </div>

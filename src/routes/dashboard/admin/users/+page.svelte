@@ -63,7 +63,7 @@
         </div>
         <a
             href="/dashboard/admin/users/new"
-            class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2.5 rounded-lg font-medium hover:bg-futurol-green/90 transition-colors shadow-sm"
+            class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2.5 rounded font-medium hover:bg-futurol-green/90 transition-colors shadow-sm"
         >
             <Plus class="w-5 h-5" />
             Nový uživatel
@@ -79,13 +79,13 @@
             type="text"
             placeholder="Hledat uživatele..."
             bind:value={searchQuery}
-            class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+            class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
         />
     </div>
 
     <!-- Users table -->
     <div
-        class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm"
+        class="bg-white rounded border border-slate-200 overflow-hidden shadow-sm"
     >
         <div class="overflow-x-auto">
             <table class="w-full">
@@ -193,14 +193,14 @@
                                 >
                                     <a
                                         href="/dashboard/admin/users/{user.id}"
-                                        class="p-2 text-slate-400 hover:text-futurol-green hover:bg-futurol-green/10 rounded-lg transition-colors"
+                                        class="p-2 text-slate-400 hover:text-futurol-green hover:bg-futurol-green/10 rounded transition-colors"
                                         title="Upravit"
                                     >
                                         <Edit class="w-4 h-4" />
                                     </a>
                                     <a
                                         href="/dashboard/admin/users/{user.id}/reset-pin"
-                                        class="p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors"
+                                        class="p-2 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded transition-colors"
                                         title="Reset PIN"
                                     >
                                         <Shield class="w-4 h-4" />

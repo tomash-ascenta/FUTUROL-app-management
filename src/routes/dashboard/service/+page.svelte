@@ -8,6 +8,7 @@
         MapPin,
         AlertCircle,
     } from "lucide-svelte";
+    import { getCustomerDisplayName, getPrimaryContact } from "$lib/utils";
 
     interface Props {
         data: {
@@ -22,8 +23,13 @@
                 createdAt: string;
                 customer: {
                     id: string;
-                    fullName: string;
-                    phone: string;
+                    type: string;
+                    companyName: string | null;
+                    contacts: Array<{
+                        fullName: string;
+                        phone: string;
+                        isPrimary: boolean;
+                    }>;
                 };
                 order: {
                     id: string;
@@ -50,7 +56,9 @@
             const query = searchQuery.toLowerCase();
             return (
                 ticket.ticketNumber.toLowerCase().includes(query) ||
-                ticket.customer.fullName.toLowerCase().includes(query) ||
+                getCustomerDisplayName(ticket.customer)
+                    .toLowerCase()
+                    .includes(query) ||
                 ticket.description.toLowerCase().includes(query)
             );
         }),
@@ -110,7 +118,7 @@
         {#if data.canCreate}
             <a
                 href="/dashboard/service/new"
-                class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2.5 rounded-lg font-medium hover:bg-futurol-green/90 transition-colors shadow-sm"
+                class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2.5 rounded font-medium hover:bg-futurol-green/90 transition-colors shadow-sm"
             >
                 <Plus class="w-5 h-5" />
                 Nový tiket
@@ -127,14 +135,14 @@
             type="text"
             bind:value={searchQuery}
             placeholder="Hledat tikety..."
-            class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
+            class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
         />
     </div>
 
     {#if filteredTickets.length === 0}
         <!-- Empty state -->
         <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center"
+            class="bg-white rounded shadow-sm border border-slate-200 p-12 text-center"
         >
             <div
                 class="w-16 h-16 bg-futurol-green/10 rounded-full flex items-center justify-center mx-auto mb-4"
@@ -155,7 +163,7 @@
     {:else}
         <!-- Tickets list -->
         <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+            class="bg-white rounded shadow-sm border border-slate-200 overflow-hidden"
         >
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -195,14 +203,17 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         {#each filteredTickets as ticket}
-                            <tr class="hover:bg-slate-50 transition-colors">
+                            <tr
+                                class="hover:bg-slate-50 transition-colors cursor-pointer"
+                                onclick={() =>
+                                    (window.location.href = `/dashboard/service/${ticket.id}`)}
+                            >
                                 <td class="px-4 py-3">
-                                    <a
-                                        href="/dashboard/service/{ticket.id}"
-                                        class="font-medium text-futurol-green hover:underline"
+                                    <span
+                                        class="font-medium text-futurol-green"
                                     >
                                         {ticket.ticketNumber}
-                                    </a>
+                                    </span>
                                     {#if ticket.priority === "high" || ticket.priority === "urgent"}
                                         <span
                                             class="ml-2 {priorityLabels[
@@ -220,7 +231,9 @@
                                         <span
                                             class="font-medium text-slate-800"
                                         >
-                                            {ticket.customer.fullName}
+                                            {getCustomerDisplayName(
+                                                ticket.customer,
+                                            )}
                                         </span>
                                         {#if ticket.order?.location}
                                             <span

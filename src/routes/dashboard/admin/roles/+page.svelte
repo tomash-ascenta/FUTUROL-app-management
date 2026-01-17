@@ -121,7 +121,7 @@
     </div>
 
     <div
-        class="bg-futurol-green/5 border border-futurol-green/20 rounded-lg p-4 flex items-start gap-3"
+        class="bg-futurol-green/5 border border-futurol-green/20 rounded p-4 flex items-start gap-3"
     >
         <Info class="w-5 h-5 text-futurol-green flex-shrink-0 mt-0.5" />
         <div class="text-sm text-slate-700">
@@ -137,11 +137,11 @@
         {#each roles as role}
             {@const colors = getColorClasses(role.color)}
             <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow"
+                class="bg-white rounded shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow"
             >
                 <div class="flex items-center gap-3 mb-4">
                     <div
-                        class="w-10 h-10 {colors.bg} rounded-lg flex items-center justify-center"
+                        class="w-10 h-10 {colors.bg} rounded flex items-center justify-center"
                     >
                         <Shield class="w-5 h-5 {colors.text}" />
                     </div>

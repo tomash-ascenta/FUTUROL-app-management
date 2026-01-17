@@ -11,10 +11,10 @@
     <div class="grid md:grid-cols-2 gap-4">
         <a
             href="/dashboard/settings/users"
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:border-futurol-green hover:shadow-md transition-all"
+            class="bg-white rounded shadow-sm border border-slate-200 p-6 hover:border-futurol-green hover:shadow-md transition-all"
         >
             <div
-                class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4"
+                class="w-12 h-12 bg-blue-100 rounded flex items-center justify-center mb-4"
             >
                 <Users class="w-6 h-6 text-blue-600" />
             </div>
@@ -24,10 +24,10 @@
 
         <a
             href="/dashboard/settings/roles"
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:border-futurol-green hover:shadow-md transition-all"
+            class="bg-white rounded shadow-sm border border-slate-200 p-6 hover:border-futurol-green hover:shadow-md transition-all"
         >
             <div
-                class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4"
+                class="w-12 h-12 bg-purple-100 rounded flex items-center justify-center mb-4"
             >
                 <Shield class="w-6 h-6 text-purple-600" />
             </div>
@@ -37,10 +37,10 @@
 
         <a
             href="/dashboard/settings/notifications"
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:border-futurol-green hover:shadow-md transition-all"
+            class="bg-white rounded shadow-sm border border-slate-200 p-6 hover:border-futurol-green hover:shadow-md transition-all"
         >
             <div
-                class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4"
+                class="w-12 h-12 bg-orange-100 rounded flex items-center justify-center mb-4"
             >
                 <Bell class="w-6 h-6 text-orange-600" />
             </div>
@@ -50,10 +50,10 @@
 
         <a
             href="/dashboard/settings/data"
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:border-futurol-green hover:shadow-md transition-all"
+            class="bg-white rounded shadow-sm border border-slate-200 p-6 hover:border-futurol-green hover:shadow-md transition-all"
         >
             <div
-                class="w-12 h-12 bg-futurol-green/10 rounded-lg flex items-center justify-center mb-4"
+                class="w-12 h-12 bg-futurol-green/10 rounded flex items-center justify-center mb-4"
             >
                 <Database class="w-6 h-6 text-futurol-green" />
             </div>

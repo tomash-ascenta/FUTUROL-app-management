@@ -10,10 +10,10 @@
 
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow"
+            class="bg-white rounded shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow"
         >
             <div
-                class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4"
+                class="w-12 h-12 bg-blue-100 rounded flex items-center justify-center mb-4"
             >
                 <FileText class="w-6 h-6 text-blue-600" />
             </div>
@@ -29,10 +29,10 @@
         </div>
 
         <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow"
+            class="bg-white rounded shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow"
         >
             <div
-                class="w-12 h-12 bg-futurol-green/10 rounded-lg flex items-center justify-center mb-4"
+                class="w-12 h-12 bg-futurol-green/10 rounded flex items-center justify-center mb-4"
             >
                 <Download class="w-6 h-6 text-futurol-green" />
             </div>
@@ -48,10 +48,10 @@
         </div>
 
         <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow"
+            class="bg-white rounded shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow"
         >
             <div
-                class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4"
+                class="w-12 h-12 bg-purple-100 rounded flex items-center justify-center mb-4"
             >
                 <Calendar class="w-6 h-6 text-purple-600" />
             </div>

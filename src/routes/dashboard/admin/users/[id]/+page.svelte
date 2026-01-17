@@ -75,7 +75,7 @@
         </a>
     </div>
 
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+    <div class="bg-white rounded border border-slate-200 shadow-sm">
         <div class="p-6 border-b border-slate-200">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
@@ -125,7 +125,7 @@
 
         {#if form?.error}
             <div
-                class="mx-6 mt-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3"
+                class="mx-6 mt-6 p-4 bg-red-50 border border-red-200 rounded flex items-start gap-3"
             >
                 <AlertTriangle class="w-5 h-5 text-red-600 flex-shrink-0" />
                 <p class="text-red-700 text-sm">{form.error}</p>
@@ -134,7 +134,7 @@
 
         {#if form?.success}
             <div
-                class="mx-6 mt-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3"
+                class="mx-6 mt-6 p-4 bg-green-50 border border-green-200 rounded flex items-start gap-3"
             >
                 <Check class="w-5 h-5 text-green-600 flex-shrink-0" />
                 <p class="text-green-700 text-sm">
@@ -169,7 +169,7 @@
                     name="fullName"
                     required
                     value={data.user.fullName}
-                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                    class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                 />
             </div>
 
@@ -188,7 +188,7 @@
                         name="email"
                         value={data.user.email || ""}
                         placeholder="jan@futurol.cz"
-                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                     />
                 </div>
                 <div>
@@ -204,7 +204,7 @@
                         name="phone"
                         value={data.user.phone || ""}
                         placeholder="+420 777 123 456"
-                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                     />
                 </div>
             </div>
@@ -217,7 +217,7 @@
                 <div class="space-y-2">
                     {#each data.roles as role}
                         <label
-                            class="flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-all {selectedRoles.includes(
+                            class="flex items-start gap-3 p-3 border rounded cursor-pointer transition-all {selectedRoles.includes(
                                 role.value,
                             )
                                 ? 'border-futurol-green bg-futurol-green/5'
@@ -246,7 +246,7 @@
 
             <!-- Aktivní -->
             <div
-                class="flex items-center gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200"
+                class="flex items-center gap-3 p-4 bg-slate-50 rounded border border-slate-200"
             >
                 <input
                     type="checkbox"
@@ -276,7 +276,7 @@
                 <div class="flex items-center gap-2">
                     <a
                         href="/dashboard/admin/users/{data.user.id}/reset-pin"
-                        class="inline-flex items-center gap-2 px-4 py-2.5 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                        class="inline-flex items-center gap-2 px-4 py-2.5 text-orange-600 hover:bg-orange-50 rounded transition-colors"
                     >
                         <Shield class="w-4 h-4" />
                         Reset PIN
@@ -284,7 +284,7 @@
                     <button
                         type="button"
                         onclick={() => (showDeleteConfirm = true)}
-                        class="inline-flex items-center gap-2 px-4 py-2.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        class="inline-flex items-center gap-2 px-4 py-2.5 text-red-600 hover:bg-red-50 rounded transition-colors"
                     >
                         <Trash2 class="w-4 h-4" />
                         Deaktivovat
@@ -301,7 +301,7 @@
                     <button
                         type="submit"
                         disabled={isSubmitting || selectedRoles.length === 0}
-                        class="inline-flex items-center gap-2 bg-futurol-green text-white px-6 py-2.5 rounded-lg font-medium hover:bg-futurol-green/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        class="inline-flex items-center gap-2 bg-futurol-green text-white px-6 py-2.5 rounded font-medium hover:bg-futurol-green/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                         {#if isSubmitting}
                             <span
@@ -324,7 +324,7 @@
     <div
         class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
     >
-        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+        <div class="bg-white rounded shadow-xl max-w-md w-full p-6">
             <div class="flex items-start gap-4">
                 <div
                     class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0"
@@ -354,7 +354,7 @@
                 <form method="POST" action="?/delete" use:enhance>
                     <button
                         type="submit"
-                        class="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2.5 rounded-lg font-medium hover:bg-red-700 transition-colors"
+                        class="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2.5 rounded font-medium hover:bg-red-700 transition-colors"
                     >
                         <Trash2 class="w-4 h-4" />
                         Deaktivovat

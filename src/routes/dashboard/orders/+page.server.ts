@@ -29,8 +29,9 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	if (search) {
 		where.OR = [
 			{ orderNumber: { contains: search, mode: 'insensitive' } },
-			{ customer: { fullName: { contains: search, mode: 'insensitive' } } },
-			{ customer: { phone: { contains: search, mode: 'insensitive' } } }
+			{ customer: { companyName: { contains: search, mode: 'insensitive' } } },
+			{ customer: { contacts: { some: { fullName: { contains: search, mode: 'insensitive' } } } } },
+			{ customer: { contacts: { some: { phone: { contains: search, mode: 'insensitive' } } } } }
 		];
 	}
 
@@ -45,7 +46,14 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	const orders = await db.order.findMany({
 		where,
 		include: {
-			customer: true,
+			customer: {
+				include: {
+					contacts: {
+						where: { isPrimary: true },
+						take: 1
+					}
+				}
+			},
 			location: true,
 			product: true,
 			measurement: {
@@ -53,6 +61,11 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 					id: true,
 					measuredAt: true
 				}
+			},
+			quotes: {
+				where: { status: 'approved' },
+				take: 1,
+				orderBy: { version: 'desc' }
 			}
 		},
 		orderBy: { createdAt: 'desc' },
@@ -63,8 +76,12 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	return {
 		orders: orders.map((o) => ({
 			...o,
-			estimatedValue: o.estimatedValue ? Number(o.estimatedValue) : null,
-			finalValue: o.finalValue ? Number(o.finalValue) : null,
+			quotes: o.quotes?.map(q => ({
+				...q,
+				amount: Number(q.amount),
+				createdAt: q.createdAt.toISOString(),
+				updatedAt: q.updatedAt.toISOString()
+			})) || [],
 			createdAt: o.createdAt.toISOString(),
 			updatedAt: o.updatedAt.toISOString(),
 			deadlineAt: o.deadlineAt?.toISOString() || null

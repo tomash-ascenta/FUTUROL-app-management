@@ -22,8 +22,17 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const customers = await db.customer.findMany({
 		select: {
 			id: true,
-			fullName: true,
-			phone: true,
+			type: true,
+			companyName: true,
+			contacts: {
+				orderBy: { isPrimary: 'desc' },
+				select: {
+					id: true,
+					fullName: true,
+					phone: true,
+					isPrimary: true
+				}
+			},
 			orders: {
 				select: {
 					id: true,
@@ -37,7 +46,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 				orderBy: { createdAt: 'desc' }
 			}
 		},
-		orderBy: { fullName: 'asc' }
+		orderBy: { createdAt: 'desc' }
 	});
 
 	// Get technicians for assignment (only technicians, not admins)

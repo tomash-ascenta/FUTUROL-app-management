@@ -41,7 +41,7 @@
         </a>
     </div>
 
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+    <div class="bg-white rounded border border-slate-200 shadow-sm">
         <div class="p-6 border-b border-slate-200">
             <div class="flex items-center gap-4">
                 <div
@@ -65,7 +65,7 @@
 
         {#if form?.error}
             <div
-                class="mx-6 mt-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3"
+                class="mx-6 mt-6 p-4 bg-red-50 border border-red-200 rounded flex items-start gap-3"
             >
                 <AlertTriangle class="w-5 h-5 text-red-600 flex-shrink-0" />
                 <p class="text-red-700 text-sm">{form.error}</p>
@@ -85,7 +85,7 @@
         >
             <!-- Warning -->
             <div
-                class="flex items-start gap-3 p-4 bg-amber-50 rounded-lg border border-amber-200"
+                class="flex items-start gap-3 p-4 bg-amber-50 rounded border border-amber-200"
             >
                 <AlertTriangle
                     class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"
@@ -117,7 +117,7 @@
                         pattern="[0-9]{6}"
                         placeholder="123456"
                         bind:value={newPin}
-                        class="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green font-mono text-xl tracking-[0.5em] pr-12"
+                        class="w-full px-4 py-3 bg-white border border-slate-200 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green font-mono text-xl tracking-[0.5em] pr-12"
                     />
                     <button
                         type="button"
@@ -152,7 +152,7 @@
                         pattern="[0-9]{6}"
                         placeholder="123456"
                         bind:value={confirmPin}
-                        class="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green font-mono text-xl tracking-[0.5em] pr-12 {confirmPin.length >
+                        class="w-full px-4 py-3 bg-white border border-slate-200 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green font-mono text-xl tracking-[0.5em] pr-12 {confirmPin.length >
                             0 && !pinsMatch
                             ? 'border-red-300 focus:border-red-500 focus:ring-red-200'
                             : ''}"
@@ -189,7 +189,7 @@
                 <button
                     type="submit"
                     disabled={isSubmitting || !pinsMatch}
-                    class="inline-flex items-center gap-2 bg-orange-500 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    class="inline-flex items-center gap-2 bg-orange-500 text-white px-6 py-2.5 rounded font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                     {#if isSubmitting}
                         <span

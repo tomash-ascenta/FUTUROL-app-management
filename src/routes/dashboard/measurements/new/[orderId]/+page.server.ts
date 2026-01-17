@@ -18,7 +18,13 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const orderRaw = await db.order.findUnique({
 		where: { id: params.orderId },
 		include: {
-			customer: true,
+			customer: {
+				include: {
+					contacts: {
+						orderBy: { isPrimary: 'desc' }
+					}
+				}
+			},
 			location: true,
 			product: true,
 			measurement: true

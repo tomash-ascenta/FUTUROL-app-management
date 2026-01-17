@@ -7,8 +7,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		throw redirect(302, '/login');
 	}
 
-	// Check role permissions - production_manager může prohlížet
-	const allowedRoles = ['admin', 'manager', 'technician', 'production_manager'];
+	// Check role permissions - sales může také prohlížet zaměření
+	const allowedRoles = ['admin', 'manager', 'technician', 'production_manager', 'sales'];
 	const hasPermission = locals.user.roles.some((role: string) => allowedRoles.includes(role));
 	if (!hasPermission) {
 		throw redirect(302, '/dashboard');
@@ -19,7 +19,13 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		include: {
 			order: {
 				include: {
-					customer: true,
+					customer: {
+						include: {
+							contacts: {
+								orderBy: { isPrimary: 'desc' }
+							}
+						}
+					},
 					location: true,
 					product: true
 				}
@@ -56,9 +62,33 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	return {
 		measurement: {
 			...measurement,
+			width: measurement.width ? Number(measurement.width) : null,
+			height: measurement.height ? Number(measurement.height) : null,
+			depth: measurement.depth ? Number(measurement.depth) : null,
+			measuredAt: measurement.measuredAt.toISOString(),
+			createdAt: measurement.createdAt.toISOString(),
+			updatedAt: measurement.updatedAt.toISOString(),
 			order: measurement.order ? {
 				...measurement.order,
-				estimatedValue: measurement.order.estimatedValue ? Number(measurement.order.estimatedValue) : null
+				estimatedValue: measurement.order.estimatedValue ? Number(measurement.order.estimatedValue) : null,
+				finalValue: measurement.order.finalValue ? Number(measurement.order.finalValue) : null,
+				createdAt: measurement.order.createdAt.toISOString(),
+				updatedAt: measurement.order.updatedAt.toISOString(),
+				deadlineAt: measurement.order.deadlineAt?.toISOString() || null,
+				customer: measurement.order.customer ? {
+					...measurement.order.customer,
+					createdAt: measurement.order.customer.createdAt.toISOString(),
+					updatedAt: measurement.order.customer.updatedAt.toISOString(),
+					contacts: measurement.order.customer.contacts.map((c) => ({
+						...c,
+						createdAt: c.createdAt.toISOString(),
+						updatedAt: c.updatedAt.toISOString()
+					}))
+				} : null,
+				location: measurement.order.location ? {
+					...measurement.order.location,
+					createdAt: measurement.order.location.createdAt.toISOString()
+				} : null
 			} : null
 		},
 		canEdit

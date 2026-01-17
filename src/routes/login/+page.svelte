@@ -206,7 +206,7 @@
 			<!-- Error -->
 			{#if error}
 				<div
-					class="mb-4 p-2 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-xs text-center"
+					class="mb-4 p-2 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-xs text-center"
 				>
 					{error}
 				</div>

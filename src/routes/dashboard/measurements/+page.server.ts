@@ -25,7 +25,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	if (search) {
 		where.OR = [
 			{ order: { orderNumber: { contains: search, mode: 'insensitive' } } },
-			{ order: { customer: { fullName: { contains: search, mode: 'insensitive' } } } },
+			{ order: { customer: { companyName: { contains: search, mode: 'insensitive' } } } },
+			{ order: { customer: { contacts: { some: { fullName: { contains: search, mode: 'insensitive' } } } } } },
 			{ pergolaType: { contains: search, mode: 'insensitive' } }
 		];
 	}
@@ -48,7 +49,14 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		include: {
 			order: {
 				include: {
-					customer: true,
+					customer: {
+						include: {
+							contacts: {
+								where: { isPrimary: true },
+								take: 1
+							}
+						}
+					},
 					location: true,
 					product: true
 				}

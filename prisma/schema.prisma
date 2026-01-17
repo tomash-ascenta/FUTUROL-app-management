@@ -36,6 +36,7 @@ model Employee {
   convertedLeads     Lead[]               @relation("LeadConverter")
   quotes             Quote[]
   attachments        Attachment[]
+  createdActivities  Activity[]           @relation("ActivityCreator")
 
   @@map("employees")
 }
@@ -54,18 +55,27 @@ enum Role {
 model Customer {
   id          String       @id @default(uuid())
   type        CustomerType @default(B2C)
-  companyName String?      // Pro B2B
-  ico         String?      // IČO pro B2B
-  dic         String?      // DIČ pro B2B
+  
+  // Kontaktní údaje (pro B2C primární, pro B2B volitelné)
+  fullName    String?      // Jméno (pro B2C povinné)
+  phone       String?      // Telefon (pro B2C povinné)
+  email       String?      // Email
+  
+  // Firemní údaje (pro B2B povinné, pro B2C volitelné)
+  companyName String?      // Název firmy
+  ico         String?      // IČO
+  dic         String?      // DIČ
+  
   note        String?
   source      CustomerSource @default(manual)
 
   // Vlastník (obchodník)
-  ownerId String
-  owner   Employee @relation("CustomerOwner", fields: [ownerId], references: [id])
+  ownerId String?
+  owner   Employee? @relation("CustomerOwner", fields: [ownerId], references: [id])
 
   // Původ z leadu
-  originLeadId String?
+  originLeadId String?  @unique
+  originLead   Lead?    @relation("LeadToCustomer", fields: [originLeadId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -77,6 +87,7 @@ model Customer {
   serviceTickets ServiceTicket[]
   inquiries      Inquiry[]
   ownerHistory   CustomerOwnerHistory[]
+  activities     Activity[]
 
   @@index([ownerId])
   @@index([type])
@@ -97,6 +108,50 @@ enum CustomerSource {
 }
 
 // ============================================
+// ACTIVITY - Historie aktivit a poznámek
+// ============================================
+model Activity {
+  id         String       @id @default(uuid())
+  
+  // Vazby
+  customerId String
+  customer   Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  orderId    String?      // Volitelná vazba na zakázku
+  order      Order?       @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  
+  // Typ aktivity
+  type       ActivityType @default(note)
+  
+  // Obsah
+  content    String       // Text poznámky nebo popis akce
+  
+  // Follow-up
+  followUpDate DateTime?  // Datum připomínky
+  followUpDone Boolean    @default(false) // Splněno?
+  
+  // Metadata
+  createdById String
+  createdBy   Employee    @relation("ActivityCreator", fields: [createdById], references: [id])
+  createdAt   DateTime    @default(now())
+  
+  @@index([customerId])
+  @@index([orderId])
+  @@index([createdById])
+  @@index([followUpDate])
+  @@index([type])
+  @@map("activities")
+}
+
+enum ActivityType {
+  note           // Poznámka
+  call           // Hovor
+  email          // Email
+  meeting        // Schůzka
+  status_change  // Změna stavu (automaticky)
+  system         // Systémová zpráva
+}
+
+// ============================================
 // CONTACT - Kontaktní osoba zákazníka
 // ============================================
 model Contact {
@@ -105,9 +160,9 @@ model Contact {
   customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
   fullName  String
-  phone     String
+  phone     String?  // Volitelný - může mít jen email
   email     String?
-  role      String?  // Funkce (jednatel, provozní, ...)
+  position  String?  // Pozice/funkce (jednatel, provozní, ...)
   isPrimary Boolean  @default(false)
   isActive  Boolean  @default(true)
   note      String?
@@ -217,6 +272,7 @@ model Lead {
   convertedById String?
   convertedBy   Employee? @relation("LeadConverter", fields: [convertedById], references: [id])
   convertedAt   DateTime?
+  customer      Customer? @relation("LeadToCustomer")
 
   // Metadata
   ipAddress   String?
@@ -296,6 +352,7 @@ model Order {
   statusHistory  OrderStatusHistory[]
   quotes         Quote[]
   attachments    Attachment[]
+  activities     Activity[]
 
   @@index([customerId])
   @@index([ownerId])
@@ -306,18 +363,15 @@ model Order {
 }
 
 enum OrderStatus {
-  lead
-  contacted
-  measurement_scheduled
-  measurement_done
-  quote_sent
-  quote_approved
-  in_production
-  production_done
-  installation_scheduled
-  installed
-  completed
-  cancelled
+  lead                    // Lead - nový kontakt
+  customer                // Zákazník - kvalifikovaný
+  quote_sent              // Nabídka - odeslána
+  measurement             // Zaměření - provedeno
+  contract                // Smlouva - podepsána
+  production              // Výroba - probíhá
+  installation            // Montáž - probíhá
+  handover                // Předání - dokončeno
+  cancelled               // Zrušeno
 }
 
 enum Priority {

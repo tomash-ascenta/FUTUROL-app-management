@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from "$app/stores";
     import {
         ArrowLeft,
         User,
@@ -10,6 +11,7 @@
         AlertCircle,
         CheckCircle,
     } from "lucide-svelte";
+    import { getCustomerDisplayName, getPrimaryContact } from "$lib/utils";
 
     interface Props {
         data: {
@@ -26,9 +28,14 @@
                 createdAt: string;
                 customer: {
                     id: string;
-                    fullName: string;
-                    phone: string;
-                    email: string | null;
+                    type: string;
+                    companyName: string | null;
+                    contacts: Array<{
+                        fullName: string;
+                        phone: string;
+                        email: string | null;
+                        isPrimary: boolean;
+                    }>;
                 };
                 order: {
                     id: string;
@@ -54,6 +61,14 @@
     }
 
     let { data }: Props = $props();
+
+    // Dynamic back URL based on where user came from
+    const backUrl = $derived(
+        $page.url.searchParams.get("from") === "customer" &&
+            $page.url.searchParams.get("customerId")
+            ? `/dashboard/customers/${$page.url.searchParams.get("customerId")}`
+            : "/dashboard/service",
+    );
 
     const statusLabels: Record<string, { label: string; color: string }> = {
         new_ticket: { label: "Nový", color: "bg-blue-100 text-blue-700" },
@@ -111,8 +126,8 @@
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
             <a
-                href="/dashboard/service"
-                class="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                href={backUrl}
+                class="p-2 hover:bg-slate-100 rounded transition-colors"
             >
                 <ArrowLeft class="w-5 h-5 text-slate-600" />
             </a>
@@ -152,7 +167,7 @@
         <div class="lg:col-span-2 space-y-6">
             <!-- Description -->
             <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+                class="bg-white rounded shadow-sm border border-slate-200 p-6"
             >
                 <h2 class="text-lg font-semibold text-slate-800 mb-4">
                     Popis problému
@@ -164,7 +179,7 @@
 
             <!-- Resolution (if exists) -->
             {#if data.ticket.resolution}
-                <div class="bg-green-50 rounded-xl border border-green-200 p-6">
+                <div class="bg-green-50 rounded border border-green-200 p-6">
                     <div class="flex items-center gap-2 mb-4">
                         <CheckCircle class="w-5 h-5 text-green-600" />
                         <h2 class="text-lg font-semibold text-green-800">
@@ -185,14 +200,14 @@
             <!-- Order info (if linked) -->
             {#if data.ticket.order}
                 <div
-                    class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+                    class="bg-white rounded shadow-sm border border-slate-200 p-6"
                 >
                     <h2 class="text-lg font-semibold text-slate-800 mb-4">
                         Zakázka
                     </h2>
                     <div class="flex items-start gap-4">
                         <div
-                            class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center"
+                            class="w-12 h-12 bg-blue-100 rounded flex items-center justify-center"
                         >
                             <Wrench class="w-6 h-6 text-blue-600" />
                         </div>
@@ -227,7 +242,7 @@
         <div class="space-y-6">
             <!-- Customer info -->
             <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+                class="bg-white rounded shadow-sm border border-slate-200 p-6"
             >
                 <h2 class="text-lg font-semibold text-slate-800 mb-4">
                     Zákazník
@@ -245,22 +260,26 @@
                                     .id}"
                                 class="font-medium text-futurol-green hover:underline"
                             >
-                                {data.ticket.customer.fullName}
+                                {getCustomerDisplayName(data.ticket.customer)}
                             </a>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 text-slate-600">
-                        <Phone class="w-4 h-4" />
-                        <a
-                            href="tel:{data.ticket.customer.phone}"
-                            class="hover:text-futurol-green"
-                        >
-                            {data.ticket.customer.phone}
-                        </a>
-                    </div>
-                    {#if data.ticket.customer.email}
+                    {#if getPrimaryContact(data.ticket.customer)?.phone}
+                        <div class="flex items-center gap-2 text-slate-600">
+                            <Phone class="w-4 h-4" />
+                            <a
+                                href="tel:{getPrimaryContact(
+                                    data.ticket.customer,
+                                )?.phone}"
+                                class="hover:text-futurol-green"
+                            >
+                                {getPrimaryContact(data.ticket.customer)?.phone}
+                            </a>
+                        </div>
+                    {/if}
+                    {#if getPrimaryContact(data.ticket.customer)?.email}
                         <div class="text-sm text-slate-500">
-                            {data.ticket.customer.email}
+                            {getPrimaryContact(data.ticket.customer)?.email}
                         </div>
                     {/if}
                 </div>
@@ -268,7 +287,7 @@
 
             <!-- Assigned technician -->
             <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+                class="bg-white rounded shadow-sm border border-slate-200 p-6"
             >
                 <h2 class="text-lg font-semibold text-slate-800 mb-4">
                     Přiřazený technik
@@ -310,7 +329,7 @@
             <!-- Schedule info -->
             {#if data.ticket.scheduledAt}
                 <div
-                    class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+                    class="bg-white rounded shadow-sm border border-slate-200 p-6"
                 >
                     <h2 class="text-lg font-semibold text-slate-800 mb-4">
                         Plánovaný termín
@@ -324,7 +343,7 @@
 
             <!-- Timeline -->
             <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
+                class="bg-white rounded shadow-sm border border-slate-200 p-6"
             >
                 <h2 class="text-lg font-semibold text-slate-800 mb-4">
                     Časová osa

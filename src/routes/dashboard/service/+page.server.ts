@@ -17,7 +17,15 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Get all service tickets
 	const ticketsRaw = await db.serviceTicket.findMany({
 		include: {
-			customer: true,
+			customer: {
+				include: {
+					contacts: {
+						where: { isPrimary: true },
+						take: 1
+					}
+				}
+			},
+			contact: true,
 			order: {
 				include: {
 					location: true

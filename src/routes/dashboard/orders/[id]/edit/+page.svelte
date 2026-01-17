@@ -11,6 +11,7 @@
         Loader2,
         Flag,
     } from "lucide-svelte";
+    import { getCustomerDisplayName } from "$lib/utils";
 
     interface Location {
         id: string;
@@ -39,7 +40,9 @@
                 productId: string | null;
                 customer: {
                     id: string;
-                    fullName: string;
+                    type: string;
+                    companyName: string | null;
+                    contacts: Array<{ fullName: string; isPrimary: boolean }>;
                 };
             };
             products: Product[];
@@ -139,14 +142,16 @@
     <div class="flex items-center gap-4">
         <a
             href="/dashboard/orders/{data.order.id}"
-            class="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            class="p-2 hover:bg-slate-100 rounded transition-colors"
         >
             <ArrowLeft class="w-5 h-5 text-slate-500" />
         </a>
         <div>
             <h1 class="text-2xl font-bold text-slate-800">Upravit zakázku</h1>
             <p class="text-slate-500 mt-1">
-                {data.order.orderNumber} • {data.order.customer.fullName}
+                {data.order.orderNumber} • {getCustomerDisplayName(
+                    data.order.customer,
+                )}
             </p>
         </div>
     </div>
@@ -161,14 +166,14 @@
     >
         {#if error}
             <div
-                class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-600"
+                class="bg-red-50 border border-red-200 rounded p-4 text-red-600"
             >
                 {error}
             </div>
         {/if}
 
         <!-- Status & Priority -->
-        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+        <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
             <h2
                 class="text-lg font-medium text-slate-800 mb-4 flex items-center gap-2"
             >
@@ -188,7 +193,7 @@
                     <select
                         id="status"
                         bind:value={status}
-                        class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
+                        class="w-full px-3 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
                     >
                         {#each statusOptions as option}
                             <option value={option.value}>{option.label}</option>
@@ -207,7 +212,7 @@
                     <select
                         id="priority"
                         bind:value={priority}
-                        class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
+                        class="w-full px-3 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
                     >
                         {#each priorityOptions as option}
                             <option value={option.value}>{option.label}</option>
@@ -218,7 +223,7 @@
         </div>
 
         <!-- Product & Location -->
-        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+        <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
             <h2
                 class="text-lg font-medium text-slate-800 mb-4 flex items-center gap-2"
             >
@@ -238,7 +243,7 @@
                     <select
                         id="product"
                         bind:value={productId}
-                        class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
+                        class="w-full px-3 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
                     >
                         <option value="">-- Vyberte produkt --</option>
                         {#each data.products as product}
@@ -263,7 +268,7 @@
                     <select
                         id="location"
                         bind:value={locationId}
-                        class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
+                        class="w-full px-3 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
                     >
                         <option value="">-- Nevybráno --</option>
                         {#each data.locations as loc}
@@ -284,7 +289,7 @@
         </div>
 
         <!-- Values -->
-        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+        <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
             <h2
                 class="text-lg font-medium text-slate-800 mb-4 flex items-center gap-2"
             >
@@ -307,7 +312,7 @@
                         bind:value={estimatedValue}
                         min="0"
                         step="1000"
-                        class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
+                        class="w-full px-3 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
                         placeholder="100 000"
                     />
                 </div>
@@ -326,7 +331,7 @@
                         bind:value={finalValue}
                         min="0"
                         step="1000"
-                        class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
+                        class="w-full px-3 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
                         placeholder="120 000"
                     />
                 </div>
@@ -334,7 +339,7 @@
         </div>
 
         <!-- Deadline -->
-        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+        <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
             <h2
                 class="text-lg font-medium text-slate-800 mb-4 flex items-center gap-2"
             >
@@ -353,7 +358,7 @@
                     id="deadline"
                     type="date"
                     bind:value={deadlineAt}
-                    class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
+                    class="w-full px-3 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
                 />
             </div>
         </div>
@@ -362,14 +367,14 @@
         <div class="flex items-center gap-3 justify-end">
             <a
                 href="/dashboard/orders/{data.order.id}"
-                class="px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors"
+                class="px-4 py-2 border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
             >
                 Zrušit
             </a>
             <button
                 type="submit"
                 disabled={loading}
-                class="inline-flex items-center gap-2 px-6 py-2 bg-futurol-green text-white rounded-lg hover:bg-futurol-green/90 transition-colors disabled:opacity-50"
+                class="inline-flex items-center gap-2 px-6 py-2 bg-futurol-green text-white rounded hover:bg-futurol-green/90 transition-colors disabled:opacity-50"
             >
                 {#if loading}
                     <Loader2 class="w-4 h-4 animate-spin" />

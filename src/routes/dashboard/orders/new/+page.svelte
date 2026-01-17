@@ -1,6 +1,7 @@
 <script lang="ts">
     import { ArrowLeft, Loader2, Check } from "lucide-svelte";
     import { goto } from "$app/navigation";
+    import { getCustomerDisplayName } from "$lib/utils";
 
     interface Location {
         id: string;
@@ -9,11 +10,19 @@
         zip: string;
     }
 
-    interface Customer {
+    interface Contact {
         id: string;
         fullName: string;
         phone: string;
-        company: string | null;
+        email: string | null;
+        isPrimary: boolean;
+    }
+
+    interface Customer {
+        id: string;
+        type: string;
+        companyName: string | null;
+        contacts: Contact[];
         locations: Location[];
     }
 
@@ -110,7 +119,7 @@
     <div class="flex items-center gap-4">
         <a
             href="/dashboard/orders"
-            class="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            class="p-2 hover:bg-slate-100 rounded transition-colors"
         >
             <ArrowLeft class="w-5 h-5 text-slate-600" />
         </a>
@@ -126,11 +135,11 @@
             e.preventDefault();
             handleSubmit();
         }}
-        class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6"
+        class="bg-white rounded shadow-sm border border-slate-200 p-6 space-y-6"
     >
         {#if error}
             <div
-                class="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700"
+                class="p-4 bg-red-50 border border-red-200 rounded text-red-700"
             >
                 {error}
             </div>
@@ -143,16 +152,13 @@
             >
             <select
                 bind:value={customerId}
-                class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                 required
             >
                 <option value="">Vyberte zákazníka...</option>
                 {#each data.customers as customer}
                     <option value={customer.id}>
-                        {customer.fullName}
-                        {#if customer.company}
-                            ({customer.company})
-                        {/if}
+                        {getCustomerDisplayName(customer)}
                     </option>
                 {/each}
             </select>
@@ -166,7 +172,7 @@
                 >
                 <select
                     bind:value={locationId}
-                    class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                    class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                     required
                 >
                     {#each availableLocations as location}
@@ -179,7 +185,7 @@
             </div>
         {:else if customerId && availableLocations.length === 0}
             <div
-                class="p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm"
+                class="p-4 bg-amber-50 border border-amber-200 rounded text-amber-700 text-sm"
             >
                 Zákazník nemá žádné místo realizace. Lokaci můžete přidat
                 později v detailu zákazníka.
@@ -193,7 +199,7 @@
             >
             <select
                 bind:value={productId}
-                class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
             >
                 <option value="">Zatím neurčeno</option>
                 {#each data.products as product}
@@ -215,7 +221,7 @@
                     <button
                         type="button"
                         onclick={() => (priority = p.value)}
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all {priority ===
+                        class="px-4 py-2 rounded text-sm font-medium transition-all {priority ===
                         p.value
                             ? p.color + ' ring-2 ring-offset-1 ring-current'
                             : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}"
@@ -235,7 +241,7 @@
                 type="number"
                 bind:value={estimatedValue}
                 placeholder="Zadejte předběžnou hodnotu..."
-                class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green placeholder:text-slate-400"
+                class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green placeholder:text-slate-400"
             />
         </div>
 
@@ -252,7 +258,7 @@
                 disabled={isSubmitting ||
                     !customerId ||
                     (availableLocations.length > 0 && !locationId)}
-                class="inline-flex items-center gap-2 bg-futurol-green text-white px-6 py-2.5 rounded-lg font-medium hover:bg-futurol-green/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                class="inline-flex items-center gap-2 bg-futurol-green text-white px-6 py-2.5 rounded font-medium hover:bg-futurol-green/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
                 {#if isSubmitting}
                     <Loader2 class="w-5 h-5 animate-spin" />

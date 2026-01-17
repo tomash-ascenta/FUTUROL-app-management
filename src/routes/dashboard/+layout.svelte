@@ -192,7 +192,7 @@
                 {#if hasAccess(item.roles)}
                     <a
                         href={item.href}
-                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                        class="flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all
 							{isActive(item.href)
                             ? 'bg-futurol-green text-white shadow-soft'
                             : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}"
@@ -215,7 +215,7 @@
                     {#each adminNavigation as item}
                         <a
                             href={item.href}
-                            class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                            class="flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all
                                 {isActive(item.href)
                                 ? 'bg-futurol-green text-white shadow-soft'
                                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}"
@@ -233,7 +233,7 @@
         <div class="p-4 border-t border-slate-200">
             <a
                 href="/dashboard/my-profile"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                class="flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all
                     {isActive('/dashboard/my-profile')
                     ? 'bg-futurol-green text-white shadow-soft'
                     : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'}"
@@ -279,7 +279,7 @@
             <!-- User menu -->
             <div class="relative">
                 <button
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"
+                    class="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-100 transition-colors"
                     onclick={() => (userMenuOpen = !userMenuOpen)}
                 >
                     <div
@@ -306,7 +306,7 @@
 
                 {#if userMenuOpen}
                     <div
-                        class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-elevated border border-futurol-border py-1 z-50"
+                        class="absolute right-0 mt-2 w-56 bg-white rounded shadow-elevated border border-futurol-border py-1 z-50"
                     >
                         <div class="px-4 py-3 border-b border-futurol-border">
                             <div class="text-sm font-medium text-slate-900">

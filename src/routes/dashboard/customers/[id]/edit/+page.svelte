@@ -109,7 +109,7 @@
     <div class="flex items-center gap-4">
         <a
             href="/dashboard/customers/{data.customer.id}"
-            class="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            class="p-2 hover:bg-slate-100 rounded transition-colors"
         >
             <ArrowLeft class="w-5 h-5 text-slate-500" />
         </a>
@@ -129,14 +129,14 @@
     >
         {#if error}
             <div
-                class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-600"
+                class="bg-red-50 border border-red-200 rounded p-4 text-red-600"
             >
                 {error}
             </div>
         {/if}
 
         <!-- Basic info -->
-        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+        <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
             <h2
                 class="text-lg font-medium text-slate-800 mb-4 flex items-center gap-2"
             >
@@ -158,7 +158,7 @@
                         id="fullName"
                         bind:value={fullName}
                         placeholder="Jan Novák"
-                        class="w-full px-4 py-2.5 bg-white border rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green focus:border-transparent {errors.fullName
+                        class="w-full px-4 py-2.5 bg-white border rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green focus:border-transparent {errors.fullName
                             ? 'border-red-500'
                             : 'border-slate-300'}"
                     />
@@ -185,7 +185,7 @@
                         id="phone"
                         bind:value={phone}
                         placeholder="+420 777 123 456"
-                        class="w-full px-4 py-2.5 bg-white border rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green focus:border-transparent {errors.phone
+                        class="w-full px-4 py-2.5 bg-white border rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green focus:border-transparent {errors.phone
                             ? 'border-red-500'
                             : 'border-slate-300'}"
                     />
@@ -210,7 +210,7 @@
                         id="email"
                         bind:value={email}
                         placeholder="jan.novak@email.cz"
-                        class="w-full px-4 py-2.5 bg-white border rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green focus:border-transparent {errors.email
+                        class="w-full px-4 py-2.5 bg-white border rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green focus:border-transparent {errors.email
                             ? 'border-red-500'
                             : 'border-slate-300'}"
                     />
@@ -235,7 +235,7 @@
                         id="company"
                         bind:value={company}
                         placeholder="Název firmy (volitelné)"
-                        class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green focus:border-transparent"
+                        class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green focus:border-transparent"
                     />
                 </div>
 
@@ -255,7 +255,7 @@
                         bind:value={note}
                         rows="3"
                         placeholder="Interní poznámka k zákazníkovi..."
-                        class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green focus:border-transparent resize-none"
+                        class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green focus:border-transparent resize-none"
                     ></textarea>
                 </div>
             </div>
@@ -272,7 +272,7 @@
             <button
                 type="submit"
                 disabled={loading}
-                class="inline-flex items-center gap-2 bg-futurol-green text-white px-6 py-2.5 rounded-lg font-medium hover:bg-futurol-green-dark transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                class="inline-flex items-center gap-2 bg-futurol-green text-white px-6 py-2.5 rounded font-medium hover:bg-futurol-green-dark transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 {#if loading}
                     <Loader2 class="w-5 h-5 animate-spin" />

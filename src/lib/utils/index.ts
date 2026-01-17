@@ -141,3 +141,63 @@ const SERVICE_TYPE_LABELS: Record<string, string> = {
 export function getServiceTypeLabel(type: string): string {
 	return SERVICE_TYPE_LABELS[type] || type;
 }
+
+// =============================================================================
+// CUSTOMER HELPERS
+// =============================================================================
+
+/**
+ * Get display name for a customer.
+ * For B2B: company name, for B2C: fullName directly on customer
+ */
+export function getCustomerDisplayName(customer: {
+	type?: string;
+	companyName?: string | null;
+	fullName?: string | null;
+	contacts?: { fullName: string; isPrimary?: boolean }[];
+}): string {
+	// B2B - use company name
+	if (customer.type === 'B2B' && customer.companyName) {
+		return customer.companyName;
+	}
+	// B2C - use fullName directly on customer
+	if (customer.fullName) {
+		return customer.fullName;
+	}
+	// Fallback to primary contact (for backwards compatibility)
+	const primaryContact = customer.contacts?.find(c => c.isPrimary) || customer.contacts?.[0];
+	return primaryContact?.fullName || 'Neznámý zákazník';
+}
+
+/**
+ * Get primary contact for a customer
+ * For B2C: returns customer's direct contact info
+ * For B2B: returns primary contact from contacts array
+ */
+export function getPrimaryContact(customer: { 
+	fullName?: string | null; 
+	phone?: string | null; 
+	email?: string | null;
+	contacts?: { fullName: string; phone?: string | null; email?: string | null; isPrimary?: boolean }[] 
+}): {
+	fullName: string;
+	phone: string | null;
+	email?: string | null;
+} | null {
+	// B2C - use direct fields on customer
+	if (customer.fullName) {
+		return {
+			fullName: customer.fullName,
+			phone: customer.phone || null,
+			email: customer.email
+		};
+	}
+	// B2B - use contacts array
+	if (!customer.contacts || customer.contacts.length === 0) return null;
+	const contact = customer.contacts.find(c => c.isPrimary) || customer.contacts[0];
+	return {
+		fullName: contact.fullName,
+		phone: contact.phone || null,
+		email: contact.email
+	};
+}

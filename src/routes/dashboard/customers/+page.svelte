@@ -18,17 +18,26 @@
         Edit,
         Trash2,
     } from "lucide-svelte";
+    import { getCustomerDisplayName, getPrimaryContact } from "$lib/utils";
+
+    interface Contact {
+        id: string;
+        fullName: string;
+        phone: string;
+        email?: string | null;
+        isPrimary: boolean;
+    }
 
     interface Customer {
         id: string;
-        fullName: string;
-        email: string | null;
-        phone: string;
-        company: string | null;
+        type: string;
+        companyName: string | null;
         note: string | null;
         source: string;
         createdAt: string;
         updatedAt: string;
+        contacts: Contact[];
+        owner?: { id: string; fullName: string } | null;
         locations: Array<{
             id: string;
             street: string;
@@ -121,7 +130,9 @@
 
     async function deleteCustomer(customer: Customer) {
         if (
-            !confirm(`Opravdu chcete smazat zákazníka "${customer.fullName}"?`)
+            !confirm(
+                `Opravdu chcete smazat zákazníka "${getCustomerDisplayName(customer)}"?`,
+            )
         ) {
             return;
         }
@@ -168,7 +179,7 @@
         {#if data.canEdit}
             <a
                 href="/dashboard/customers/new"
-                class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2.5 rounded-lg font-medium hover:bg-futurol-green-dark transition-colors shadow-sm"
+                class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2.5 rounded font-medium hover:bg-futurol-green-dark transition-colors shadow-sm"
             >
                 <Plus class="w-5 h-5" />
                 Nový zákazník
@@ -186,14 +197,14 @@
             placeholder="Hledat podle jména, telefonu, emailu..."
             bind:value={searchQuery}
             oninput={handleSearch}
-            class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green focus:border-transparent shadow-sm"
+            class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green focus:border-transparent shadow-sm"
         />
     </div>
 
     <!-- Customers table -->
     {#if data.customers.length === 0}
         <div
-            class="bg-white rounded-xl border border-futurol-border p-12 text-center shadow-card"
+            class="bg-white rounded border border-futurol-border p-12 text-center shadow-card"
         >
             <div
                 class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4"
@@ -216,7 +227,7 @@
             </p>
             <a
                 href="/dashboard/customers/new"
-                class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2 rounded-lg font-medium hover:bg-futurol-green-dark transition-colors"
+                class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2 rounded font-medium hover:bg-futurol-green-dark transition-colors"
             >
                 <Plus class="w-5 h-5" />
                 Přidat zákazníka
@@ -224,7 +235,7 @@
         </div>
     {:else}
         <div
-            class="bg-white rounded-xl border border-futurol-border overflow-hidden shadow-card"
+            class="bg-white rounded border border-futurol-border overflow-hidden shadow-card"
         >
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -277,7 +288,9 @@
                                             <span
                                                 class="text-sm font-semibold text-primary-700"
                                             >
-                                                {customer.fullName
+                                                {getCustomerDisplayName(
+                                                    customer,
+                                                )
                                                     .split(" ")
                                                     .map((n) => n[0])
                                                     .join("")
@@ -289,9 +302,11 @@
                                             <div
                                                 class="font-medium text-slate-900 truncate"
                                             >
-                                                {customer.fullName}
+                                                {getCustomerDisplayName(
+                                                    customer,
+                                                )}
                                             </div>
-                                            {#if customer.company}
+                                            {#if customer.type === "B2B" && customer.companyName}
                                                 <div
                                                     class="text-sm text-slate-500 flex items-center gap-1"
                                                 >
@@ -299,7 +314,7 @@
                                                         class="w-3 h-3"
                                                     />
                                                     <span class="truncate"
-                                                        >{customer.company}</span
+                                                        >{customer.companyName}</span
                                                     >
                                                 </div>
                                             {/if}
@@ -314,9 +329,10 @@
                                             <Phone
                                                 class="w-4 h-4 text-slate-400"
                                             />
-                                            {customer.phone}
+                                            {getPrimaryContact(customer)
+                                                ?.phone || "-"}
                                         </div>
-                                        {#if customer.email}
+                                        {#if getPrimaryContact(customer)?.email}
                                             <div
                                                 class="flex items-center gap-2 text-sm text-slate-500"
                                             >
@@ -325,7 +341,9 @@
                                                 />
                                                 <span
                                                     class="truncate max-w-[200px]"
-                                                    >{customer.email}</span
+                                                    >{getPrimaryContact(
+                                                        customer,
+                                                    )?.email}</span
                                                 >
                                             </div>
                                         {/if}
@@ -392,7 +410,7 @@
                                                 e.stopPropagation();
                                                 toggleDropdown(customer.id);
                                             }}
-                                            class="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                                            class="p-2 hover:bg-slate-100 rounded transition-colors"
                                         >
                                             <MoreVertical
                                                 class="w-5 h-5 text-slate-400"
@@ -400,7 +418,7 @@
                                         </button>
                                         {#if openDropdown === customer.id}
                                             <div
-                                                class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-elevated border border-futurol-border py-1 z-10"
+                                                class="absolute right-0 mt-2 w-48 bg-white rounded shadow-elevated border border-futurol-border py-1 z-10"
                                             >
                                                 <a
                                                     href="/dashboard/customers/{customer.id}"
@@ -461,7 +479,7 @@
                         <button
                             onclick={() => goToPage(data.pagination.page - 1)}
                             disabled={data.pagination.page === 1}
-                            class="p-2 rounded-lg border border-futurol-border bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            class="p-2 rounded border border-futurol-border bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                             <ChevronLeft class="w-5 h-5 text-slate-500" />
                         </button>
@@ -469,7 +487,7 @@
                             onclick={() => goToPage(data.pagination.page + 1)}
                             disabled={data.pagination.page ===
                                 data.pagination.totalPages}
-                            class="p-2 rounded-lg border border-futurol-border bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            class="p-2 rounded border border-futurol-border bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                             <ChevronRight class="w-5 h-5 text-slate-500" />
                         </button>

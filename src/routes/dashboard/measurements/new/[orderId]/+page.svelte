@@ -9,6 +9,7 @@
     } from "lucide-svelte";
     import type { PageData } from "./$types";
     import { goto } from "$app/navigation";
+    import { getCustomerDisplayName } from "$lib/utils";
 
     let { data }: { data: PageData } = $props();
 
@@ -289,7 +290,7 @@
     <div class="flex items-center gap-4">
         <a
             href="/dashboard/measurements/new"
-            class="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            class="p-2 hover:bg-slate-100 rounded transition-colors"
         >
             <ArrowLeft class="w-5 h-5 text-slate-600" />
         </a>
@@ -300,7 +301,7 @@
                 <span>•</span>
                 <span class="flex items-center gap-1">
                     <User class="w-4 h-4" />
-                    {order.customer.fullName}
+                    {getCustomerDisplayName(order.customer)}
                 </span>
                 {#if order.location}
                     <span>•</span>
@@ -314,7 +315,7 @@
     </div>
 
     <!-- Progress -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+    <div class="bg-white rounded shadow-sm border border-slate-200 p-4">
         <div class="flex items-center gap-2 overflow-x-auto pb-2">
             {#each steps as step, i}
                 <button
@@ -322,7 +323,7 @@
                     onclick={() => {
                         if (i <= currentStep) currentStep = i;
                     }}
-                    class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm whitespace-nowrap transition-colors {i ===
+                    class="flex items-center gap-2 px-3 py-1.5 rounded text-sm whitespace-nowrap transition-colors {i ===
                     currentStep
                         ? 'bg-futurol-green text-white'
                         : i < currentStep
@@ -344,10 +345,10 @@
     </div>
 
     <!-- Form -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+    <div class="bg-white rounded shadow-sm border border-slate-200 p-6">
         {#if error}
             <div
-                class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700"
+                class="mb-6 p-4 bg-red-50 border border-red-200 rounded text-red-700"
             >
                 {error}
             </div>
@@ -364,7 +365,7 @@
                         <button
                             type="button"
                             onclick={() => (formData.pergolaType = type.id)}
-                            class="p-4 rounded-xl border-2 text-left transition-all {formData.pergolaType ===
+                            class="p-4 rounded border-2 text-left transition-all {formData.pergolaType ===
                             type.id
                                 ? 'border-futurol-green bg-futurol-green/5'
                                 : 'border-slate-200 hover:border-slate-300'}"
@@ -395,7 +396,7 @@
                             type="number"
                             bind:value={formData.width}
                             placeholder="např. 4000"
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         />
                     </div>
                     <div>
@@ -408,7 +409,7 @@
                             type="number"
                             bind:value={formData.depth}
                             placeholder="např. 3500"
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         />
                     </div>
                     <div>
@@ -421,7 +422,7 @@
                             type="number"
                             bind:value={formData.height}
                             placeholder="např. 2800"
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         />
                     </div>
                     <div>
@@ -434,7 +435,7 @@
                             type="number"
                             bind:value={formData.clearanceHeight}
                             placeholder="např. 2200"
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         />
                     </div>
                 </div>
@@ -455,7 +456,7 @@
                         </label>
                         <select
                             bind:value={formData.roofPanels}
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         >
                             {#each [2, 3, 4, 5, 6, 7, 8, 9] as n}
                                 <option value={n}>{n}</option>
@@ -470,7 +471,7 @@
                         </label>
                         <select
                             bind:value={formData.legLength}
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         >
                             {#each legLengths as len}
                                 <option value={len}>{len} mm</option>
@@ -486,7 +487,7 @@
                         </label>
                         <select
                             bind:value={formData.legCount}
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         >
                             {#each [1, 2, 3, 4, 5, 6] as n}
                                 <option value={n}>{n}</option>
@@ -503,7 +504,7 @@
                             type="text"
                             bind:value={formData.bracketInfo}
                             placeholder="Počet a umístění"
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         />
                     </div>
                 </div>
@@ -517,7 +518,7 @@
                         </label>
                         <select
                             bind:value={formData.colorFrame}
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         >
                             {#each frameColors as color}
                                 <option value={color}>{color}</option>
@@ -532,7 +533,7 @@
                         </label>
                         <select
                             bind:value={formData.colorRoof}
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         >
                             {#each roofColors as color}
                                 <option value={color.id}>{color.label}</option>
@@ -561,7 +562,7 @@
                             type="text"
                             bind:value={formData.wallType}
                             placeholder="např. cihla, beton..."
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         />
                     </div>
                     <div>
@@ -575,13 +576,13 @@
                                 type="text"
                                 bind:value={formData.insulationType}
                                 placeholder="Typ (EPS, minerální...)"
-                                class="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="flex-1 px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             />
                             <input
                                 type="number"
                                 bind:value={formData.insulationThickness}
                                 placeholder="mm"
-                                class="w-20 px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="w-20 px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             />
                         </div>
                     </div>
@@ -596,7 +597,7 @@
                         </label>
                         <select
                             bind:value={formData.anchoringType}
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         >
                             <option value="">Vyberte...</option>
                             <option value="zavitove_tyce">Závitové tyče</option>
@@ -620,7 +621,7 @@
                             type="text"
                             bind:value={formData.anchoringDetails}
                             placeholder="Počet ks, délka..."
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         />
                     </div>
                 </div>
@@ -640,7 +641,7 @@
                         <div class="grid grid-cols-2 gap-4 pl-8">
                             <select
                                 bind:value={formData.concreteFootingsType}
-                                class="px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             >
                                 <option value="">Vyberte typ...</option>
                                 <option value="podbetonovat"
@@ -657,7 +658,7 @@
                                 type="number"
                                 bind:value={formData.concreteFootingsCount}
                                 placeholder="Počet ks"
-                                class="px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             />
                         </div>
                     {/if}
@@ -672,7 +673,7 @@
                         </label>
                         <select
                             bind:value={formData.drainOutput}
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         >
                             <option value="vpravo">Vpravo standart</option>
                             <option value="vlevo">Vlevo standart</option>
@@ -693,7 +694,7 @@
                         </label>
                         <select
                             bind:value={formData.electricalInlet}
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         >
                             <option value="">Vyberte...</option>
                             <option value="vlevo_kotvici"
@@ -739,7 +740,7 @@
                         </label>
                         <select
                             bind:value={formData.remote}
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         >
                             <option value="">Vyberte...</option>
                             <option value="situo_1_pure"
@@ -769,7 +770,7 @@
                         </label>
                         <select
                             bind:value={formData.motor}
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         >
                             <option value="IO">IO</option>
                             <option value="WT">WT</option>
@@ -792,7 +793,7 @@
                         <div class="pl-8">
                             <select
                                 bind:value={formData.windSensorPosition}
-                                class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             >
                                 <option value="vpravo">Vpravo</option>
                                 <option value="vlevo">Vlevo</option>
@@ -813,7 +814,7 @@
                         </label>
                         <select
                             bind:value={formData.ledType}
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         >
                             <option value="">Bez LED</option>
                             <option value="COB_4000K"
@@ -837,7 +838,7 @@
                             </label>
                             <select
                                 bind:value={formData.ledCount}
-                                class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             >
                                 {#each [1, 2, 3, 4] as n}
                                     <option value={n}>{n} ks</option>
@@ -856,7 +857,7 @@
                         </label>
                         <select
                             bind:value={formData.outlets}
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         >
                             <option value={0}>Bez zásuvek</option>
                             {#each [1, 2, 3, 4] as n}
@@ -872,7 +873,7 @@
                         </label>
                         <select
                             bind:value={formData.tahoma}
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         >
                             <option value="">Ne</option>
                             <option value="ano">Ano - nová</option>
@@ -918,7 +919,7 @@
                 </p>
 
                 <!-- Čelní -->
-                <div class="p-4 border border-slate-200 rounded-lg">
+                <div class="p-4 border border-slate-200 rounded">
                     <h3 class="font-medium text-slate-700 mb-3">Čelní</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -929,7 +930,7 @@
                                 type="number"
                                 bind:value={formData.screenFront.width}
                                 placeholder="0 = bez rolety"
-                                class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             />
                         </div>
                         <div>
@@ -940,14 +941,14 @@
                                 type="text"
                                 bind:value={formData.screenFront.fabric}
                                 placeholder="např. SE6-007007"
-                                class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             />
                         </div>
                     </div>
                 </div>
 
                 <!-- Čelní levá -->
-                <div class="p-4 border border-slate-200 rounded-lg">
+                <div class="p-4 border border-slate-200 rounded">
                     <h3 class="font-medium text-slate-700 mb-3">Čelní levá</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -958,7 +959,7 @@
                                 type="number"
                                 bind:value={formData.screenFrontLeft.width}
                                 placeholder="0 = bez rolety"
-                                class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             />
                         </div>
                         <div>
@@ -969,14 +970,14 @@
                                 type="text"
                                 bind:value={formData.screenFrontLeft.fabric}
                                 placeholder="např. SE6-007007"
-                                class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             />
                         </div>
                     </div>
                 </div>
 
                 <!-- Čelní pravá -->
-                <div class="p-4 border border-slate-200 rounded-lg">
+                <div class="p-4 border border-slate-200 rounded">
                     <h3 class="font-medium text-slate-700 mb-3">Čelní pravá</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -987,7 +988,7 @@
                                 type="number"
                                 bind:value={formData.screenFrontRight.width}
                                 placeholder="0 = bez rolety"
-                                class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             />
                         </div>
                         <div>
@@ -998,14 +999,14 @@
                                 type="text"
                                 bind:value={formData.screenFrontRight.fabric}
                                 placeholder="např. SE6-007007"
-                                class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             />
                         </div>
                     </div>
                 </div>
 
                 <!-- Boční levá -->
-                <div class="p-4 border border-slate-200 rounded-lg">
+                <div class="p-4 border border-slate-200 rounded">
                     <h3 class="font-medium text-slate-700 mb-3">Boční levá</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -1016,7 +1017,7 @@
                                 type="number"
                                 bind:value={formData.screenLeft.width}
                                 placeholder="0 = bez rolety"
-                                class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             />
                         </div>
                         <div>
@@ -1027,14 +1028,14 @@
                                 type="text"
                                 bind:value={formData.screenLeft.fabric}
                                 placeholder="např. SE6-007007"
-                                class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             />
                         </div>
                     </div>
                 </div>
 
                 <!-- Boční pravá -->
-                <div class="p-4 border border-slate-200 rounded-lg">
+                <div class="p-4 border border-slate-200 rounded">
                     <h3 class="font-medium text-slate-700 mb-3">Boční pravá</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -1045,7 +1046,7 @@
                                 type="number"
                                 bind:value={formData.screenRight.width}
                                 placeholder="0 = bez rolety"
-                                class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             />
                         </div>
                         <div>
@@ -1056,7 +1057,7 @@
                                 type="text"
                                 bind:value={formData.screenRight.fabric}
                                 placeholder="např. SE6-007007"
-                                class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                             />
                         </div>
                     </div>
@@ -1082,7 +1083,7 @@
                             type="text"
                             bind:value={formData.parking}
                             placeholder="Popis přístupu..."
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         />
                     </div>
                     <div>
@@ -1095,7 +1096,7 @@
                             type="text"
                             bind:value={formData.storageSpace}
                             placeholder="Popis prostoru..."
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         />
                     </div>
                 </div>
@@ -1109,7 +1110,7 @@
                         </label>
                         <select
                             bind:value={formData.duration}
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         >
                             <option value="">Vyberte...</option>
                             <option value="mozno_do_vecera"
@@ -1128,7 +1129,7 @@
                         </label>
                         <select
                             bind:value={formData.terrain}
-                            class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                         >
                             <option value="">Vyberte...</option>
                             <option value="v_poradku">V pořádku</option>
@@ -1145,7 +1146,7 @@
                     </label>
                     <select
                         bind:value={formData.access}
-                        class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                        class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                     >
                         <option value="">Vyberte...</option>
                         <option value="v_poradku">V pořádku</option>
@@ -1163,7 +1164,7 @@
                         bind:value={formData.additionalNotes}
                         rows="4"
                         placeholder="Další poznámky..."
-                        class="w-full px-4 py-2.5 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                        class="w-full px-4 py-2.5 border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                     ></textarea>
                 </div>
             </div>
@@ -1187,7 +1188,7 @@
                 type="button"
                 onclick={nextStep}
                 disabled={!canProceed()}
-                class="inline-flex items-center gap-2 bg-futurol-green text-white px-6 py-2.5 rounded-lg font-medium hover:bg-futurol-green/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                class="inline-flex items-center gap-2 bg-futurol-green text-white px-6 py-2.5 rounded font-medium hover:bg-futurol-green/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
                 Pokračovat
                 <ArrowRight class="w-5 h-5" />
@@ -1197,7 +1198,7 @@
                 type="button"
                 onclick={submitForm}
                 disabled={isSubmitting}
-                class="inline-flex items-center gap-2 bg-futurol-green text-white px-6 py-2.5 rounded-lg font-medium hover:bg-futurol-green/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                class="inline-flex items-center gap-2 bg-futurol-green text-white px-6 py-2.5 rounded font-medium hover:bg-futurol-green/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
                 {#if isSubmitting}
                     <Loader2 class="w-5 h-5 animate-spin" />

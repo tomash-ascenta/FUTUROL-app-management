@@ -9,6 +9,7 @@
     } from "lucide-svelte";
     import type { PageData } from "./$types";
     import { goto } from "$app/navigation";
+    import { getCustomerDisplayName } from "$lib/utils";
 
     interface Props {
         data: PageData;
@@ -18,28 +19,26 @@
 
     // Status labels
     const statusLabels: Record<string, string> = {
-        lead: "Nový lead",
-        contacted: "Kontaktováno",
-        quote_sent: "Nabídka odeslána",
-        quote_approved: "Nabídka schválena",
-        measurement_scheduled: "Zaměření naplánováno",
-        in_production: "Ve výrobě",
-        ready_for_installation: "Připraveno k montáži",
-        installed: "Namontováno",
-        completed: "Dokončeno",
+        lead: "Lead",
+        customer: "Zákazník",
+        quote_sent: "Nabídka",
+        measurement: "Zaměření",
+        contract: "Smlouva",
+        production: "Výroba",
+        installation: "Montáž",
+        handover: "Předání",
         cancelled: "Zrušeno",
     };
 
     const statusColors: Record<string, string> = {
         lead: "bg-slate-100 text-slate-700",
-        contacted: "bg-blue-100 text-blue-700",
-        quote_sent: "bg-purple-100 text-purple-700",
-        quote_approved: "bg-indigo-100 text-indigo-700",
-        measurement_scheduled: "bg-amber-100 text-amber-700",
-        in_production: "bg-orange-100 text-orange-700",
-        ready_for_installation: "bg-cyan-100 text-cyan-700",
-        installed: "bg-teal-100 text-teal-700",
-        completed: "bg-green-100 text-green-700",
+        customer: "bg-blue-100 text-blue-700",
+        quote_sent: "bg-amber-100 text-amber-700",
+        measurement: "bg-purple-100 text-purple-700",
+        contract: "bg-green-100 text-green-700",
+        production: "bg-orange-100 text-orange-700",
+        installation: "bg-teal-100 text-teal-700",
+        handover: "bg-emerald-100 text-emerald-700",
         cancelled: "bg-red-100 text-red-700",
     };
 
@@ -83,7 +82,7 @@
         {#if data.canEdit}
             <a
                 href="/dashboard/orders/new"
-                class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2.5 rounded-lg font-medium hover:bg-futurol-green/90 transition-colors shadow-sm"
+                class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2.5 rounded font-medium hover:bg-futurol-green/90 transition-colors shadow-sm"
             >
                 <Plus class="w-5 h-5" />
                 Nová zakázka
@@ -102,12 +101,12 @@
                 name="search"
                 value={data.search}
                 placeholder="Hledat zakázky..."
-                class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded bg-white focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
             />
         </div>
         <button
             type="submit"
-            class="inline-flex items-center gap-2 px-4 py-2.5 border border-slate-200 rounded-lg bg-white hover:bg-slate-50 transition-colors"
+            class="inline-flex items-center gap-2 px-4 py-2.5 border border-slate-200 rounded bg-white hover:bg-slate-50 transition-colors"
         >
             <Filter class="w-5 h-5 text-slate-500" />
             Filtry
@@ -117,7 +116,7 @@
     {#if data.orders.length === 0}
         <!-- Empty state -->
         <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center"
+            class="bg-white rounded shadow-sm border border-slate-200 p-12 text-center"
         >
             <div
                 class="w-16 h-16 bg-futurol-green/10 rounded-full flex items-center justify-center mx-auto mb-4"
@@ -131,7 +130,7 @@
             {#if data.canEdit}
                 <a
                     href="/dashboard/orders/new"
-                    class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2.5 rounded-lg font-medium hover:bg-futurol-green/90 transition-colors shadow-sm"
+                    class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2.5 rounded font-medium hover:bg-futurol-green/90 transition-colors shadow-sm"
                 >
                     <Plus class="w-5 h-5" />
                     Vytvořit zakázku
@@ -141,7 +140,7 @@
     {:else}
         <!-- Orders list -->
         <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+            class="bg-white rounded shadow-sm border border-slate-200 overflow-hidden"
         >
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -203,7 +202,7 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="font-medium text-slate-900">
-                                        {order.customer.fullName}
+                                        {getCustomerDisplayName(order.customer)}
                                     </div>
                                     {#if order.location}
                                         <p
@@ -239,7 +238,12 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-slate-700">
-                                    {formatCurrency(order.estimatedValue)}
+                                    {formatCurrency(
+                                        order.quotes.reduce(
+                                            (sum, q) => sum + q.amount,
+                                            0,
+                                        ),
+                                    )}
                                 </td>
                                 <td class="px-6 py-4 text-slate-500 text-sm">
                                     <div class="flex items-center gap-1">

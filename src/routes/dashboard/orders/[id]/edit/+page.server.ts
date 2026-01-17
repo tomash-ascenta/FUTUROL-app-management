@@ -18,11 +18,18 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		include: {
 			customer: {
 				include: {
+					contacts: {
+						orderBy: { isPrimary: 'desc' }
+					},
 					locations: true
 				}
 			},
+			contact: true,
 			location: true,
-			product: true
+			product: true,
+			quotes: {
+				orderBy: { version: 'desc' }
+			}
 		}
 	});
 
@@ -43,7 +50,36 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			finalValue: order.finalValue ? Number(order.finalValue) : null,
 			createdAt: order.createdAt.toISOString(),
 			updatedAt: order.updatedAt.toISOString(),
-			deadlineAt: order.deadlineAt?.toISOString() || null
+			deadlineAt: order.deadlineAt?.toISOString() || null,
+			customer: order.customer ? {
+				...order.customer,
+				createdAt: order.customer.createdAt.toISOString(),
+				updatedAt: order.customer.updatedAt.toISOString(),
+				contacts: order.customer.contacts.map((c) => ({
+					...c,
+					createdAt: c.createdAt.toISOString(),
+					updatedAt: c.updatedAt.toISOString()
+				})),
+				locations: order.customer.locations.map((l) => ({
+					...l,
+					createdAt: l.createdAt.toISOString()
+				}))
+			} : null,
+			contact: order.contact ? {
+				...order.contact,
+				createdAt: order.contact.createdAt.toISOString(),
+				updatedAt: order.contact.updatedAt.toISOString()
+			} : null,
+			location: order.location ? {
+				...order.location,
+				createdAt: order.location.createdAt.toISOString()
+			} : null,
+			quotes: order.quotes.map((q) => ({
+				...q,
+				amount: Number(q.amount),
+				createdAt: q.createdAt.toISOString(),
+				updatedAt: q.updatedAt.toISOString()
+			}))
 		},
 		products,
 		locations: order.customer.locations.map((l) => ({

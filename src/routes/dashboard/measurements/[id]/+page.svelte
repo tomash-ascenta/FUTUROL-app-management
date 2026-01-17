@@ -15,6 +15,7 @@
     import type { PageData } from "./$types";
     import { goto, invalidateAll } from "$app/navigation";
     import { generateMeasurementPdf } from "$lib/utils/measurementPdf";
+    import { getCustomerDisplayName, getPrimaryContact } from "$lib/utils";
 
     let { data }: { data: PageData } = $props();
 
@@ -373,7 +374,7 @@
         <div class="flex items-center gap-4">
             <a
                 href="/dashboard/measurements"
-                class="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                class="p-2 hover:bg-slate-100 rounded transition-colors"
             >
                 <ArrowLeft class="w-5 h-5 text-slate-600" />
             </a>
@@ -406,7 +407,7 @@
                             typeof generateMeasurementPdf
                         >[0],
                     )}
-                class="flex items-center gap-2 px-4 py-2 bg-futurol-wine text-white rounded-lg hover:bg-futurol-wine/90 transition-colors"
+                class="flex items-center gap-2 px-4 py-2 bg-futurol-wine text-white rounded hover:bg-futurol-wine/90 transition-colors"
                 title="Stáhnout PDF"
             >
                 <Download class="w-4 h-4" />
@@ -414,7 +415,7 @@
             </button>
             <button
                 onclick={deleteMeasurement}
-                class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                class="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
                 title="Smazat"
             >
                 <Trash2 class="w-5 h-5" />
@@ -427,26 +428,36 @@
         {#if measurement.order}
             <!-- Customer info -->
             <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 p-5"
+                class="bg-white rounded shadow-sm border border-slate-200 p-5"
             >
                 <div class="flex items-center gap-2 text-slate-600 mb-3">
                     <User class="w-5 h-5" />
                     <span class="font-medium">Zákazník</span>
                 </div>
-                <h3 class="text-lg font-semibold text-slate-800">
-                    {measurement.order.customer.fullName}
-                </h3>
-                <p class="text-slate-500">{measurement.order.customer.phone}</p>
-                {#if measurement.order.customer.email}
-                    <p class="text-slate-500">
-                        {measurement.order.customer.email}
-                    </p>
+                {#if measurement.order.customer}
+                    <h3 class="text-lg font-semibold text-slate-800">
+                        {getCustomerDisplayName(measurement.order.customer)}
+                    </h3>
+                    {#if getPrimaryContact(measurement.order.customer)?.phone}
+                        <p class="text-slate-500">
+                            {getPrimaryContact(measurement.order.customer)
+                                ?.phone}
+                        </p>
+                    {/if}
+                    {#if getPrimaryContact(measurement.order.customer)?.email}
+                        <p class="text-slate-500">
+                            {getPrimaryContact(measurement.order.customer)
+                                ?.email}
+                        </p>
+                    {/if}
+                {:else}
+                    <p class="text-slate-500">Zákazník není přiřazen</p>
                 {/if}
             </div>
 
             <!-- Location info -->
             <div
-                class="bg-white rounded-xl shadow-sm border border-slate-200 p-5"
+                class="bg-white rounded shadow-sm border border-slate-200 p-5"
             >
                 <div class="flex items-center gap-2 text-slate-600 mb-3">
                     <MapPin class="w-5 h-5" />
@@ -470,13 +481,13 @@
     </div>
 
     <!-- Main measurements -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+    <div class="bg-white rounded shadow-sm border border-slate-200 p-5">
         <div class="flex items-center gap-2 text-slate-600 mb-4">
             <Ruler class="w-5 h-5" />
             <span class="font-medium">Základní rozměry</span>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="text-center p-4 bg-slate-50 rounded-lg group relative">
+            <div class="text-center p-4 bg-slate-50 rounded group relative">
                 {#if editingField === "width"}
                     <input
                         type="text"
@@ -515,7 +526,7 @@
                 {/if}
                 <div class="text-sm text-slate-500">Šířka (mm)</div>
             </div>
-            <div class="text-center p-4 bg-slate-50 rounded-lg group relative">
+            <div class="text-center p-4 bg-slate-50 rounded group relative">
                 {#if editingField === "depth"}
                     <input
                         type="text"
@@ -554,7 +565,7 @@
                 {/if}
                 <div class="text-sm text-slate-500">Hloubka (mm)</div>
             </div>
-            <div class="text-center p-4 bg-slate-50 rounded-lg group relative">
+            <div class="text-center p-4 bg-slate-50 rounded group relative">
                 {#if editingField === "height"}
                     <input
                         type="text"
@@ -593,7 +604,7 @@
                 {/if}
                 <div class="text-sm text-slate-500">Výška (mm)</div>
             </div>
-            <div class="text-center p-4 bg-slate-50 rounded-lg group relative">
+            <div class="text-center p-4 bg-slate-50 rounded group relative">
                 {#if editingField === "clearanceHeight"}
                     <input
                         type="text"
@@ -640,7 +651,7 @@
     </div>
 
     <!-- Construction details -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+    <div class="bg-white rounded shadow-sm border border-slate-200 p-5">
         <h3 class="font-medium text-slate-800 mb-4">Konstrukce</h3>
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
             {@render editableField("Počet nosných profilů", "roofPanels")}
@@ -653,7 +664,7 @@
     </div>
 
     <!-- Mounting details -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+    <div class="bg-white rounded shadow-sm border border-slate-200 p-5">
         <h3 class="font-medium text-slate-800 mb-4">Montáž</h3>
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
             {@render editableField("Typ zdiva", "wallType")}
@@ -671,7 +682,7 @@
     </div>
 
     <!-- Accessories -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+    <div class="bg-white rounded shadow-sm border border-slate-200 p-5">
         <h3 class="font-medium text-slate-800 mb-4">Příslušenství</h3>
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
             {@render nestedEditableField("Ovladač", "accessories.remote")}
@@ -715,7 +726,7 @@
     </div>
 
     <!-- Screens/Rolety -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+    <div class="bg-white rounded shadow-sm border border-slate-200 p-5">
         <h3 class="font-medium text-slate-800 mb-4">Rolety</h3>
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
             <!-- Přední -->
@@ -769,7 +780,7 @@
     </div>
 
     <!-- Logistics/Poznámky -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+    <div class="bg-white rounded shadow-sm border border-slate-200 p-5">
         <h3 class="font-medium text-slate-800 mb-4">Logistika a poznámky</h3>
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
             {@render editableField("Parkování", "parking")}
@@ -781,7 +792,7 @@
     </div>
 
     <!-- Additional notes -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+    <div class="bg-white rounded shadow-sm border border-slate-200 p-5">
         <div class="flex items-center justify-between mb-3">
             <h3 class="font-medium text-slate-800">Doplňující poznámky</h3>
             {#if editingField !== "additionalNotes"}
@@ -797,7 +808,7 @@
         {#if editingField === "additionalNotes"}
             <div class="space-y-2">
                 <textarea
-                    class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
+                    class="w-full px-3 py-2 text-sm border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
                     bind:value={editValue}
                 ></textarea>
                 <div class="flex gap-2">
@@ -832,7 +843,7 @@
     </div>
 
     <!-- Surveyor info -->
-    <div class="bg-slate-50 rounded-xl p-4 text-sm text-slate-500">
+    <div class="bg-slate-50 rounded p-4 text-sm text-slate-500">
         <div class="flex items-center gap-2">
             <User class="w-4 h-4" />
             <span

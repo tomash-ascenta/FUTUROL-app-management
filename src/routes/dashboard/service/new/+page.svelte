@@ -8,13 +8,19 @@
         AlertCircle,
     } from "lucide-svelte";
     import { goto } from "$app/navigation";
+    import { getCustomerDisplayName, getPrimaryContact } from "$lib/utils";
 
     interface Props {
         data: {
             customers: Array<{
                 id: string;
-                fullName: string;
-                phone: string;
+                type: string;
+                companyName: string | null;
+                contacts: Array<{
+                    fullName: string;
+                    phone: string;
+                    isPrimary: boolean;
+                }>;
                 orders: Array<{
                     id: string;
                     orderNumber: string;
@@ -124,7 +130,7 @@
     <div class="flex items-center gap-4">
         <a
             href="/dashboard/service"
-            class="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            class="p-2 hover:bg-slate-100 rounded transition-colors"
         >
             <ArrowLeft class="w-5 h-5 text-slate-600" />
         </a>
@@ -140,7 +146,7 @@
 
     {#if error}
         <div
-            class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3"
+            class="bg-red-50 border border-red-200 rounded p-4 flex items-center gap-3"
         >
             <AlertCircle class="w-5 h-5 text-red-500 flex-shrink-0" />
             <p class="text-red-700">{error}</p>
@@ -149,7 +155,7 @@
 
     <form onsubmit={handleSubmit} class="space-y-6">
         <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6"
+            class="bg-white rounded shadow-sm border border-slate-200 p-6 space-y-6"
         >
             <!-- Customer selection -->
             <div>
@@ -163,12 +169,14 @@
                     id="customer"
                     bind:value={customerId}
                     required
-                    class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
+                    class="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
                 >
                     <option value="">Vyberte zákazníka</option>
                     {#each data.customers as customer}
                         <option value={customer.id}>
-                            {customer.fullName} ({customer.phone})
+                            {getCustomerDisplayName(customer)} ({getPrimaryContact(
+                                customer,
+                            )?.phone || "-"})
                         </option>
                     {/each}
                 </select>
@@ -186,7 +194,7 @@
                     <select
                         id="order"
                         bind:value={orderId}
-                        class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
+                        class="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
                     >
                         <option value="">Bez vazby na zakázku</option>
                         {#each availableOrders as order}
@@ -214,7 +222,7 @@
                         id="type"
                         bind:value={type}
                         required
-                        class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
+                        class="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
                     >
                         {#each Object.entries(typeLabels) as [value, label]}
                             <option {value}>{label}</option>
@@ -233,7 +241,7 @@
                         id="priority"
                         bind:value={priority}
                         required
-                        class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
+                        class="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
                     >
                         {#each Object.entries(priorityLabels) as [value, label]}
                             <option {value}>{label}</option>
@@ -253,7 +261,7 @@
                 <select
                     id="assignedTo"
                     bind:value={assignedToId}
-                    class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
+                    class="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green"
                 >
                     <option value="">Nepřiřazeno</option>
                     {#each data.technicians as tech}
@@ -278,7 +286,7 @@
                     required
                     rows="4"
                     placeholder="Popište detailně problém zákazníka..."
-                    class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green resize-none"
+                    class="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/20 focus:border-futurol-green resize-none"
                 ></textarea>
             </div>
         </div>
@@ -287,14 +295,14 @@
         <div class="flex justify-end gap-3">
             <a
                 href="/dashboard/service"
-                class="px-4 py-2.5 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors"
+                class="px-4 py-2.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-50 transition-colors"
             >
                 Zrušit
             </a>
             <button
                 type="submit"
                 disabled={!isValid || isSubmitting}
-                class="inline-flex items-center gap-2 bg-futurol-green text-white px-6 py-2.5 rounded-lg font-medium hover:bg-futurol-green/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                class="inline-flex items-center gap-2 bg-futurol-green text-white px-6 py-2.5 rounded font-medium hover:bg-futurol-green/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 <Save class="w-5 h-5" />
                 {isSubmitting ? "Ukládám..." : "Vytvořit tiket"}

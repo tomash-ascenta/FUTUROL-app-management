@@ -130,6 +130,7 @@ async function main() {
   // ========================================
   console.log('🎯 Creating leads...');
 
+  // Leady z rádce (advisor)
   await prisma.lead.create({
     data: {
       originalName: 'Karel Zájemce',
@@ -145,6 +146,33 @@ async function main() {
 
   await prisma.lead.create({
     data: {
+      originalName: 'Ing. Pavel Dvořák',
+      originalPhone: '+420777123456',
+      originalEmail: 'dvorak.pavel@gmail.com',
+      source: 'advisor',
+      answers: { q1: [2], q2: [1, 3], q3: [2] },
+      scores: { KLIMO: 8, HORIZONTAL: 15, KLASIK: 6 },
+      recommendedProduct: 'HORIZONTAL',
+      status: 'new',
+    },
+  });
+
+  await prisma.lead.create({
+    data: {
+      originalName: 'Martina Svobodová',
+      originalPhone: '+420605987654',
+      originalEmail: 'martina.svobodova@seznam.cz',
+      source: 'advisor',
+      answers: { q1: [1], q2: [2], q3: [1, 2] },
+      scores: { KLIMO: 5, HORIZONTAL: 7, KLASIK: 14 },
+      recommendedProduct: 'KLASIK',
+      status: 'new',
+    },
+  });
+
+  // Leady z webu
+  await prisma.lead.create({
+    data: {
       originalName: 'Marie Nová',
       originalPhone: '+420603222333',
       originalEmail: 'marie@email.cz',
@@ -154,6 +182,57 @@ async function main() {
     },
   });
 
+  await prisma.lead.create({
+    data: {
+      originalName: 'Josef Krátký',
+      originalPhone: '+420608111222',
+      originalEmail: 'josef.kratky@email.cz',
+      source: 'web',
+      channel: 'poptávkový formulář',
+      customerNote: 'Mám zájem o pergolu na terasu, cca 4x3m',
+      status: 'new',
+    },
+  });
+
+  await prisma.lead.create({
+    data: {
+      originalName: 'Anna Veselá',
+      originalPhone: '+420702333444',
+      originalEmail: 'anna.vesela@outlook.com',
+      source: 'web',
+      channel: 'chat',
+      customerNote: 'Dotaz na cenu KLIMO 5x4m',
+      status: 'new',
+    },
+  });
+
+  // Firemní leady
+  await prisma.lead.create({
+    data: {
+      originalName: 'Jan Ředitel',
+      originalPhone: '+420605444555',
+      originalEmail: 'reditel@restauraceukocoura.cz',
+      originalCompany: 'Restaurace U Kocoura s.r.o.',
+      source: 'referral',
+      customerNote: 'Doporučení od Hotel Panorama - potřebují zastřešení terasy',
+      status: 'new',
+    },
+  });
+
+  await prisma.lead.create({
+    data: {
+      originalName: 'Mgr. Petra Horáková',
+      originalPhone: '+420606555666',
+      originalEmail: 'horakova@skolka-slunicko.cz',
+      originalCompany: 'MŠ Sluníčko',
+      source: 'phone',
+      channel: 'telefonát',
+      customerNote: 'Poptávka na zastřešení pískoviště',
+      status: 'new',
+    },
+  });
+
+  // Ztracený lead
   await prisma.lead.create({
     data: {
       originalName: 'Petr Starý',
@@ -166,6 +245,7 @@ async function main() {
     },
   });
 
+  // Další firemní lead
   await prisma.lead.create({
     data: {
       originalName: 'Firma ABC s.r.o.',
@@ -177,27 +257,22 @@ async function main() {
     },
   });
 
-  console.log('   ✓ 4 leads\n');
+  console.log('   ✓ 10 leads\n');
 
   // ========================================
   // CUSTOMERS
   // ========================================
   console.log('👥 Creating customers...');
 
-  // B2C zákazník
+  // B2C zákazník - kontaktní údaje přímo na Customer
   const customer1 = await prisma.customer.create({
     data: {
       type: 'B2C',
+      fullName: 'Jan Novotný',
+      phone: '+420601100100',
+      email: 'novotny@email.cz',
       source: 'manual',
       ownerId: sales1.id,
-      contacts: {
-        create: {
-          fullName: 'Jan Novotný',
-          phone: '+420601100100',
-          email: 'novotny@email.cz',
-          isPrimary: true,
-        },
-      },
       locations: {
         create: {
           name: 'Rodinný dům',
@@ -209,23 +284,19 @@ async function main() {
         },
       },
     },
-    include: { contacts: true, locations: true },
+    include: { locations: true },
   });
 
-  // B2C zákazník 2
+  // B2C zákazník 2 - s IČO (OSVČ)
   const customer2 = await prisma.customer.create({
     data: {
       type: 'B2C',
+      fullName: 'Eva Malá',
+      phone: '+420602200200',
+      email: 'mala@email.cz',
+      ico: '87654321', // OSVČ
       source: 'advisor',
       ownerId: sales1.id,
-      contacts: {
-        create: {
-          fullName: 'Eva Malá',
-          phone: '+420602200200',
-          email: 'mala@email.cz',
-          isPrimary: true,
-        },
-      },
       locations: {
         create: {
           name: 'Chata',
@@ -235,7 +306,7 @@ async function main() {
         },
       },
     },
-    include: { contacts: true, locations: true },
+    include: { locations: true },
   });
 
   // B2B zákazník s více kontakty
@@ -254,14 +325,14 @@ async function main() {
               fullName: 'Ing. Tomáš Ředitel',
               phone: '+420603300300',
               email: 'reditel@hotelpanorama.cz',
-              role: 'jednatel',
+              position: 'jednatel',
               isPrimary: true,
             },
             {
               fullName: 'Jana Provozní',
               phone: '+420603300301',
               email: 'provoz@hotelpanorama.cz',
-              role: 'provozní',
+              position: 'provozní',
               isPrimary: false,
             },
           ],
@@ -302,11 +373,11 @@ async function main() {
     data: {
       orderNumber: 'FUT-2026-0001',
       customerId: customer1.id,
-      contactId: customer1.contacts[0].id,
+      // B2C - kontakt je přímo na customer, nepotřebujeme contactId
       locationId: customer1.locations[0].id,
       productId: klimo.id,
       ownerId: sales1.id,
-      status: 'measurement_done',
+      status: 'measurement',
       priority: 'normal',
     },
   });
@@ -315,7 +386,7 @@ async function main() {
     data: {
       orderNumber: 'FUT-2026-0002',
       customerId: customer2.id,
-      contactId: customer2.contacts[0].id,
+      // B2C - kontakt je přímo na customer
       locationId: customer2.locations[0].id,
       productId: klasik.id,
       ownerId: sales1.id,
@@ -329,11 +400,11 @@ async function main() {
     data: {
       orderNumber: 'FUT-2026-0003',
       customerId: customer3.id,
-      contactId: customer3.contacts[1].id, // Provozní (ne jednatel)
+      contactId: customer3.contacts[1].id, // B2B - konkrétní kontaktní osoba (Provozní)
       locationId: customer3.locations[0].id,
       productId: klimo.id,
       ownerId: sales2.id,
-      status: 'in_production',
+      status: 'production',
       priority: 'urgent',
       deadlineAt: new Date('2026-02-15'),
     },
@@ -436,7 +507,7 @@ async function main() {
     data: {
       ticketNumber: 'SRV-2026-0001',
       customerId: customer1.id,
-      contactId: customer1.contacts[0].id,
+      // B2C - kontakt je přímo na customer, nepotřebujeme contactId
       orderId: order1.id,
       assignedToId: technician.id,
       type: 'warranty',
@@ -452,7 +523,7 @@ async function main() {
     data: {
       ticketNumber: 'SRV-2026-0002',
       customerId: customer3.id,
-      contactId: customer3.contacts[1].id,
+      contactId: customer3.contacts[1].id, // B2B - konkrétní kontaktní osoba
       type: 'maintenance',
       category: 'textile',
       priority: 'normal',
@@ -471,9 +542,9 @@ async function main() {
   await prisma.orderStatusHistory.createMany({
     data: [
       { orderId: order1.id, fromStatus: null, toStatus: 'lead', changedById: sales1.id },
-      { orderId: order1.id, fromStatus: 'lead', toStatus: 'contacted', changedById: sales1.id },
-      { orderId: order1.id, fromStatus: 'contacted', toStatus: 'measurement_scheduled', changedById: sales1.id },
-      { orderId: order1.id, fromStatus: 'measurement_scheduled', toStatus: 'measurement_done', changedById: technician.id },
+      { orderId: order1.id, fromStatus: 'lead', toStatus: 'customer', changedById: sales1.id },
+      { orderId: order1.id, fromStatus: 'customer', toStatus: 'quote_sent', changedById: sales1.id },
+      { orderId: order1.id, fromStatus: 'quote_sent', toStatus: 'measurement', changedById: technician.id },
     ],
   });
 
@@ -489,7 +560,7 @@ async function main() {
   console.log('📊 Summary:');
   console.log('   Employees:       6');
   console.log('   Products:        4');
-  console.log('   Leads:           4');
+  console.log('   Leads:           10');
   console.log('   Customers:       3');
   console.log('   Contacts:        4');
   console.log('   Locations:       4');

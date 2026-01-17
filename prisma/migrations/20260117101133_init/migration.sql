@@ -8,6 +8,9 @@ CREATE TYPE "CustomerType" AS ENUM ('B2C', 'B2B');
 CREATE TYPE "CustomerSource" AS ENUM ('manual', 'advisor', 'import', 'web');
 
 -- CreateEnum
+CREATE TYPE "ActivityType" AS ENUM ('note', 'call', 'email', 'meeting', 'status_change', 'system');
+
+-- CreateEnum
 CREATE TYPE "LeadSource" AS ENUM ('advisor', 'web', 'phone', 'email', 'referral', 'event', 'import');
 
 -- CreateEnum
@@ -17,7 +20,7 @@ CREATE TYPE "LeadStatus" AS ENUM ('new', 'converted', 'lost');
 CREATE TYPE "LostReason" AS ENUM ('price', 'competitor', 'timing', 'no_response', 'not_relevant', 'other');
 
 -- CreateEnum
-CREATE TYPE "OrderStatus" AS ENUM ('lead', 'contacted', 'measurement_scheduled', 'measurement_done', 'quote_sent', 'quote_approved', 'in_production', 'production_done', 'installation_scheduled', 'installed', 'completed', 'cancelled');
+CREATE TYPE "OrderStatus" AS ENUM ('lead', 'customer', 'quote_sent', 'measurement', 'contract', 'production', 'installation', 'handover', 'cancelled');
 
 -- CreateEnum
 CREATE TYPE "Priority" AS ENUM ('low', 'normal', 'high', 'urgent');
@@ -60,12 +63,15 @@ CREATE TABLE "employees" (
 CREATE TABLE "customers" (
     "id" TEXT NOT NULL,
     "type" "CustomerType" NOT NULL DEFAULT 'B2C',
+    "fullName" TEXT,
+    "phone" TEXT,
+    "email" TEXT,
     "companyName" TEXT,
     "ico" TEXT,
     "dic" TEXT,
     "note" TEXT,
     "source" "CustomerSource" NOT NULL DEFAULT 'manual',
-    "ownerId" TEXT NOT NULL,
+    "ownerId" TEXT,
     "originLeadId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -74,13 +80,28 @@ CREATE TABLE "customers" (
 );
 
 -- CreateTable
+CREATE TABLE "activities" (
+    "id" TEXT NOT NULL,
+    "customerId" TEXT NOT NULL,
+    "orderId" TEXT,
+    "type" "ActivityType" NOT NULL DEFAULT 'note',
+    "content" TEXT NOT NULL,
+    "followUpDate" TIMESTAMP(3),
+    "followUpDone" BOOLEAN NOT NULL DEFAULT false,
+    "createdById" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "activities_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "contacts" (
     "id" TEXT NOT NULL,
     "customerId" TEXT NOT NULL,
     "fullName" TEXT NOT NULL,
-    "phone" TEXT NOT NULL,
+    "phone" TEXT,
     "email" TEXT,
-    "role" TEXT,
+    "position" TEXT,
     "isPrimary" BOOLEAN NOT NULL DEFAULT false,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "note" TEXT,
@@ -340,6 +361,9 @@ CREATE TABLE "push_subscriptions" (
 CREATE UNIQUE INDEX "employees_personalNumber_key" ON "employees"("personalNumber");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "customers_originLeadId_key" ON "customers"("originLeadId");
+
+-- CreateIndex
 CREATE INDEX "customers_ownerId_idx" ON "customers"("ownerId");
 
 -- CreateIndex
@@ -347,6 +371,21 @@ CREATE INDEX "customers_type_idx" ON "customers"("type");
 
 -- CreateIndex
 CREATE INDEX "customers_createdAt_idx" ON "customers"("createdAt");
+
+-- CreateIndex
+CREATE INDEX "activities_customerId_idx" ON "activities"("customerId");
+
+-- CreateIndex
+CREATE INDEX "activities_orderId_idx" ON "activities"("orderId");
+
+-- CreateIndex
+CREATE INDEX "activities_createdById_idx" ON "activities"("createdById");
+
+-- CreateIndex
+CREATE INDEX "activities_followUpDate_idx" ON "activities"("followUpDate");
+
+-- CreateIndex
+CREATE INDEX "activities_type_idx" ON "activities"("type");
 
 -- CreateIndex
 CREATE INDEX "contacts_customerId_idx" ON "contacts"("customerId");
@@ -457,7 +496,19 @@ CREATE INDEX "audit_logs_action_idx" ON "audit_logs"("action");
 CREATE INDEX "audit_logs_createdAt_idx" ON "audit_logs"("createdAt");
 
 -- AddForeignKey
-ALTER TABLE "customers" ADD CONSTRAINT "customers_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "employees"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "customers" ADD CONSTRAINT "customers_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "employees"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "customers" ADD CONSTRAINT "customers_originLeadId_fkey" FOREIGN KEY ("originLeadId") REFERENCES "leads"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "activities" ADD CONSTRAINT "activities_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "activities" ADD CONSTRAINT "activities_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "orders"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "activities" ADD CONSTRAINT "activities_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "employees"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "contacts" ADD CONSTRAINT "contacts_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE CASCADE ON UPDATE CASCADE;

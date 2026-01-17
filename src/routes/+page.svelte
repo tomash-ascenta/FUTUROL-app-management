@@ -68,7 +68,7 @@
 				class="bg-white p-6 border-2 border-slate-100 hover:border-futurol-wine/50 hover:shadow-lg transition-all shadow-sm group"
 			>
 				<div
-					class="w-12 h-12 bg-futurol-wine/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-futurol-wine/20 transition-colors"
+					class="w-12 h-12 bg-futurol-wine/10 rounded flex items-center justify-center mb-4 group-hover:bg-futurol-wine/20 transition-colors"
 				>
 					<ClipboardList class="w-6 h-6 text-futurol-wine" />
 				</div>
@@ -85,7 +85,7 @@
 				class="bg-white p-6 border-2 border-slate-100 hover:border-futurol-wine/50 hover:shadow-lg transition-all shadow-sm group"
 			>
 				<div
-					class="w-12 h-12 bg-futurol-wine/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-futurol-wine/20 transition-colors"
+					class="w-12 h-12 bg-futurol-wine/10 rounded flex items-center justify-center mb-4 group-hover:bg-futurol-wine/20 transition-colors"
 				>
 					<Users class="w-6 h-6 text-futurol-wine" />
 				</div>
@@ -101,7 +101,7 @@
 				class="bg-white p-6 border-2 border-slate-100 hover:border-futurol-wine/50 hover:shadow-lg transition-all shadow-sm group"
 			>
 				<div
-					class="w-12 h-12 bg-futurol-wine/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-futurol-wine/20 transition-colors"
+					class="w-12 h-12 bg-futurol-wine/10 rounded flex items-center justify-center mb-4 group-hover:bg-futurol-wine/20 transition-colors"
 				>
 					<ShoppingCart class="w-6 h-6 text-futurol-wine" />
 				</div>
@@ -117,7 +117,7 @@
 				class="bg-white p-6 border-2 border-slate-100 hover:border-futurol-wine/50 hover:shadow-lg transition-all shadow-sm group"
 			>
 				<div
-					class="w-12 h-12 bg-futurol-wine/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-futurol-wine/20 transition-colors"
+					class="w-12 h-12 bg-futurol-wine/10 rounded flex items-center justify-center mb-4 group-hover:bg-futurol-wine/20 transition-colors"
 				>
 					<Wrench class="w-6 h-6 text-futurol-wine" />
 				</div>
@@ -134,7 +134,7 @@
 				class="bg-white p-6 border-2 border-slate-100 hover:border-futurol-wine/50 hover:shadow-lg transition-all shadow-sm group"
 			>
 				<div
-					class="w-12 h-12 bg-futurol-wine/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-futurol-wine/20 transition-colors"
+					class="w-12 h-12 bg-futurol-wine/10 rounded flex items-center justify-center mb-4 group-hover:bg-futurol-wine/20 transition-colors"
 				>
 					<BarChart3 class="w-6 h-6 text-futurol-wine" />
 				</div>

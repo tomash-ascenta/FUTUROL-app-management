@@ -17,7 +17,14 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	const ticket = await db.serviceTicket.findUnique({
 		where: { id: params.id },
 		include: {
-			customer: true,
+			customer: {
+				include: {
+					contacts: {
+						orderBy: { isPrimary: 'desc' }
+					}
+				}
+			},
+			contact: true,
 			order: {
 				include: {
 					location: true,

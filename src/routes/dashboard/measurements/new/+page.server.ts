@@ -23,7 +23,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 			measurement: null // No measurement yet
 		},
 		include: {
-			customer: true,
+			customer: {
+				include: {
+					contacts: {
+						where: { isPrimary: true },
+						take: 1
+					}
+				}
+			},
 			location: true,
 			product: true
 		},

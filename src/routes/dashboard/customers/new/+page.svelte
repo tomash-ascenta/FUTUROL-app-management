@@ -113,7 +113,7 @@
     <div class="flex items-center gap-4">
         <a
             href="/dashboard/customers"
-            class="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            class="p-2 hover:bg-slate-100 rounded transition-colors"
         >
             <ArrowLeft class="w-5 h-5 text-slate-500" />
         </a>
@@ -133,14 +133,14 @@
     >
         {#if error}
             <div
-                class="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700"
+                class="bg-red-50 border border-red-200 rounded p-4 text-red-700"
             >
                 {error}
             </div>
         {/if}
 
         <!-- Basic info -->
-        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+        <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
             <h2
                 class="text-lg font-medium text-slate-800 mb-4 flex items-center gap-2"
             >
@@ -162,7 +162,7 @@
                         id="fullName"
                         bind:value={fullName}
                         placeholder="Jan Novák"
-                        class="w-full px-4 py-2.5 bg-white border rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green {errors.fullName
+                        class="w-full px-4 py-2.5 bg-white border rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green {errors.fullName
                             ? 'border-red-500'
                             : 'border-slate-200'}"
                     />
@@ -189,7 +189,7 @@
                         id="phone"
                         bind:value={phone}
                         placeholder="+420 777 123 456"
-                        class="w-full px-4 py-2.5 bg-white border rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green {errors.phone
+                        class="w-full px-4 py-2.5 bg-white border rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green {errors.phone
                             ? 'border-red-500'
                             : 'border-slate-200'}"
                     />
@@ -214,7 +214,7 @@
                         id="email"
                         bind:value={email}
                         placeholder="jan.novak@email.cz"
-                        class="w-full px-4 py-2.5 bg-white border rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green {errors.email
+                        class="w-full px-4 py-2.5 bg-white border rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green {errors.email
                             ? 'border-red-500'
                             : 'border-slate-200'}"
                     />
@@ -239,7 +239,7 @@
                         id="company"
                         bind:value={company}
                         placeholder="Název firmy (volitelné)"
-                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                     />
                 </div>
 
@@ -259,14 +259,14 @@
                         bind:value={note}
                         rows="3"
                         placeholder="Interní poznámka k zákazníkovi..."
-                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green resize-none"
+                        class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green resize-none"
                     ></textarea>
                 </div>
             </div>
         </div>
 
         <!-- Location (optional) -->
-        <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+        <div class="bg-white rounded border border-slate-200 p-6 shadow-sm">
             <div class="flex items-center justify-between mb-4">
                 <h2
                     class="text-lg font-medium text-slate-800 flex items-center gap-2"
@@ -299,7 +299,7 @@
                             id="street"
                             bind:value={street}
                             placeholder="Příkladná 123"
-                            class="w-full px-4 py-2.5 bg-white border rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green {errors.street
+                            class="w-full px-4 py-2.5 bg-white border rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green {errors.street
                                 ? 'border-red-500'
                                 : 'border-slate-200'}"
                         />
@@ -324,7 +324,7 @@
                                 id="city"
                                 bind:value={city}
                                 placeholder="Praha"
-                                class="w-full px-4 py-2.5 bg-white border rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green {errors.city
+                                class="w-full px-4 py-2.5 bg-white border rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green {errors.city
                                     ? 'border-red-500'
                                     : 'border-slate-200'}"
                             />
@@ -348,7 +348,7 @@
                                 id="zip"
                                 bind:value={zip}
                                 placeholder="110 00"
-                                class="w-full px-4 py-2.5 bg-white border rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green {errors.zip
+                                class="w-full px-4 py-2.5 bg-white border rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green {errors.zip
                                     ? 'border-red-500'
                                     : 'border-slate-200'}"
                             />
@@ -378,7 +378,7 @@
             <button
                 type="submit"
                 disabled={loading}
-                class="inline-flex items-center gap-2 bg-futurol-green text-white px-6 py-2.5 rounded-lg font-medium hover:bg-futurol-green/90 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                class="inline-flex items-center gap-2 bg-futurol-green text-white px-6 py-2.5 rounded font-medium hover:bg-futurol-green/90 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 {#if loading}
                     <Loader2 class="w-5 h-5 animate-spin" />

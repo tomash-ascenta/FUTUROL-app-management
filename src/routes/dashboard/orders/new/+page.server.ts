@@ -20,9 +20,12 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	// Get customers for selection
 	const customers = await db.customer.findMany({
 		include: {
+			contacts: {
+				orderBy: { isPrimary: 'desc' }
+			},
 			locations: true
 		},
-		orderBy: { fullName: 'asc' }
+		orderBy: { createdAt: 'desc' }
 	});
 
 	// Get products

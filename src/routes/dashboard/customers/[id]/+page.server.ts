@@ -10,6 +10,9 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const customer = await db.customer.findUnique({
 		where: { id: params.id },
 		include: {
+			contacts: {
+				orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }]
+			},
 			locations: {
 				orderBy: { createdAt: 'desc' }
 			},
@@ -24,6 +27,24 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			serviceTickets: {
 				orderBy: { createdAt: 'desc' },
 				take: 5
+			},
+			activities: {
+				include: {
+					createdBy: {
+						select: {
+							id: true,
+							fullName: true
+						}
+					},
+					order: {
+						select: {
+							id: true,
+							orderNumber: true
+						}
+					}
+				},
+				orderBy: { createdAt: 'desc' },
+				take: 20
 			}
 		}
 	});
@@ -37,6 +58,11 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			...customer,
 			createdAt: customer.createdAt.toISOString(),
 			updatedAt: customer.updatedAt.toISOString(),
+			contacts: customer.contacts.map((c) => ({
+				...c,
+				createdAt: c.createdAt.toISOString(),
+				updatedAt: c.updatedAt.toISOString()
+			})),
 			locations: customer.locations.map((l) => ({
 				...l,
 				createdAt: l.createdAt.toISOString()
@@ -62,12 +88,22 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 				updatedAt: s.updatedAt.toISOString(),
 				scheduledAt: s.scheduledAt?.toISOString() || null,
 				resolvedAt: s.resolvedAt?.toISOString() || null
+			})),
+			activities: customer.activities.map((a) => ({
+				...a,
+				createdAt: a.createdAt.toISOString(),
+				followUpDate: a.followUpDate?.toISOString() || null
 			}))
 		},
 		// Pouze admin, manager a sales mohou upravovat zákazníky
 		// technician a production_manager mají read-only přístup
 		canEdit: locals.user.roles.some((role: string) => ['admin', 'manager', 'sales'].includes(role)),
 		// Pouze admin může mazat zákazníky
-		canDelete: locals.user.roles.includes('admin')
+		canDelete: locals.user.roles.includes('admin'),
+		// Kdo může přidávat aktivity
+		canAddActivity: locals.user.roles.some((role: string) => 
+			['admin', 'sales', 'technician', 'production_manager'].includes(role)
+		),
+		currentUserId: locals.user.employeeId
 	};
 };

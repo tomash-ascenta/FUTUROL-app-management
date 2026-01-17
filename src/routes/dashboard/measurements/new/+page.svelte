@@ -7,6 +7,7 @@
         ArrowRight,
     } from "lucide-svelte";
     import type { PageData } from "./$types";
+    import { getCustomerDisplayName } from "$lib/utils";
 
     let { data }: { data: PageData } = $props();
 
@@ -20,7 +21,7 @@
     <div class="flex items-center gap-4">
         <a
             href="/dashboard/measurements"
-            class="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            class="p-2 hover:bg-slate-100 rounded transition-colors"
         >
             <ArrowLeft class="w-5 h-5 text-slate-600" />
         </a>
@@ -33,7 +34,7 @@
     <!-- Orders list -->
     {#if data.orders.length === 0}
         <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center"
+            class="bg-white rounded shadow-sm border border-slate-200 p-12 text-center"
         >
             <div
                 class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4"
@@ -60,7 +61,7 @@
             {#each data.orders as order}
                 <a
                     href="/dashboard/measurements/new/{order.id}"
-                    class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 hover:border-futurol-green hover:shadow-md transition-all group"
+                    class="bg-white rounded shadow-sm border border-slate-200 p-5 hover:border-futurol-green hover:shadow-md transition-all group"
                 >
                     <div class="flex items-start justify-between">
                         <div class="space-y-2">
@@ -71,15 +72,15 @@
                                 <span
                                     class="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700"
                                 >
-                                    {order.status === "measurement_scheduled"
-                                        ? "Naplánováno"
-                                        : "Kontaktováno"}
+                                    {order.status === "quote_sent"
+                                        ? "Nabídka"
+                                        : "Zákazník"}
                                 </span>
                             </div>
                             <h3
                                 class="text-lg font-semibold text-slate-800 group-hover:text-futurol-green transition-colors"
                             >
-                                {order.customer.fullName}
+                                {getCustomerDisplayName(order.customer)}
                             </h3>
                             <div
                                 class="flex flex-wrap gap-4 text-sm text-slate-500"

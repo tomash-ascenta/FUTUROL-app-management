@@ -10,9 +10,19 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const order = await db.order.findUnique({
 		where: { id: params.id },
 		include: {
-			customer: true,
+			customer: {
+				include: {
+					contacts: {
+						orderBy: { isPrimary: 'desc' }
+					}
+				}
+			},
+			contact: true,
 			location: true,
 			product: true,
+			quotes: {
+				orderBy: { version: 'desc' }
+			},
 			measurement: {
 				include: {
 					employee: true
@@ -50,6 +60,31 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			createdAt: order.createdAt.toISOString(),
 			updatedAt: order.updatedAt.toISOString(),
 			deadlineAt: order.deadlineAt?.toISOString() || null,
+			customer: order.customer ? {
+				...order.customer,
+				createdAt: order.customer.createdAt.toISOString(),
+				updatedAt: order.customer.updatedAt.toISOString(),
+				contacts: order.customer.contacts.map((c) => ({
+					...c,
+					createdAt: c.createdAt.toISOString(),
+					updatedAt: c.updatedAt.toISOString()
+				}))
+			} : null,
+			contact: order.contact ? {
+				...order.contact,
+				createdAt: order.contact.createdAt.toISOString(),
+				updatedAt: order.contact.updatedAt.toISOString()
+			} : null,
+			location: order.location ? {
+				...order.location,
+				createdAt: order.location.createdAt.toISOString()
+			} : null,
+			quotes: order.quotes.map((q) => ({
+				...q,
+				amount: Number(q.amount),
+				createdAt: q.createdAt.toISOString(),
+				updatedAt: q.updatedAt.toISOString()
+			})),
 			measurement: order.measurement
 				? {
 						...order.measurement,

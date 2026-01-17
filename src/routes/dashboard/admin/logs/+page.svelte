@@ -76,11 +76,11 @@
             <input
                 type="text"
                 placeholder="Hledat v logu..."
-                class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
             />
         </div>
         <button
-            class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+            class="inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded hover:bg-slate-50 transition-colors"
         >
             <Filter class="w-5 h-5 text-slate-500" />
             Filtry
@@ -89,7 +89,7 @@
 
     <!-- Logs list -->
     <div
-        class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+        class="bg-white rounded shadow-sm border border-slate-200 overflow-hidden"
     >
         <div class="divide-y divide-slate-100">
             {#each data.logs as log}

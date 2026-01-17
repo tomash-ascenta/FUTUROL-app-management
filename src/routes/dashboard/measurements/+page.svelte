@@ -2,6 +2,7 @@
     import { Search, Plus, Ruler, MapPin, Eye } from "lucide-svelte";
     import type { PageData } from "./$types";
     import { goto } from "$app/navigation";
+    import { getCustomerDisplayName } from "$lib/utils";
 
     let { data }: { data: PageData } = $props();
 
@@ -52,7 +53,7 @@
         {#if data.canCreate}
             <a
                 href="/dashboard/measurements/new"
-                class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2.5 rounded-lg font-medium hover:bg-futurol-green/90 transition-colors shadow-sm"
+                class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2.5 rounded font-medium hover:bg-futurol-green/90 transition-colors shadow-sm"
             >
                 <Plus class="w-5 h-5" />
                 Nové zaměření
@@ -77,12 +78,12 @@
                     type="text"
                     bind:value={searchQuery}
                     placeholder="Hledat podle zákazníka, čísla zakázky..."
-                    class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
+                    class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded bg-white focus:outline-none focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green"
                 />
             </div>
             <button
                 type="submit"
-                class="px-4 py-2.5 bg-futurol-green text-white rounded-lg hover:bg-futurol-green/90 transition-colors"
+                class="px-4 py-2.5 bg-futurol-green text-white rounded hover:bg-futurol-green/90 transition-colors"
             >
                 Hledat
             </button>
@@ -92,7 +93,7 @@
     <!-- List -->
     {#if data.measurements.length === 0}
         <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center"
+            class="bg-white rounded shadow-sm border border-slate-200 p-12 text-center"
         >
             <div
                 class="w-16 h-16 bg-futurol-green/10 rounded-full flex items-center justify-center mx-auto mb-4"
@@ -117,7 +118,7 @@
             {#if data.canCreate}
                 <a
                     href="/dashboard/measurements/new"
-                    class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2.5 rounded-lg font-medium hover:bg-futurol-green/90 transition-colors shadow-sm"
+                    class="inline-flex items-center gap-2 bg-futurol-green text-white px-4 py-2.5 rounded font-medium hover:bg-futurol-green/90 transition-colors shadow-sm"
                 >
                     <Plus class="w-5 h-5" />
                     Nové zaměření
@@ -126,7 +127,7 @@
         </div>
     {:else}
         <div
-            class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+            class="bg-white rounded shadow-sm border border-slate-200 overflow-hidden"
         >
             <div class="overflow-x-auto">
                 <table class="w-full">
@@ -156,16 +157,16 @@
                                 class="text-left px-4 py-3 text-sm font-medium text-slate-600"
                                 >Datum</th
                             >
-                            <th
-                                class="text-right px-4 py-3 text-sm font-medium text-slate-600"
-                                >Akce</th
-                            >
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         {#each data.measurements as measurement}
                             {#if measurement.order}
-                                <tr class="hover:bg-slate-50 transition-colors">
+                                <tr
+                                    class="hover:bg-slate-50 transition-colors cursor-pointer"
+                                    onclick={() =>
+                                        (window.location.href = `/dashboard/measurements/${measurement.id}`)}
+                                >
                                     <td class="px-4 py-3">
                                         <span
                                             class="font-mono text-sm text-slate-600"
@@ -177,8 +178,9 @@
                                         <div class="flex flex-col">
                                             <span
                                                 class="font-medium text-slate-800"
-                                                >{measurement.order.customer
-                                                    .fullName}</span
+                                                >{getCustomerDisplayName(
+                                                    measurement.order.customer,
+                                                )}</span
                                             >
                                             {#if measurement.order.location}
                                                 <span
@@ -217,15 +219,6 @@
                                                 measurement.measuredAt,
                                             )}</span
                                         >
-                                    </td>
-                                    <td class="px-4 py-3 text-right">
-                                        <a
-                                            href="/dashboard/measurements/{measurement.id}"
-                                            class="inline-flex items-center gap-1.5 text-sm text-futurol-green hover:underline"
-                                        >
-                                            <Eye class="w-4 h-4" />
-                                            Detail
-                                        </a>
                                     </td>
                                 </tr>
                             {/if}

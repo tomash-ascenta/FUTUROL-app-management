@@ -22,14 +22,14 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	const limit = 20;
 	const skip = (page - 1) * limit;
 
-	// Build where clause
+	// Build where clause - search in contacts instead of customer fields
 	const where = search
 		? {
 				OR: [
-					{ fullName: { contains: search, mode: 'insensitive' as const } },
-					{ email: { contains: search, mode: 'insensitive' as const } },
-					{ phone: { contains: search, mode: 'insensitive' as const } },
-					{ company: { contains: search, mode: 'insensitive' as const } }
+					{ companyName: { contains: search, mode: 'insensitive' as const } },
+					{ contacts: { some: { fullName: { contains: search, mode: 'insensitive' as const } } } },
+					{ contacts: { some: { email: { contains: search, mode: 'insensitive' as const } } } },
+					{ contacts: { some: { phone: { contains: search, mode: 'insensitive' as const } } } }
 				]
 			}
 		: {};
@@ -37,13 +37,19 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	// Get total count
 	const total = await db.customer.count({ where });
 
-	// Get customers with locations and counts
+	// Get customers with contacts, locations and counts
 	const customers = await db.customer.findMany({
 		where,
 		include: {
+			contacts: {
+				orderBy: { isPrimary: 'desc' }
+			},
 			locations: {
 				take: 1,
 				orderBy: { createdAt: 'desc' }
+			},
+			owner: {
+				select: { id: true, fullName: true }
 			},
 			_count: {
 				select: {
