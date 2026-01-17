@@ -7,6 +7,29 @@ a projekt dodržuje [Semantic Versioning](https://semver.org/lang/cs/).
 
 ---
 
+## [0.12.1] - 2026-01-17
+
+### Opraveno - TypeScript compatibility
+
+#### API opravy
+- **Customer API** - `company` → `companyName` v Zod schématech a queries
+- **Lead API** - `email` → `originalEmail` pro správnou vazbu na schema
+- **Order API** - odstranění neexistujících `estimatedValue`/`finalValue`
+- **Measurement API** - aktualizace status hodnot (`measurement_done` → `measurement`)
+
+#### Frontend opravy
+- **Orders detail** - zobrazení hodnoty z Quote místo neexistujících polí Order
+- **Inquiries stránka** - přidání `updatedAt` do LeadData interface
+
+### Změněno - Deployment
+
+#### Automatická migrace
+- **Dockerfile** - `prisma migrate deploy` se automaticky spouští při startu kontejneru
+- Bezpečné pro produkci - aplikuje pouze pending migrace bez ztráty dat
+- Idempotentní - pokud migrace proběhla, prostě pokračuje
+
+---
+
 ## [0.12.0] - 2026-01-17
 
 ### Přidáno - Dashboard redesign

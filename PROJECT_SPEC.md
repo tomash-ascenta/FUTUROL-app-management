@@ -191,31 +191,26 @@ model Order {
   status        OrderStatus @default(lead)
   priority      Priority    @default(normal)
   
-  estimatedValue Decimal?   // Předběžná cena
-  finalValue     Decimal?   // Finální cena
-  
   deadlineAt    DateTime?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   
   // Relations
+  quotes        Quote[]     // Cenové nabídky
   measurement   Measurement?
   serviceTickets ServiceTicket[]
   statusHistory OrderStatusHistory[]
 }
 
 enum OrderStatus {
-  lead              // Nový lead (z Rádce nebo ručně)
-  contacted         // Kontaktován
-  measurement_scheduled // Naplánováno zaměření
-  measurement_done  // Zaměřeno
+  lead              // Nový lead
+  customer          // Kontaktovaný zákazník
   quote_sent        // Nabídka odeslána
-  quote_approved    // Nabídka schválena
-  in_production     // Ve výrobě
-  production_done   // Vyrobeno
-  installation_scheduled // Naplánována montáž
-  installed         // Namontováno
-  completed         // Dokončeno (předáno)
+  measurement       // Zaměření naplánováno/provedeno
+  contract          // Smlouva podepsána
+  production        // Ve výrobě
+  installation      // Montáž
+  handover          // Předáno zákazníkovi
   cancelled         // Zrušeno
 }
 
@@ -994,7 +989,6 @@ const validationRules = {
   order: {
     customerPhone: { required: true }, // Lookup zákazníka
     productCode: { required: true, enum: ['KLIMO', 'HORIZONTAL', 'KLASIK', 'KOMFORT', 'EXCELLENT'] },
-    estimatedValue: { required: false, type: 'number', min: 0 },
   }
 };
 ```

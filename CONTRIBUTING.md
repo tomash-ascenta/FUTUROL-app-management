@@ -214,14 +214,30 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
 ### Změny schématu
 
+**⚠️ DŮLEŽITÉ: Pro produkční projekty VŽDY používat inkrementální migrace!**
+
 ```bash
 # 1. Upravit schema.prisma
 
-# 2. Vytvořit migraci
-npx prisma migrate dev --name popis_zmeny
+# 2. Vytvořit migraci (BEZ resetu)
+npx prisma migrate dev --name popis_zmeny --create-only
 
-# 3. Regenerovat klienta
+# 3. Zkontrolovat vygenerovaný SQL
+cat prisma/migrations/*/migration.sql
+
+# 4. Aplikovat migraci
+npx prisma migrate dev
+
+# 5. Regenerovat klienta
 npx prisma generate
+```
+
+### ❌ NIKDY nepoužívat
+
+```bash
+# Tyto příkazy resetují historii migrací a rozbijí produkci:
+npx prisma migrate reset  # ❌ Smaže všechna data
+npx prisma db push        # ❌ Nepodporuje migrační historii
 ```
 
 ### Konvence

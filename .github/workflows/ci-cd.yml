@@ -172,6 +172,11 @@ jobs:
             # Pull latest code for docker-compose.yml changes
             git pull origin main
             
+            # Create database backup before migration
+            echo "💾 Creating database backup..."
+            BACKUP_FILE="backup_$(date +%Y%m%d_%H%M%S).sql"
+            docker compose exec -T db pg_dump -U futurol futurol > "/home/vpsuser/backups/$BACKUP_FILE" 2>/dev/null || echo "⚠️ Backup skipped (empty db or first deploy)"
+            
             # Pull the new image from GHCR
             echo "📥 Pulling new image from GitHub Container Registry..."
             docker pull ghcr.io/tomash-ascenta/futurol-app-management:latest
@@ -185,16 +190,31 @@ jobs:
             docker compose stop app 2>/dev/null || true
             docker compose rm -f app 2>/dev/null || true
             
-            # Start with new image
+            # Start with new image (migrations run automatically on startup)
             echo "✅ Starting new container..."
             docker compose up -d
+            
+            # Wait for app to start and check health
+            echo "⏳ Waiting for application to start..."
+            sleep 10
+            
+            # Check if app is healthy
+            if docker compose logs app --tail 5 | grep -q "Listening on"; then
+              echo "✅ Application started successfully!"
+            else
+              echo "⚠️ Checking migration status..."
+              docker compose logs app --tail 20
+            fi
             
             # Cleanup old images
             echo "🧹 Cleaning up old images..."
             docker image prune -f
             
+            # Keep only last 5 backups
+            echo "🗂️ Cleaning old backups..."
+            ls -t /home/vpsuser/backups/backup_*.sql 2>/dev/null | tail -n +6 | xargs rm -f 2>/dev/null || true
+            
             # Verify
-            sleep 5
             docker compose ps
             
             echo "✨ Deployment completed!"

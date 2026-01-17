@@ -19,11 +19,12 @@ Kompletní průvodce nasazením Futurol App do produkčního prostředí.
 - ✅ VPS pouze stahuje hotový image - šetří RAM a čas
 - ✅ GHCR package je veřejný - nepotřebuje autentizaci
 - ✅ Automatický deploy při push do main
+- ✅ **Automatická migrace** - `prisma migrate deploy` se spouští při startu kontejneru
 
 **Klíčové soubory:**
 - `.github/workflows/deploy.yml` - CI/CD workflow
 - `docker-compose.yml` - kontejnerová orchestrace
-- `Dockerfile` - build instrukcí
+- `Dockerfile` - build instrukce (včetně automatické migrace)
 
 ---
 
@@ -224,18 +225,15 @@ docker compose logs -f
 
 ### 4. Inicializace databáze
 
+> **Poznámka:** Od verze 0.12.1 se `prisma migrate deploy` spouští **automaticky** při startu kontejneru. Manuální migrace není potřeba.
+
 ```bash
-# Připoj se do app kontejneru
-docker exec -it futurol-app sh
+# Migrace probíhá automaticky při startu kontejneru
+# Pro manuální spuštění (pokud potřeba):
+docker exec -it futurol-app npx prisma migrate deploy
 
-# Pusni migrace
-npx prisma migrate deploy
-
-# Seedni data (testovací uživatele)
-npx prisma db seed
-
-# Exit z kontejneru
-exit
+# Seedni data (pouze při první instalaci)
+docker exec -it futurol-app npx prisma db seed
 ```
 
 ### 5. Ověření
@@ -295,10 +293,8 @@ docker pull ghcr.io/tomash-ascenta/futurol-app-management:latest
 docker tag ghcr.io/tomash-ascenta/futurol-app-management:latest futurol-app:latest
 docker compose up -d
 
-# Aplikuj migrace (pokud jsou)
-docker exec -it futurol-app npx prisma migrate deploy
-
-# Sleduj logy
+# Migrace se spustí automaticky při startu kontejneru
+# Sleduj logy pro ověření
 docker compose logs -f app
 ```
 
@@ -533,7 +529,126 @@ rclone copy ~/backups/ gdrive:futurol-backups/
 
 ---
 
+## 🔄 Database Migrations
+
+### Jak funguje automatická migrace
+
+Při každém startu kontejneru se automaticky spouští:
+
+```dockerfile
+CMD ["sh", "-c", "npx prisma migrate deploy && node build"]
+```
+
+**Vlastnosti `prisma migrate deploy`:**
+- ✅ Bezpečné pro produkci - nemaže data
+- ✅ Idempotentní - opakované spuštění nic nerozbije
+- ✅ Aplikuje pouze pending migrace
+
+### Správný workflow pro schema změny
+
+**⚠️ DŮLEŽITÉ: Nikdy nepoužívat `migrate dev` s reset na produkčním projektu!**
+
+#### 1. Lokální vývoj - inkrementální migrace
+
+```bash
+# ✅ SPRÁVNĚ - vytvoř migraci bez resetu
+npx prisma migrate dev --name add_new_field --create-only
+
+# Zkontroluj vygenerovaný SQL v prisma/migrations/
+cat prisma/migrations/*/migration.sql
+
+# Aplikuj migraci
+npx prisma migrate dev
+```
+
+#### 2. Před push na main
+
+```bash
+# Ověř že migrace projde
+npx prisma migrate deploy --preview-feature
+
+# Nebo otestuj proti lokální kopii prod DB
+```
+
+#### 3. Deploy (automaticky přes CI/CD)
+
+CI/CD workflow automaticky:
+1. Vytvoří zálohu databáze před deployem
+2. Spustí nový kontejner s `prisma migrate deploy`
+3. Při selhání migrace kontejner nespadne - viz Troubleshooting
+
+### Rollback po selhané migraci
+
+Pokud migrace selže:
+
+```bash
+# 1. Připoj se na server
+ssh vpsuser@37.46.209.22
+cd ~/app/FUTUROL-app-management
+
+# 2. Zkontroluj stav
+docker compose run --rm app npx prisma migrate status
+
+# 3a. Pokud migrace začala ale selhala - označ jako rolled back
+docker compose run --rm app npx prisma migrate resolve --rolled-back MIGRATION_NAME
+
+# 3b. Pokud schéma odpovídá ale migrace není označená - označ jako applied
+docker compose run --rm app npx prisma migrate resolve --applied MIGRATION_NAME
+
+# 4. Restore ze zálohy (pokud potřeba)
+gunzip -c ~/backups/futurol_YYYY-MM-DD_HH-MM.sql.gz | docker compose exec -T db psql -U futurol futurol
+
+# 5. Spusť aplikaci znovu
+docker compose up -d app
+```
+
+### Reset databáze (jen testovací prostředí!)
+
+```bash
+# ⚠️ SMAŽE VŠECHNA DATA!
+docker compose stop app
+docker compose exec db psql -U futurol -d futurol -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+docker compose run --rm app npx prisma migrate deploy
+docker compose run --rm app npx prisma db seed
+docker compose up -d app
+```
+
+---
+
 ## Troubleshooting
+
+### Migrace selhala (P3009 error)
+
+```bash
+# Symptom: Kontejner se restartuje, v logu "P3009 migrate found failed migrations"
+
+# 1. Zastavit kontejner
+docker compose stop app
+
+# 2. Zkontrolovat stav migrace
+docker compose run --rm app npx prisma migrate status
+
+# 3. Pokud schéma odpovídá - označit jako applied
+docker compose run --rm app npx prisma migrate resolve --applied MIGRATION_NAME
+
+# 4. Pokud schéma neodpovídá - označit jako rolled back a opravit
+docker compose run --rm app npx prisma migrate resolve --rolled-back MIGRATION_NAME
+
+# 5. Spustit znovu
+docker compose up -d app
+```
+
+### Enum hodnota neexistuje v databázi
+
+```bash
+# Symptom: "invalid input value for enum"
+
+# Buď přidat hodnotu ručně:
+docker compose exec db psql -U futurol -d futurol -c "ALTER TYPE \"OrderStatus\" ADD VALUE 'new_value';"
+
+# Nebo reset databáze (ztráta dat!):
+# Viz sekce "Reset databáze" výše
+```
 
 ### App kontejner se nespustí
 
@@ -545,6 +660,7 @@ docker compose logs app
 # 1. Chybí .env - zkontroluj existenci
 # 2. DB není ready - počkej na healthcheck
 # 3. Port konflikt - změň port v docker-compose.yml
+# 4. Migrace selhala - viz sekce výše
 ```
 
 ### Nginx 502 Bad Gateway

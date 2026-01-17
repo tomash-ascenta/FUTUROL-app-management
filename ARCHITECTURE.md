@@ -192,8 +192,10 @@ erDiagram
     Customer {
         uuid id PK
         string fullName
+        string companyName
         string phone
         string email
+        enum type
         enum source
     }
     
@@ -204,7 +206,14 @@ erDiagram
         uuid locationId FK
         uuid productId FK
         enum status
-        decimal estimatedValue
+    }
+    
+    Quote {
+        uuid id PK
+        string quoteNumber UK
+        uuid orderId FK
+        decimal amount
+        enum status
     }
     
     Measurement {
@@ -270,12 +279,11 @@ enum Role {
   productId?: uuid FK
   status: OrderStatus (9 stavů)
   priority: Priority
-  estimatedValue?: decimal
-  finalValue?: decimal
   deadlineAt?: datetime
   
   // Relations
   measurement?: Measurement
+  quotes: Quote[]
   serviceTickets: ServiceTicket[]
   statusHistory: OrderStatusHistory[]
 }

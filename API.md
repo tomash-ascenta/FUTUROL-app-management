@@ -715,10 +715,8 @@ Seznam zakázek s filtrací a stránkováním.
     {
       "id": "uuid",
       "orderNumber": "FUT-2026-0001",
-      "status": "measurement_done",
+      "status": "measurement",
       "priority": "normal",
-      "estimatedValue": "250000",
-      "finalValue": null,
       "deadlineAt": "2026-02-15T00:00:00Z",
       "createdAt": "2026-01-09T10:00:00Z",
       "customer": {
@@ -735,6 +733,14 @@ Seznam zakázek s filtrací a stránkováním.
         "code": "KLIMO",
         "name": "KLIMO Bioklimatická pergola"
       },
+      "quotes": [
+        {
+          "id": "uuid",
+          "quoteNumber": "NAB-2026-0001-v1",
+          "amount": 250000,
+          "status": "approved"
+        }
+      ],
       "measurement": {
         "id": "uuid",
         "measuredAt": "2026-01-10T14:00:00Z"
@@ -765,7 +771,6 @@ Vytvoření nové zakázky.
   "locationId": "uuid",
   "productId": "uuid",
   "priority": "normal",
-  "estimatedValue": 250000,
   "deadlineAt": "2026-02-15",
   "note": "Zákazník žádá montáž v sobotu"
 }
@@ -799,17 +804,24 @@ Detail zakázky včetně historie.
   "order": {
     "id": "uuid",
     "orderNumber": "FUT-2026-0001",
-    "status": "measurement_done",
+    "status": "measurement",
     "priority": "normal",
-    "estimatedValue": "250000",
     "customer": { ... },
     "location": { ... },
     "product": { ... },
+    "quotes": [
+      {
+        "id": "uuid",
+        "quoteNumber": "NAB-2026-0001-v1",
+        "amount": 250000,
+        "status": "approved"
+      }
+    ],
     "measurement": { ... },
     "statusHistory": [
       {
         "fromStatus": "lead",
-        "toStatus": "contacted",
+        "toStatus": "customer",
         "changedAt": "2026-01-09T11:00:00Z",
         "changedBy": {
           "fullName": "Petr Obchodník"
@@ -837,7 +849,6 @@ Aktualizace zakázky.
 ```json
 {
   "status": "quote_sent",
-  "finalValue": 275000,
   "deadlineAt": "2026-02-20",
   "note": "Aktualizace po zaměření"
 }
