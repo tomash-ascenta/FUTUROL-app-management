@@ -41,4 +41,5 @@ ENV PORT=3000
 
 EXPOSE 3000
 
-CMD ["node", "build"]
+# Run migrations and start app
+CMD ["sh", "-c", "npx prisma migrate deploy && node build"]
