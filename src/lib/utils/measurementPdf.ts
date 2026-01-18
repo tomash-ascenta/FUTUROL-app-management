@@ -28,7 +28,7 @@ interface AutoTableOptions {
     tableWidth?: 'auto' | 'wrap' | number;
 }
 
-interface MeasurementData {
+export interface MeasurementData {
     id: string;
     width: number;
     depth: number;
@@ -39,7 +39,8 @@ interface MeasurementData {
     order?: {
         orderNumber?: string | null;
         customer: {
-            fullName: string;
+            fullName?: string | null;
+            companyName?: string | null;
         };
         location?: {
             street?: string | null;
@@ -53,7 +54,11 @@ interface MeasurementData {
     details?: Record<string, unknown> | null;
 }
 
-export function generateMeasurementPdf(measurement: MeasurementData): void {
+/**
+ * Interní funkce pro sestavení PDF dokumentu
+ * Vrací jsPDF instanci připravenou k uložení nebo exportu
+ */
+function buildMeasurementPdf(measurement: MeasurementData): jsPDF {
     const doc = new jsPDF();
     
     // Register Roboto font with Czech character support
@@ -332,7 +337,26 @@ export function generateMeasurementPdf(measurement: MeasurementData): void {
         );
     }
 
-    // Save the PDF
+    return doc;
+}
+
+/**
+ * Generuje PDF a stáhne ho jako soubor
+ */
+export function generateMeasurementPdf(measurement: MeasurementData): void {
+    const doc = buildMeasurementPdf(measurement);
     const fileName = `zamereni_${measurement.order?.orderNumber ?? measurement.id}.pdf`;
     doc.save(fileName);
+}
+
+/**
+ * Generuje PDF a vrací jako base64 string (pro email přílohu)
+ * Vrací čistý base64 bez data URI prefixu
+ */
+export function generateMeasurementPdfBase64(measurement: MeasurementData): string {
+    const doc = buildMeasurementPdf(measurement);
+    // Získáme data URI a odstraníme prefix "data:application/pdf;filename=generated.pdf;base64,"
+    const dataUri = doc.output('datauristring');
+    const base64 = dataUri.split(',')[1];
+    return base64;
 }

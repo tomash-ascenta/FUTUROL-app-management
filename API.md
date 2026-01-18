@@ -1084,6 +1084,64 @@ Generování a stažení PDF protokolu zaměření.
 
 ---
 
+### POST /api/measurements/[id]/send-email
+
+Odeslání protokolu zaměření emailem zákazníkovi.
+
+> **Poznámka:** Tato funkce je dostupná pouze pro Full licenci (`email_measurement` feature flag).
+
+**Request Body:**
+```json
+{
+  "email": "zakaznik@email.cz",
+  "customMessage": "V příloze zasíláme protokol zaměření.",
+  "pdfBase64": "JVBERi0xLjQKJeLjz9..."
+}
+```
+
+| Pole | Typ | Povinné | Popis |
+|------|-----|---------|-------|
+| email | string | ✅ | Email příjemce |
+| customMessage | string | ❌ | Volitelná zpráva |
+| pdfBase64 | string | ✅ | PDF dokument v base64 formátu |
+
+**Response (200):**
+```json
+{
+  "success": true,
+  "messageId": "msg_xxxxxxxxx"
+}
+```
+
+**Response (400):**
+```json
+{
+  "error": "Email je povinný"
+}
+```
+
+**Response (403):**
+```json
+{
+  "error": "Tato funkce není dostupná ve vaší licenci"
+}
+```
+
+**Response (500):**
+```json
+{
+  "error": "Nepodařilo se odeslat email: <detail>"
+}
+```
+
+**Side effects:**
+- Odešle email přes Resend API
+- Aktualizuje `emailSentAt`, `emailSentTo`, `emailSentById` v DB
+
+**Oprávnění:** `admin`, `technician`
+
+---
+
 ## Service Ticket Endpoints
 
 ### GET /api/service-tickets

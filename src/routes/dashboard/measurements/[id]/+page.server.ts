@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { redirect, error } from '@sveltejs/kit';
+import { hasFeature } from '$lib/server/features';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	if (!locals.user) {
@@ -68,6 +69,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			measuredAt: measurement.measuredAt.toISOString(),
 			createdAt: measurement.createdAt.toISOString(),
 			updatedAt: measurement.updatedAt.toISOString(),
+			// Email tracking
+			emailSentAt: measurement.emailSentAt?.toISOString() || null,
+			emailSentTo: measurement.emailSentTo || null,
 			order: measurement.order ? {
 				...measurement.order,
 				createdAt: measurement.order.createdAt.toISOString(),
@@ -89,6 +93,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 				} : null
 			} : null
 		},
-		canEdit
+		canEdit,
+		canSendEmail: hasFeature('email_measurement') && 
+			locals.user.roles.some((role: string) => ['admin', 'technician'].includes(role))
 	};
 };

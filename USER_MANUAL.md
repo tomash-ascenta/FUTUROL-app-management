@@ -322,6 +322,26 @@ Po vytvoření můžeš jednotlivé položky upravovat přímo v detailu:
 - Logistické poznámky
 - Fotodokumentaci (pokud je)
 
+### Odeslání protokolu emailem
+
+> **Poznámka:** Tato funkce je dostupná pouze pro **Full licenci**.
+
+1. Otevři **detail zaměření**
+2. Klikni tlačítko **Odeslat zákazníkovi** (obálka)
+3. V modalu zkontroluj/uprav **email příjemce**
+4. Volitelně přidej **vlastní zprávu**
+5. Klikni **Odeslat**
+
+**Po odeslání:**
+- Zobrazí se potvrzení s animací ✓
+- V detailu zaměření se zobrazí info "Protokol odeslán..."
+- Email obsahuje PDF protokol jako přílohu
+
+**Zákazník obdrží:**
+- Email z adresy `noreply@futurol.ascentalab.cz`
+- Předmět: "Protokol zaměření | FUT-2026-XXXX | Futurol.cz"
+- PDF přílohu s protokolem
+
 ### Fotodokumentace
 
 **Připravujeme** - možnost nahrát fotky přímo z mobilního zařízení.

@@ -57,6 +57,7 @@ Umožnit přepínání aplikace mezi dvěma licenčními úrovněmi (Basic/Full)
 | **Servis** | ❌ | ✅ Komplet | Tikety, plánování |
 | **Dashboard** | Základní přehled | KPI, statistiky | Basic = počty, Full = grafy |
 | **Reporty** | ❌ | ✅ Export | PDF, Excel export |
+| **Email protokolu** | ❌ | ✅ | Odeslání PDF emailem zákazníkovi |
 | **Max. uživatelů** | 3 | 6 | Počet aktivních Employee |
 | **Max. rolí** | 3 | 6 | admin, sales, technician vs všechny |
 | **Podpora** | Email | Prioritní + onboarding | Mimo scope aplikace |
@@ -66,15 +67,16 @@ Umožnit přepínání aplikace mezi dvěma licenčními úrovněmi (Basic/Full)
 ```typescript
 // Feature identifikátory
 type Feature = 
-  | 'radce'           // B2C Rádce
-  | 'customers'       // Zákazníci
-  | 'measurements'    // Zaměření
-  | 'orders'          // Zakázky
-  | 'service'         // Servis
-  | 'dashboard_basic' // Základní dashboard
-  | 'dashboard_full'  // KPI dashboard
-  | 'reports'         // Reporty a export
-  | 'audit_logs';     // Audit logy
+  | 'radce'             // B2C Rádce
+  | 'customers'         // Zákazníci
+  | 'measurements'      // Zaměření
+  | 'orders'            // Zakázky
+  | 'service'           // Servis
+  | 'dashboard_basic'   // Základní dashboard
+  | 'dashboard_full'    // KPI dashboard
+  | 'reports'           // Reporty a export
+  | 'audit_logs'        // Audit logy
+  | 'email_measurement' // Email protokolu zaměření (Full only)
 ```
 
 ---

@@ -75,6 +75,7 @@ graph TB
 | **Hashing** | bcrypt | 6.x | Password hashing |
 | **Icons** | lucide-svelte | 0.469 | Icon library |
 | **PDF** | jsPDF + autotable | 4.x / 5.x | PDF generation |
+| **Email** | Resend | 4.x | Email delivery |
 | **Runtime** | Node.js | 20 LTS | Server runtime |
 | **Container** | Docker | - | Containerization |
 | **Web Server** | Nginx | - | Reverse proxy |

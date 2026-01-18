@@ -24,6 +24,7 @@ export type Feature =
 	| 'dashboard_basic' // Základní dashboard - vždy dostupné
 	| 'dashboard_full'  // KPI dashboard - pouze Full
 	| 'reports'         // Reporty a export - pouze Full
+	| 'email_measurement' // Odeslání protokolu emailem - pouze Full
 	| 'audit_logs';     // Audit logy - pouze Full
 
 // ---------------------------------------------
@@ -51,7 +52,8 @@ const TIER_CONFIG: Record<LicenseTier, {
 			'service', 
 			'dashboard_basic', 
 			'dashboard_full', 
-			'reports', 
+			'reports',
+			'email_measurement',
 			'audit_logs'
 		],
 		maxUsers: 6,
@@ -161,7 +163,8 @@ function getFeatureLabel(feature: Feature): string {
 		dashboard_basic: 'Dashboard',
 		dashboard_full: 'Dashboard KPI',
 		reports: 'Reporty',
-		audit_logs: 'Audit logy'
+		audit_logs: 'Audit logy',
+		email_measurement: 'Email protokolů'
 	};
 	return labels[feature] || feature;
 }

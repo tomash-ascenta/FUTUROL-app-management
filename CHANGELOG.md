@@ -9,6 +9,27 @@ a projekt dodržuje [Semantic Versioning](https://semver.org/lang/cs/).
 
 ---
 
+## [0.14.0] - 2026-01-18
+
+### Přidáno
+
+#### Email protokolu zaměření
+- **Odeslání emailem** - tlačítko "Odeslat zákazníkovi" v detailu zaměření
+- **Modal dialog** - předvyplněný email zákazníka, volitelná zpráva
+- **PDF příloha** - automaticky generovaný protokol zaměření
+- **Email tracking** - evidence odeslaných emailů (datum, příjemce, odesílatel)
+- **Resend integrace** - email provider s ověřenou doménou `futurol.ascentalab.cz`
+- **Feature flag** - funkce dostupná pouze pro Full licenci (`email_measurement`)
+
+### Technické změny
+- `src/lib/server/email.ts` - nový email service
+- `src/routes/api/measurements/[id]/send-email/+server.ts` - API endpoint
+- `src/lib/components/SendEmailModal.svelte` - modal komponenta
+- `src/lib/utils/measurementPdf.ts` - refaktoring pro base64 export
+- Prisma schema - pole `emailSentAt`, `emailSentTo`, `emailSentById`
+
+---
+
 ## [0.13.1] - 2026-01-17
 
 ### Přidáno

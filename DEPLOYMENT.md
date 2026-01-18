@@ -85,7 +85,17 @@ docker compose down && docker compose up -d
 |--------|:-----:|:----:|
 | Zákazníci, Zaměření, Poptávky | ✅ | ✅ |
 | Zakázky, Servis, Reporty | ❌ | ✅ |
+| Email protokolu zaměření | ❌ | ✅ |
 | Max uživatelů | 3 | 6 |
+
+### Email (Resend)
+```bash
+# V docker-compose.yml environment
+RESEND_API_KEY=re_xxxxxxxxxx
+EMAIL_FROM=noreply@futurol.ascentalab.cz
+```
+
+> **Poznámka:** Doména `futurol.ascentalab.cz` je ověřená v Resend dashboardu.
 
 Více v [FEATURE_FLAGS_SPEC.md](./FEATURE_FLAGS_SPEC.md)
 

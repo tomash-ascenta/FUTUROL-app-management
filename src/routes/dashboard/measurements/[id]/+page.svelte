@@ -11,15 +11,21 @@
         Check,
         X,
         Download,
+        Mail,
+        CheckCircle,
     } from "lucide-svelte";
     import type { PageData } from "./$types";
     import { goto, invalidateAll } from "$app/navigation";
-    import { generateMeasurementPdf } from "$lib/utils/measurementPdf";
+    import {
+        generateMeasurementPdf,
+        generateMeasurementPdfBase64,
+    } from "$lib/utils/measurementPdf";
     import { getCustomerDisplayName, getPrimaryContact } from "$lib/utils";
+    import SendEmailModal from "$lib/components/SendEmailModal.svelte";
 
     let { data }: { data: PageData } = $props();
 
-    let measurement = $derived(data.measurement);
+    let measurement = $state(data.measurement);
     let details = $derived(measurement.details as Record<string, unknown>);
     let accessories = $derived(
         (details.accessories ?? {}) as Record<string, unknown>,
@@ -30,6 +36,57 @@
     let editingField: string | null = $state(null);
     let editValue: string = $state("");
     let isSaving = $state(false);
+
+    // Email modal state
+    let showEmailModal = $state(false);
+
+    // Získat email zákazníka z primárního kontaktu
+    function getCustomerEmail(): string | null {
+        const primaryContact = measurement.order?.customer
+            ? getPrimaryContact(measurement.order.customer)
+            : null;
+        return (
+            primaryContact?.email || measurement.order?.customer?.email || null
+        );
+    }
+
+    // Handler pro odeslání emailu
+    async function handleSendEmail(
+        recipientEmail: string,
+        customMessage: string,
+    ) {
+        // 1. Vygenerovat PDF jako base64
+        const pdfBase64 = generateMeasurementPdfBase64(
+            measurement as Parameters<typeof generateMeasurementPdfBase64>[0],
+        );
+
+        // 2. Odeslat na API
+        const response = await fetch(
+            `/api/measurements/${measurement.id}/send-email`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    recipientEmail,
+                    customMessage: customMessage || undefined,
+                    pdfBase64,
+                }),
+            },
+        );
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Nepodařilo se odeslat email");
+        }
+
+        // 3. Aktualizovat lokální stav
+        const result = await response.json();
+        measurement = {
+            ...measurement,
+            emailSentAt: result.sentAt,
+            emailSentTo: result.sentTo,
+        };
+    }
 
     function formatDate(date: string | Date) {
         return new Date(date).toLocaleDateString("cs-CZ", {
@@ -407,12 +464,22 @@
                             typeof generateMeasurementPdf
                         >[0],
                     )}
-                class="flex items-center gap-2 px-4 py-2 bg-futurol-wine text-white rounded hover:bg-futurol-wine/90 transition-colors"
+                class="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded hover:bg-slate-200 transition-colors"
                 title="Stáhnout PDF"
             >
                 <Download class="w-4 h-4" />
                 <span class="hidden sm:inline">Stáhnout PDF</span>
             </button>
+            {#if data.canSendEmail}
+                <button
+                    onclick={() => (showEmailModal = true)}
+                    class="flex items-center gap-2 px-4 py-2 bg-futurol-wine text-white rounded hover:bg-futurol-wine/90 transition-colors"
+                    title="Odeslat emailem"
+                >
+                    <Mail class="w-4 h-4" />
+                    <span class="hidden sm:inline">Odeslat zákazníkovi</span>
+                </button>
+            {/if}
             <button
                 onclick={deleteMeasurement}
                 class="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
@@ -423,13 +490,35 @@
         </div>
     </div>
 
+    <!-- Email sent info -->
+    {#if measurement.emailSentAt}
+        <div
+            class="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg"
+        >
+            <CheckCircle class="w-5 h-5 text-green-600 flex-shrink-0" />
+            <p class="text-sm text-green-700">
+                Protokol odeslán <strong
+                    >{new Date(measurement.emailSentAt).toLocaleDateString(
+                        "cs-CZ",
+                        {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        },
+                    )}</strong
+                >
+                na <strong>{measurement.emailSentTo}</strong>
+            </p>
+        </div>
+    {/if}
+
     <!-- Info cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {#if measurement.order}
             <!-- Customer info -->
-            <div
-                class="bg-white rounded shadow-sm border border-slate-200 p-5"
-            >
+            <div class="bg-white rounded shadow-sm border border-slate-200 p-5">
                 <div class="flex items-center gap-2 text-slate-600 mb-3">
                     <User class="w-5 h-5" />
                     <span class="font-medium">Zákazník</span>
@@ -456,9 +545,7 @@
             </div>
 
             <!-- Location info -->
-            <div
-                class="bg-white rounded shadow-sm border border-slate-200 p-5"
-            >
+            <div class="bg-white rounded shadow-sm border border-slate-200 p-5">
                 <div class="flex items-center gap-2 text-slate-600 mb-3">
                     <MapPin class="w-5 h-5" />
                     <span class="font-medium">Místo realizace</span>
@@ -855,3 +942,14 @@
         </div>
     </div>
 </div>
+
+<!-- Email Modal -->
+<SendEmailModal
+    isOpen={showEmailModal}
+    customerEmail={getCustomerEmail()}
+    orderNumber={measurement.order?.orderNumber ||
+        `M-${measurement.id.slice(0, 8)}`}
+    measurementId={measurement.id}
+    onClose={() => (showEmailModal = false)}
+    onSend={handleSendEmail}
+/>
