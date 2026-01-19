@@ -1,5 +1,6 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
+    import { goto } from "$app/navigation";
     import {
         ArrowLeft,
         Save,
@@ -20,10 +21,18 @@
                 phone: string | null;
                 roles: string[];
                 isActive: boolean;
+                canMeasurement: boolean;
+                canInstallation: boolean;
+                canService: boolean;
                 createdAt: string;
                 updatedAt: string;
             };
             roles: Array<{
+                value: string;
+                label: string;
+                description: string;
+            }>;
+            technicianPermissions: Array<{
                 value: string;
                 label: string;
                 description: string;
@@ -35,15 +44,37 @@
     let { data, form }: Props = $props();
 
     let selectedRoles = $state<string[]>([]);
+    let techPermissions = $state<Record<string, boolean>>({});
     let isSubmitting = $state(false);
     let showDeleteConfirm = $state(false);
 
-    // Initialize roles from data
+    // Initialize roles and permissions from data
     $effect(() => {
         if (data.user.roles && selectedRoles.length === 0) {
             selectedRoles = [...data.user.roles];
         }
+        if (Object.keys(techPermissions).length === 0) {
+            techPermissions = {
+                canMeasurement: data.user.canMeasurement,
+                canInstallation: data.user.canInstallation,
+                canService: data.user.canService,
+            };
+        }
     });
+
+    // Redirect to list after successful save
+    $effect(() => {
+        if (form?.success) {
+            // Scroll nahoru aby byla vidět hláška
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            setTimeout(() => {
+                goto("/dashboard/admin/users");
+            }, 2000);
+        }
+    });
+
+    // Check if user has technician role
+    let isTechnician = $derived(selectedRoles.includes("technician"));
 
     function toggleRole(role: string) {
         if (selectedRoles.includes(role)) {
@@ -243,6 +274,47 @@
                     {/each}
                 </div>
             </div>
+
+            <!-- Technician Permissions -->
+            {#if isTechnician}
+                <div class="p-4 bg-blue-50 rounded border border-blue-200">
+                    <label class="block text-sm font-medium text-blue-800 mb-3">
+                        Oprávnění technika
+                    </label>
+                    <p class="text-sm text-blue-600 mb-4">
+                        Vyberte, které činnosti může tento technik vykonávat:
+                    </p>
+                    <div class="space-y-2">
+                        {#each data.technicianPermissions as perm}
+                            <label
+                                class="flex items-start gap-3 p-3 bg-white border rounded cursor-pointer transition-all {techPermissions[
+                                    perm.value
+                                ]
+                                    ? 'border-blue-400 bg-blue-50'
+                                    : 'border-slate-200 hover:border-slate-300'}"
+                            >
+                                <input
+                                    type="checkbox"
+                                    name={perm.value}
+                                    checked={techPermissions[perm.value]}
+                                    onchange={() =>
+                                        (techPermissions[perm.value] =
+                                            !techPermissions[perm.value])}
+                                    class="mt-0.5 w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                                />
+                                <div class="flex-1">
+                                    <div class="font-medium text-slate-800">
+                                        {perm.label}
+                                    </div>
+                                    <div class="text-sm text-slate-500">
+                                        {perm.description}
+                                    </div>
+                                </div>
+                            </label>
+                        {/each}
+                    </div>
+                </div>
+            {/if}
 
             <!-- Aktivní -->
             <div

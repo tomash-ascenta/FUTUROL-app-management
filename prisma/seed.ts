@@ -70,6 +70,23 @@ async function main() {
       email: 'technik@futurol.cz',
       phone: '+420777000030',
       roles: ['technician'],
+      canMeasurement: true,
+      canInstallation: true,
+      canService: true,
+    },
+  });
+
+  const technician2 = await prisma.employee.create({
+    data: {
+      personalNumber: '0031',
+      pin: hashedPin,
+      fullName: 'Tomáš Montážník',
+      email: 'montaznik@futurol.cz',
+      phone: '+420777000031',
+      roles: ['technician'],
+      canMeasurement: false,
+      canInstallation: true,
+      canService: false,
     },
   });
 
@@ -84,7 +101,7 @@ async function main() {
     },
   });
 
-  console.log('   ✓ 6 employees\n');
+  console.log('   ✓ 7 employees\n');
 
   // ========================================
   // PRODUCTS
@@ -499,6 +516,112 @@ async function main() {
   console.log('   ✓ 1 measurement\n');
 
   // ========================================
+  // INSTALLATIONS
+  // ========================================
+  console.log('🔧 Creating installations...');
+
+  // Montáž naplánovaná (pro order1 který má měření)
+  const installation1 = await prisma.installation.create({
+    data: {
+      orderId: order1.id,
+      technicianId: technician.id,
+      status: 'planned',
+      scheduledAt: new Date('2026-01-25T08:00:00'),
+      checklist: {
+        material_check: false,
+        site_ready: false,
+        anchoring: false,
+        frame: false,
+        roof_panels: false,
+        drainage: false,
+        wiring: false,
+        motor: false,
+        lighting: false,
+        sensors: false,
+        screens: false,
+        remote: false,
+        function_test: false,
+        cleaning: false,
+        customer_training: false,
+      },
+    },
+  });
+
+  // Montáž probíhající (pro order3 který je ve výrobě)
+  const installation2 = await prisma.installation.create({
+    data: {
+      orderId: order3.id,
+      technicianId: technician2.id,
+      status: 'in_progress',
+      scheduledAt: new Date('2026-01-18T08:00:00'),
+      checklist: {
+        material_check: true,
+        site_ready: true,
+        anchoring: true,
+        frame: true,
+        roof_panels: true,
+        drainage: false,
+        wiring: false,
+        motor: false,
+        lighting: false,
+        sensors: false,
+        screens: false,
+        remote: false,
+        function_test: false,
+        cleaning: false,
+        customer_training: false,
+      },
+      workNotes: 'Konstrukce hotova, zítra elektro.',
+    },
+  });
+
+  // Montáž dokončená (vytvoříme novou zakázku pro ni)
+  const order4 = await prisma.order.create({
+    data: {
+      orderNumber: 'FUT-2025-0099',
+      customerId: customer2.id,
+      locationId: customer2.locations[0].id,
+      productId: horizontal.id,
+      ownerId: sales1.id,
+      status: 'handover',
+      priority: 'normal',
+    },
+  });
+
+  const installation3 = await prisma.installation.create({
+    data: {
+      orderId: order4.id,
+      technicianId: technician.id,
+      status: 'completed',
+      scheduledAt: new Date('2026-01-10T08:00:00'),
+      completedAt: new Date('2026-01-10T16:30:00'),
+      checklist: {
+        material_check: true,
+        site_ready: true,
+        anchoring: true,
+        frame: true,
+        roof_panels: true,
+        drainage: true,
+        wiring: true,
+        motor: true,
+        lighting: true,
+        sensors: true,
+        screens: true,
+        remote: true,
+        function_test: true,
+        cleaning: true,
+        customer_training: true,
+      },
+      workNotes: 'Bezproblémová montáž.',
+      handoverNotes: 'Zákazník poučen o ovládání, předány 2x dálkový ovladač.',
+      emailSentAt: new Date('2026-01-10T17:00:00'),
+      emailSentTo: 'marie@email.cz',
+    },
+  });
+
+  console.log('   ✓ 3 installations\n');
+
+  // ========================================
   // SERVICE TICKETS
   // ========================================
   console.log('🔧 Creating service tickets...');
@@ -558,15 +681,16 @@ async function main() {
   console.log('═══════════════════════════════════════');
   console.log('');
   console.log('📊 Summary:');
-  console.log('   Employees:       6');
+  console.log('   Employees:       7');
   console.log('   Products:        4');
   console.log('   Leads:           10');
   console.log('   Customers:       3');
   console.log('   Contacts:        4');
   console.log('   Locations:       4');
-  console.log('   Orders:          3');
+  console.log('   Orders:          4');
   console.log('   Quotes:          4');
   console.log('   Measurements:    1');
+  console.log('   Installations:   3');
   console.log('   Service Tickets: 2');
   console.log('');
   console.log('🔐 PIN pro všechny: 123456');

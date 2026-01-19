@@ -18,6 +18,9 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			phone: true,
 			roles: true,
 			isActive: true,
+			canMeasurement: true,
+			canInstallation: true,
+			canService: true,
 			createdAt: true,
 			updatedAt: true
 		}
@@ -38,7 +41,12 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			{ value: 'sales', label: 'Obchodník', description: 'Leady, zákazníci, zakázky, servis' },
 			{ value: 'manager', label: 'Manažer', description: 'Vidí vše (read-only)' },
 			{ value: 'production_manager', label: 'Vedoucí výroby', description: 'Zákazníci, zakázky, zaměření (read)' },
-			{ value: 'technician', label: 'Technik', description: 'Zaměření, servis' },
+			{ value: 'technician', label: 'Technik', description: 'Zaměření, montáže, servis' },
+		],
+		technicianPermissions: [
+			{ value: 'canMeasurement', label: 'Zaměření', description: 'Může provádět zaměření v terénu' },
+			{ value: 'canInstallation', label: 'Montáže', description: 'Může provádět montáže pergol' },
+			{ value: 'canService', label: 'Servis', description: 'Může řešit servisní tickety' },
 		]
 	};
 };
@@ -56,6 +64,11 @@ export const actions: Actions = {
 		const phone = formData.get('phone') as string || null;
 		const roles = formData.getAll('roles') as string[];
 		const isActive = formData.get('isActive') === 'on';
+		
+		// Technician permissions
+		const canMeasurement = formData.get('canMeasurement') === 'on';
+		const canInstallation = formData.get('canInstallation') === 'on';
+		const canService = formData.get('canService') === 'on';
 
 		// Validation
 		if (!fullName || fullName.length < 2) {
@@ -69,7 +82,7 @@ export const actions: Actions = {
 		// Get current user data for audit log
 		const currentUser = await db.employee.findUnique({
 			where: { id: params.id },
-			select: { fullName: true, roles: true, isActive: true }
+			select: { fullName: true, roles: true, isActive: true, canMeasurement: true, canInstallation: true, canService: true }
 		});
 
 		if (!currentUser) {
@@ -85,7 +98,10 @@ export const actions: Actions = {
 					email,
 					phone,
 					roles: roles as any,
-					isActive
+					isActive,
+					canMeasurement,
+					canInstallation,
+					canService
 				}
 			});
 

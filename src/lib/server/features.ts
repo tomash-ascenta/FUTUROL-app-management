@@ -19,13 +19,16 @@ export type Feature =
 	| 'customers'       // Zákazníci - vždy dostupné
 	| 'measurements'    // Zaměření - vždy dostupné
 	| 'inquiries'       // Poptávky - vždy dostupné
-	| 'orders'          // Zakázky - pouze Full
-	| 'service'         // Servis - pouze Full
+	| 'orders'          // Zakázky - pouze Business
+	| 'installation'    // Montáž - pouze Business
+	| 'service'         // Servis - pouze Business
 	| 'dashboard_basic' // Základní dashboard - vždy dostupné
-	| 'dashboard_full'  // KPI dashboard - pouze Full
-	| 'reports'         // Reporty a export - pouze Full
-	| 'email_measurement' // Odeslání protokolu emailem - pouze Full
-	| 'audit_logs';     // Audit logy - pouze Full
+	| 'dashboard_full'  // KPI dashboard - pouze Business
+	| 'reports'         // Reporty a export - pouze Business
+	| 'email_measurement' // Odeslání protokolu emailem - pouze Business
+	| 'email_installation' // Odeslání montážního protokolu - pouze Business
+	| 'email_service'   // Odeslání servisního protokolu - pouze Business
+	| 'audit_logs';     // Audit logy - pouze Business
 
 // ---------------------------------------------
 // Konfigurace tier úrovní
@@ -49,11 +52,14 @@ const TIER_CONFIG: Record<LicenseTier, {
 			'measurements', 
 			'inquiries',
 			'orders', 
+			'installation',
 			'service', 
 			'dashboard_basic', 
 			'dashboard_full', 
 			'reports',
 			'email_measurement',
+			'email_installation',
+			'email_service',
 			'audit_logs'
 		],
 		maxUsers: 6,
@@ -139,7 +145,7 @@ export function getTierInfo() {
 	const tier = getCurrentTier();
 	return {
 		tier,
-		tierLabel: tier === 'full' ? 'Full' : 'Basic',
+		tierLabel: tier === 'full' ? 'Business' : 'Basic',
 		features: TIER_CONFIG[tier].features,
 		maxUsers: TIER_CONFIG[tier].maxUsers,
 		maxRoles: TIER_CONFIG[tier].maxRoles,
@@ -159,12 +165,15 @@ function getFeatureLabel(feature: Feature): string {
 		measurements: 'Zaměření',
 		inquiries: 'Poptávky',
 		orders: 'Zakázky',
+		installation: 'Montáž',
 		service: 'Servis',
 		dashboard_basic: 'Dashboard',
 		dashboard_full: 'Dashboard KPI',
 		reports: 'Reporty',
 		audit_logs: 'Audit logy',
-		email_measurement: 'Email protokolů'
+		email_measurement: 'Email protokolů zaměření',
+		email_installation: 'Email protokolů montáže',
+		email_service: 'Email servisních protokolů'
 	};
 	return labels[feature] || feature;
 }

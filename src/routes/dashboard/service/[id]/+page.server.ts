@@ -58,6 +58,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			updatedAt: ticket.updatedAt.toISOString(),
 			scheduledAt: ticket.scheduledAt?.toISOString() || null,
 			resolvedAt: ticket.resolvedAt?.toISOString() || null,
+			emailSentAt: ticket.emailSentAt?.toISOString() || null,
+			emailSentTo: ticket.emailSentTo || null,
 			order: ticket.order ? {
 				...ticket.order,
 				createdAt: ticket.order.createdAt.toISOString(),

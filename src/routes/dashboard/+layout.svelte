@@ -7,6 +7,7 @@
         ClipboardList,
         Ruler,
         Wrench,
+        HardHat,
         FileText,
         Settings,
         LogOut,
@@ -26,6 +27,7 @@
         | "radce"
         | "customers"
         | "measurements"
+        | "installation"
         | "inquiries"
         | "orders"
         | "service"
@@ -119,6 +121,13 @@
                 "technician",
             ],
             feature: "measurements" as Feature,
+        },
+        {
+            name: "Montáže",
+            href: "/dashboard/installations",
+            icon: HardHat,
+            roles: ["admin", "manager", "production_manager", "technician"],
+            feature: "installation" as Feature,
         },
         {
             name: "Servis",

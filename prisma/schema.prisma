@@ -26,6 +26,11 @@ model Employee {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  // Granulární oprávnění pro techniky
+  canMeasurement   Boolean @default(false)
+  canInstallation  Boolean @default(false)
+  canService       Boolean @default(false)
+
   // Relations
   measurements           Measurement[]
   sentMeasurementEmails  Measurement[]        @relation("MeasurementEmailSender")
@@ -38,6 +43,15 @@ model Employee {
   quotes             Quote[]
   attachments        Attachment[]
   createdActivities  Activity[]           @relation("ActivityCreator")
+
+  // Installation relations
+  installations              Installation[]       @relation("InstallationTechnician")
+  installationEmailsSent     Installation[]       @relation("InstallationEmailSender")
+
+  // Extended Service relations
+  resolvedServiceTickets     ServiceTicket[]      @relation("ServiceResolver")
+  closedServiceTickets       ServiceTicket[]      @relation("ServiceCloser")
+  serviceEmailsSent          ServiceTicket[]      @relation("ServiceEmailSender")
 
   @@map("employees")
 }
@@ -349,6 +363,7 @@ model Order {
 
   // Relations
   measurement    Measurement?
+  installation   Installation?
   serviceTickets ServiceTicket[]
   statusHistory  OrderStatusHistory[]
   quotes         Quote[]
@@ -509,6 +524,54 @@ model Measurement {
 }
 
 // ============================================
+// INSTALLATION - Montáž
+// ============================================
+model Installation {
+  id      String @id @default(uuid())
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  // Status (zjednodušený)
+  status String @default("planned") // planned | completed
+
+  // Plánování
+  scheduledAt  DateTime?
+  technicianId String
+  technician   Employee  @relation("InstallationTechnician", fields: [technicianId], references: [id])
+
+  // Realizace
+  completedAt   DateTime?
+  checklist     Json?   // { [itemId]: boolean }
+  workNotes     String?
+  photos        Json?   // string[]
+
+  // Předání
+  handoverNotes String? // Poznámky od zákazníka
+
+  // PDF protokol
+  pdfUrl         String?
+  pdfGeneratedAt DateTime?
+
+  // Email - zákazník
+  emailSentAt   DateTime?
+  emailSentTo   String?
+  emailSentById String?
+  emailSentBy   Employee? @relation("InstallationEmailSender", fields: [emailSentById], references: [id])
+
+  // Email - interní
+  internalEmailSentAt DateTime?
+  internalEmailSentTo Json?     // string[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([technicianId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@map("installations")
+}
+
+// ============================================
 // SERVICE TICKET
 // ============================================
 model ServiceTicket {
@@ -528,16 +591,49 @@ model ServiceTicket {
   assignedToId String?
   assignedTo   Employee? @relation("AssignedTickets", fields: [assignedToId], references: [id])
 
+  // Zdroj požadavku
+  source   String @default("internal") // customer | internal
+
   type     ServiceType
   category ServiceCategory?
   status   ServiceStatus    @default(new_ticket)
   priority Priority         @default(normal)
 
   description String
-  resolution  String?
+
+  // Realizace - nová pole
+  diagnosis     String?
+  workPerformed String?
+  materialsUsed Json?    // [{ name: string, quantity: number, price?: number }]
+  photos        Json?    // { before: string[], after: string[] }
+
+  // Řešení
+  resolution   String?
+  resolvedAt   DateTime?
+  resolvedById String?
+  resolvedBy   Employee? @relation("ServiceResolver", fields: [resolvedById], references: [id])
 
   scheduledAt DateTime?
-  resolvedAt  DateTime?
+
+  // PDF protokol
+  pdfUrl         String?
+  pdfGeneratedAt DateTime?
+
+  // Email - zákazník
+  emailSentAt   DateTime?
+  emailSentTo   String?
+  emailSentById String?
+  emailSentBy   Employee? @relation("ServiceEmailSender", fields: [emailSentById], references: [id])
+
+  // Email - interní
+  internalEmailSentAt DateTime?
+  internalEmailSentTo Json?     // string[]
+
+  // Uzavření
+  customerFeedback String?
+  closedAt         DateTime?
+  closedById       String?
+  closedBy         Employee? @relation("ServiceCloser", fields: [closedById], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

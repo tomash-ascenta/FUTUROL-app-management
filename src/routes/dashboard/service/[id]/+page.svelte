@@ -10,8 +10,16 @@
         Wrench,
         AlertCircle,
         CheckCircle,
+        Download,
+        Mail,
     } from "lucide-svelte";
     import { getCustomerDisplayName, getPrimaryContact } from "$lib/utils";
+    import {
+        generateServicePdf,
+        generateServicePdfBase64,
+        type ServiceTicketData,
+    } from "$lib/utils/servicePdf";
+    import SendEmailModal from "$lib/components/SendEmailModal.svelte";
 
     interface Props {
         data: {
@@ -55,6 +63,8 @@
                     personalNumber: string;
                     phone: string | null;
                 } | null;
+                emailSentAt: string | null;
+                emailSentTo: string | null;
             };
             canEdit: boolean;
         };
@@ -119,6 +129,72 @@
             year: "numeric",
         });
     }
+
+    // Email modal state
+    let showEmailModal = $state(false);
+    let ticket = $state(data.ticket);
+
+    // Get customer email for email modal
+    function getCustomerEmail(): string | null {
+        const primaryContact = getPrimaryContact(ticket.customer);
+        return primaryContact?.email || null;
+    }
+
+    // Prepare ticket data for PDF generation
+    function getTicketDataForPdf(): ServiceTicketData {
+        return {
+            id: ticket.id,
+            ticketNumber: ticket.ticketNumber,
+            type: ticket.type,
+            priority: ticket.priority,
+            status: ticket.status,
+            description: ticket.description,
+            resolution: ticket.resolution,
+            resolvedAt: ticket.resolvedAt,
+            scheduledAt: ticket.scheduledAt,
+            customer: ticket.customer,
+            order: ticket.order,
+            assignedTo: ticket.assignedTo,
+        };
+    }
+
+    // Download PDF
+    function downloadPdf() {
+        generateServicePdf(getTicketDataForPdf());
+    }
+
+    // Send email handler
+    async function handleSendEmail(
+        recipientEmail: string,
+        customMessage: string,
+    ) {
+        const pdfBase64 = generateServicePdfBase64(getTicketDataForPdf());
+
+        const response = await fetch(
+            `/api/service-tickets/${ticket.id}/send-email`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    recipientEmail,
+                    customMessage: customMessage || undefined,
+                    pdfBase64,
+                }),
+            },
+        );
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Nepodařilo se odeslat email");
+        }
+
+        const result = await response.json();
+        ticket = {
+            ...ticket,
+            emailSentAt: result.sentAt,
+            emailSentTo: result.sentTo,
+        };
+    }
 </script>
 
 <div class="space-y-6">
@@ -160,15 +236,31 @@
                 </p>
             </div>
         </div>
+
+        <!-- Action buttons -->
+        <div class="flex items-center gap-2">
+            <button
+                onclick={downloadPdf}
+                class="flex items-center gap-2 px-4 py-2 text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+            >
+                <Download class="w-4 h-4" />
+                <span class="hidden sm:inline">Stáhnout PDF</span>
+            </button>
+            <button
+                onclick={() => (showEmailModal = true)}
+                class="flex items-center gap-2 px-4 py-2 bg-futurol-wine text-white rounded-lg hover:bg-futurol-wine/90 transition-colors"
+            >
+                <Mail class="w-4 h-4" />
+                <span class="hidden sm:inline">Odeslat email</span>
+            </button>
+        </div>
     </div>
 
     <div class="grid lg:grid-cols-3 gap-6">
         <!-- Main content -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Description -->
-            <div
-                class="bg-white rounded shadow-sm border border-slate-200 p-6"
-            >
+            <div class="bg-white rounded shadow-sm border border-slate-200 p-6">
                 <h2 class="text-lg font-semibold text-slate-800 mb-4">
                     Popis problému
                 </h2>
@@ -241,9 +333,7 @@
         <!-- Sidebar -->
         <div class="space-y-6">
             <!-- Customer info -->
-            <div
-                class="bg-white rounded shadow-sm border border-slate-200 p-6"
-            >
+            <div class="bg-white rounded shadow-sm border border-slate-200 p-6">
                 <h2 class="text-lg font-semibold text-slate-800 mb-4">
                     Zákazník
                 </h2>
@@ -286,9 +376,7 @@
             </div>
 
             <!-- Assigned technician -->
-            <div
-                class="bg-white rounded shadow-sm border border-slate-200 p-6"
-            >
+            <div class="bg-white rounded shadow-sm border border-slate-200 p-6">
                 <h2 class="text-lg font-semibold text-slate-800 mb-4">
                     Přiřazený technik
                 </h2>
@@ -342,9 +430,7 @@
             {/if}
 
             <!-- Timeline -->
-            <div
-                class="bg-white rounded shadow-sm border border-slate-200 p-6"
-            >
+            <div class="bg-white rounded shadow-sm border border-slate-200 p-6">
                 <h2 class="text-lg font-semibold text-slate-800 mb-4">
                     Časová osa
                 </h2>
@@ -394,6 +480,44 @@
                     {/if}
                 </div>
             </div>
+
+            <!-- Email sent info -->
+            {#if ticket.emailSentAt}
+                <div
+                    class="bg-white rounded shadow-sm border border-slate-200 p-6"
+                >
+                    <h2 class="text-lg font-semibold text-slate-800 mb-4">
+                        Odeslaný email
+                    </h2>
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center"
+                        >
+                            <Mail class="w-5 h-5 text-green-600" />
+                        </div>
+                        <div>
+                            <div class="text-sm text-slate-500">
+                                Odesláno: {formatDate(ticket.emailSentAt)}
+                            </div>
+                            <div class="font-medium text-slate-800">
+                                {ticket.emailSentTo}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {/if}
         </div>
     </div>
 </div>
+
+<!-- Email Modal -->
+{#if showEmailModal}
+    <SendEmailModal
+        isOpen={showEmailModal}
+        customerEmail={getCustomerEmail()}
+        orderNumber={ticket.ticketNumber}
+        measurementId={ticket.id}
+        onClose={() => (showEmailModal = false)}
+        onSend={handleSendEmail}
+    />
+{/if}

@@ -131,3 +131,279 @@ export async function sendMeasurementEmail(
 		};
 	}
 }
+
+// ---------------------------------------------
+// Installation Email
+// ---------------------------------------------
+export interface SendInstallationEmailParams {
+	to: string;
+	orderNumber: string;
+	employeeName: string;
+	customMessage?: string;
+	pdfBase64: string;
+	pdfFilename: string;
+}
+
+function getInstallationEmailHtml(
+	orderNumber: string,
+	employeeName: string,
+	customMessage?: string
+): string {
+	return `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <p>Dobrý den,</p>
+  <p>v příloze zasíláme protokol o montáži a předání pro Vaši zakázku <strong>${orderNumber}</strong>.</p>
+  ${customMessage ? `<p>${customMessage.replace(/\n/g, '<br>')}</p>` : ''}
+  <p>Děkujeme za Vaši důvěru a přejeme mnoho radosti s Vaší novou pergolou!</p>
+  <p>S pozdravem,<br>
+  <strong>${employeeName}</strong><br>
+  Futurol.cz</p>
+  <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 20px 0;">
+  <p style="color: #666; font-size: 12px;">
+    Tato zpráva byla odeslána automaticky ze systému Futurol.
+  </p>
+</body>
+</html>
+`.trim();
+}
+
+function getInstallationEmailText(
+	orderNumber: string,
+	employeeName: string,
+	customMessage?: string
+): string {
+	return `
+Dobrý den,
+
+v příloze zasíláme protokol o montáži a předání pro Vaši zakázku ${orderNumber}.
+
+${customMessage ? customMessage + '\n\n' : ''}Děkujeme za Vaši důvěru a přejeme mnoho radosti s Vaší novou pergolou!
+
+S pozdravem,
+${employeeName}
+Futurol.cz
+
+---
+Tato zpráva byla odeslána automaticky ze systému Futurol.
+`.trim();
+}
+
+export async function sendInstallationEmail(
+	params: SendInstallationEmailParams
+): Promise<SendEmailResult> {
+	const { to, orderNumber, employeeName, customMessage, pdfBase64, pdfFilename } = params;
+	const fromAddress = env.EMAIL_FROM || 'Futurol <noreply@futurol.ascentalab.cz>';
+
+	try {
+		const resend = getResend();
+
+		const { data, error } = await resend.emails.send({
+			from: fromAddress,
+			to: [to],
+			subject: `Protokol o montáži a předání - ${orderNumber}`,
+			html: getInstallationEmailHtml(orderNumber, employeeName, customMessage),
+			text: getInstallationEmailText(orderNumber, employeeName, customMessage),
+			attachments: [
+				{
+					filename: pdfFilename,
+					content: pdfBase64,
+				},
+			],
+		});
+
+		if (error) {
+			console.error('[Email] Resend installation error:', error);
+			return { success: false, error: error.message };
+		}
+
+		console.log(`[Email] Installation email sent to ${to}, messageId: ${data?.id}`);
+		return { success: true, messageId: data?.id };
+	} catch (err) {
+		console.error('[Email] Installation send failed:', err);
+		return {
+			success: false,
+			error: err instanceof Error ? err.message : 'Unknown error',
+		};
+	}
+}
+
+// ---------------------------------------------
+// Service Email
+// ---------------------------------------------
+export interface SendServiceEmailParams {
+	to: string;
+	ticketNumber: string;
+	employeeName: string;
+	customMessage?: string;
+	pdfBase64: string;
+	pdfFilename: string;
+}
+
+function getServiceEmailHtml(
+	ticketNumber: string,
+	employeeName: string,
+	customMessage?: string
+): string {
+	return `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <p>Dobrý den,</p>
+  <p>v příloze zasíláme servisní protokol pro tiket <strong>${ticketNumber}</strong>.</p>
+  ${customMessage ? `<p>${customMessage.replace(/\n/g, '<br>')}</p>` : ''}
+  <p>S pozdravem,<br>
+  <strong>${employeeName}</strong><br>
+  Futurol.cz</p>
+  <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 20px 0;">
+  <p style="color: #666; font-size: 12px;">
+    Tato zpráva byla odeslána automaticky ze systému Futurol.
+  </p>
+</body>
+</html>
+`.trim();
+}
+
+function getServiceEmailText(
+	ticketNumber: string,
+	employeeName: string,
+	customMessage?: string
+): string {
+	return `
+Dobrý den,
+
+v příloze zasíláme servisní protokol pro tiket ${ticketNumber}.
+
+${customMessage ? customMessage + '\n\n' : ''}S pozdravem,
+${employeeName}
+Futurol.cz
+
+---
+Tato zpráva byla odeslána automaticky ze systému Futurol.
+`.trim();
+}
+
+export async function sendServiceEmail(
+	params: SendServiceEmailParams
+): Promise<SendEmailResult> {
+	const { to, ticketNumber, employeeName, customMessage, pdfBase64, pdfFilename } = params;
+	const fromAddress = env.EMAIL_FROM || 'Futurol <noreply@futurol.ascentalab.cz>';
+
+	try {
+		const resend = getResend();
+
+		const { data, error } = await resend.emails.send({
+			from: fromAddress,
+			to: [to],
+			subject: `Servisní protokol - ${ticketNumber}`,
+			html: getServiceEmailHtml(ticketNumber, employeeName, customMessage),
+			text: getServiceEmailText(ticketNumber, employeeName, customMessage),
+			attachments: [
+				{
+					filename: pdfFilename,
+					content: pdfBase64,
+				},
+			],
+		});
+
+		if (error) {
+			console.error('[Email] Resend service error:', error);
+			return { success: false, error: error.message };
+		}
+
+		console.log(`[Email] Service email sent to ${to}, messageId: ${data?.id}`);
+		return { success: true, messageId: data?.id };
+	} catch (err) {
+		console.error('[Email] Service send failed:', err);
+		return {
+			success: false,
+			error: err instanceof Error ? err.message : 'Unknown error',
+		};
+	}
+}
+
+// ---------------------------------------------
+// Internal Email (kopie vedení)
+// ---------------------------------------------
+export interface SendInternalEmailParams {
+	to: string[];
+	subject: string;
+	orderNumber: string;
+	employeeName: string;
+	type: 'installation' | 'service' | 'measurement';
+	pdfBase64: string;
+	pdfFilename: string;
+}
+
+export async function sendInternalEmail(
+	params: SendInternalEmailParams
+): Promise<SendEmailResult> {
+	const { to, subject, orderNumber, employeeName, type, pdfBase64, pdfFilename } = params;
+	const fromAddress = env.EMAIL_FROM || 'Futurol <noreply@futurol.ascentalab.cz>';
+
+	const typeLabels: Record<string, string> = {
+		installation: 'montáži',
+		service: 'servisu',
+		measurement: 'zaměření',
+	};
+	const typeLabel = typeLabels[type] || type;
+
+	const html = `
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <p>Dobrý den,</p>
+  <p>informujeme Vás o dokončení ${typeLabel} pro zakázku <strong>${orderNumber}</strong>.</p>
+  <p>Protokol je v příloze.</p>
+  <p>Technik: <strong>${employeeName}</strong></p>
+  <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 20px 0;">
+  <p style="color: #666; font-size: 12px;">
+    Interní notifikace ze systému Futurol.
+  </p>
+</body>
+</html>
+`.trim();
+
+	try {
+		const resend = getResend();
+
+		const { data, error } = await resend.emails.send({
+			from: fromAddress,
+			to,
+			subject,
+			html,
+			attachments: [
+				{
+					filename: pdfFilename,
+					content: pdfBase64,
+				},
+			],
+		});
+
+		if (error) {
+			console.error('[Email] Resend internal error:', error);
+			return { success: false, error: error.message };
+		}
+
+		console.log(`[Email] Internal email sent to ${to.join(', ')}, messageId: ${data?.id}`);
+		return { success: true, messageId: data?.id };
+	} catch (err) {
+		console.error('[Email] Internal send failed:', err);
+		return {
+			success: false,
+			error: err instanceof Error ? err.message : 'Unknown error',
+		};
+	}
+}
