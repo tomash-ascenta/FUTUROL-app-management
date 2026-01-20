@@ -249,13 +249,13 @@
 				href="https://ascentalab.cz"
 				target="_blank"
 				rel="noopener noreferrer"
-				class="text-xs text-slate-600 hover:text-slate-800 transition-colors bg-white/90 px-5 py-2 rounded-sm shadow-sm backdrop-blur-sm text-center"
+				class="bg-white px-4 py-2 rounded-md shadow-sm hover:shadow-md transition-shadow"
 			>
-				Powered by <span class="font-semibold"
-					><span class="text-emerald-600">Ascenta</span><span
-						class="text-red-600">Lab</span
-					></span
-				>
+				<img
+					src="/Ascenta Lab logo web  300 x 50 px.svg"
+					alt="Powered by Ascenta Lab"
+					class="h-6"
+				/>
 			</a>
 		</div>
 	</div>
