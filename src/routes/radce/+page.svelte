@@ -313,17 +313,24 @@
         try {
             const recommendation = getRecommendation();
 
-            const response = await fetch("/api/inquiries", {
+            const response = await fetch("/api/leads", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    ...formData,
-                    purpose: answers.purpose,
-                    size: answers.size,
-                    roofType: answers.roof,
-                    extras: answers.extras || [],
-                    budget: answers.budget,
+                    name: formData.fullName,
+                    email: formData.email,
+                    phone: formData.phone,
+                    source: "advisor",
+                    channel: "rádce",
+                    answers: {
+                        purpose: answers.purpose,
+                        size: answers.size,
+                        roofType: answers.roof,
+                        extras: answers.extras || [],
+                        budget: answers.budget,
+                    },
                     recommendedProduct: recommendation.title,
+                    customerNote: formData.note,
                 }),
             });
 

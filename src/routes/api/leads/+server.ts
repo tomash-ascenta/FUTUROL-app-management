@@ -1,11 +1,11 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 
-// POST - Create new lead (for PDF download etc.)
+// POST - Create new lead (from radce or PDF download)
 export const POST: RequestHandler = async ({ request }) => {
     try {
         const body = await request.json();
-        const { email, source, name, phone } = body;
+        const { email, source, name, phone, channel, answers, recommendedProduct, customerNote } = body;
 
         if (!email) {
             return json({ error: 'Email je povinný' }, { status: 400 });
@@ -17,16 +17,24 @@ export const POST: RequestHandler = async ({ request }) => {
             return json({ error: 'Neplatný formát emailu' }, { status: 400 });
         }
 
-        // Create lead with minimal required data
+        // Clean phone number if provided
+        let cleanPhone = '';
+        if (phone && phone.trim()) {
+            cleanPhone = phone.replace(/\s/g, '');
+        }
+
+        // Create lead with full radce data
         const lead = await db.lead.create({
             data: {
                 originalName: name || 'Neznámý',
-                originalPhone: phone || '',
+                originalPhone: cleanPhone,
                 originalEmail: email,
-                answers: {},
+                source: source || 'advisor',
+                channel: channel || null,
+                answers: answers || {},
                 scores: {},
-                recommendedProduct: source || 'pdf_guide',
-                utmSource: source,
+                recommendedProduct: recommendedProduct || null,
+                customerNote: customerNote || null,
             },
         });
 
