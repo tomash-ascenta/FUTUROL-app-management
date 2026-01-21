@@ -19,9 +19,12 @@
         Users,
         X,
         Ban,
+        RefreshCw,
     } from "lucide-svelte";
     import { invalidateAll } from "$app/navigation";
     import { goto } from "$app/navigation";
+    import { onMount, onDestroy } from "svelte";
+    import { browser } from "$app/environment";
 
     interface LeadData {
         id: string;
@@ -64,6 +67,67 @@
     // State
     let processingId = $state<string | null>(null);
     let errorMessage = $state("");
+    let isRefreshing = $state(false);
+    let lastRefresh = $state<Date>(new Date());
+
+    // Auto-refresh configuration
+    const POLLING_INTERVAL = 30000; // 30 seconds
+    let pollingInterval: ReturnType<typeof setInterval> | null = null;
+
+    // Refresh data function
+    async function refreshData() {
+        if (isRefreshing) return;
+        isRefreshing = true;
+        try {
+            await invalidateAll();
+            lastRefresh = new Date();
+        } finally {
+            isRefreshing = false;
+        }
+    }
+
+    // Handle visibility change - refresh when tab becomes visible
+    function handleVisibilityChange() {
+        if (document.visibilityState === 'visible') {
+            // Only refresh if more than 10 seconds since last refresh
+            const timeSinceRefresh = Date.now() - lastRefresh.getTime();
+            if (timeSinceRefresh > 10000) {
+                refreshData();
+            }
+        }
+    }
+
+    // Start/stop polling based on visibility
+    function startPolling() {
+        if (pollingInterval) return;
+        pollingInterval = setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                refreshData();
+            }
+        }, POLLING_INTERVAL);
+    }
+
+    function stopPolling() {
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+            pollingInterval = null;
+        }
+    }
+
+    // Lifecycle
+    onMount(() => {
+        if (browser) {
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+            startPolling();
+        }
+    });
+
+    onDestroy(() => {
+        if (browser) {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            stopPolling();
+        }
+    });
 
     // Reject modal state
     let showRejectModal = $state(false);
@@ -314,6 +378,15 @@
                 Správa kontaktů a poptávek z různých zdrojů
             </p>
         </div>
+        <button
+            onclick={refreshData}
+            disabled={isRefreshing}
+            class="inline-flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors disabled:opacity-50"
+            title="Obnovit data"
+        >
+            <RefreshCw class="w-4 h-4 {isRefreshing ? 'animate-spin' : ''}" />
+            <span class="hidden sm:inline">Obnovit</span>
+        </button>
     </div>
 
     <!-- Stats -->
