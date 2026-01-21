@@ -5,7 +5,7 @@ import { canAccess, type Module } from '$lib/server/permissions';
 import type { Role } from '@prisma/client';
 
 // Routes that don't require authentication
-const publicRoutes = ['/', '/login', '/radce', '/api/auth/login', '/api/inquiries'];
+const publicRoutes = ['/', '/login', '/radce', '/api/auth/login', '/api/inquiries', '/api/leads'];
 
 // Routes that start with these prefixes are public
 const publicPrefixes = ['/radce/', '/api/radce/'];
