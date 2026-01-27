@@ -592,16 +592,16 @@
                                 type="button"
                                 onclick={() =>
                                     selectOption(question.id, option.id)}
-                                class="group text-left p-5 border-2 transition-all duration-300 {isSelected(
+                                class="glass-card group text-left p-5 border-2 transition-all duration-300 {isSelected(
                                     question.id,
                                     option.id,
                                 )
-                                    ? 'border-futurol-wine bg-white shadow-md'
-                                    : 'border-slate-600/30 bg-white/95 hover:border-futurol-wine/50 hover:shadow-sm'}"
+                                    ? 'border-futurol-green bg-white/20 shadow-lg shadow-futurol-green/20'
+                                    : 'border-white/15 bg-white/10 hover:bg-white/18 hover:border-futurol-green/70 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/15'}"
                             >
                                 <div class="flex items-start gap-3">
                                     <div
-                                        class="w-12 h-12 flex items-center justify-center bg-amber-50 border border-amber-200/60 flex-shrink-0 transition-all duration-300 group-hover:bg-amber-100 group-hover:border-amber-300"
+                                        class="w-12 h-12 flex items-center justify-center bg-white/15 border-2 border-white/20 rounded flex-shrink-0 transition-all duration-300 group-hover:bg-white/25 group-hover:border-futurol-green"
                                     >
                                         {#if iconComponents[option.icon || ""]}
                                             {@const IconComponent =
@@ -611,7 +611,7 @@
                                             <IconComponent
                                                 size={28}
                                                 weight="regular"
-                                                class="text-amber-700 transition-all duration-300 group-hover:text-amber-800 group-hover:scale-110"
+                                                class="text-white/80 transition-all duration-300 group-hover:text-white group-hover:scale-110"
                                             />
                                         {/if}
                                     </div>
@@ -620,13 +620,13 @@
                                             class="flex items-center justify-between gap-2"
                                         >
                                             <h3
-                                                class="font-semibold text-slate-800"
+                                                class="font-semibold text-white/90 group-hover:text-white"
                                             >
                                                 {option.label}
                                             </h3>
                                             {#if isSelected(question.id, option.id)}
                                                 <div
-                                                    class="w-6 h-6 bg-futurol-green rounded-full flex items-center justify-center flex-shrink-0"
+                                                    class="w-6 h-6 bg-futurol-green border-2 border-futurol-green rounded-full flex items-center justify-center flex-shrink-0 shadow-md shadow-futurol-green/30"
                                                 >
                                                     <Check
                                                         class="w-3.5 h-3.5 text-white"
@@ -636,7 +636,7 @@
                                         </div>
                                         {#if option.description}
                                             <p
-                                                class="text-sm text-slate-500 mt-1"
+                                                class="text-sm text-white/60 mt-1 group-hover:text-white/80"
                                             >
                                                 {option.description}
                                             </p>
@@ -655,7 +655,7 @@
                             <button
                                 type="button"
                                 onclick={prevStep}
-                                class="inline-flex items-center gap-2 px-6 py-2 text-sm text-slate-300 hover:text-white border border-slate-600 hover:border-slate-500 rounded-sm transition-all"
+                                class="ghost-btn inline-flex items-center gap-2 px-6 py-2.5 text-sm text-white/80 hover:text-white bg-transparent border border-white/20 hover:border-white/40 hover:bg-white/5 rounded transition-all duration-200"
                             >
                                 <ArrowLeft class="w-4 h-4" />
                                 Zpět
@@ -666,7 +666,7 @@
                             type="button"
                             onclick={nextStep}
                             disabled={!canProceed()}
-                            class="group inline-flex items-center gap-2 bg-transparent border-2 border-futurol-green text-futurol-green px-6 py-2 text-sm font-normal rounded-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:bg-futurol-green hover:text-white hover:border-futurol-green hover:shadow-lg hover:-translate-y-0.5"
+                            class="ghost-btn group inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium bg-transparent border border-futurol-green/60 text-futurol-green hover:border-futurol-green hover:bg-futurol-green/10 hover:text-white rounded disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:-translate-y-0.5"
                         >
                             {currentStep === questions.length - 1
                                 ? "Zobrazit doporučení"
@@ -688,11 +688,11 @@
                     <div class="flex items-center justify-center">
                         <div class="w-full max-w-xl">
                             <div
-                                class="bg-white border-2 border-green-600 p-6 shadow-lg"
+                                class="glass-card bg-white/10 border-2 border-futurol-green p-6 shadow-lg shadow-futurol-green/10"
                             >
                                 <div class="flex items-start gap-4 mb-5">
                                     <div
-                                        class="w-14 h-14 bg-white flex items-center justify-center flex-shrink-0 overflow-hidden"
+                                        class="w-14 h-14 bg-white/20 border border-white/30 rounded flex items-center justify-center flex-shrink-0 overflow-hidden"
                                     >
                                         <img
                                             src="/FUTUROL_logo F.jpg"
@@ -702,47 +702,48 @@
                                     </div>
                                     <div>
                                         <h2
-                                            class="text-xl font-bold text-slate-800 mb-1"
+                                            class="text-xl font-bold text-white mb-1"
                                         >
                                             Poptávku jsme v pořádku přijali!
                                         </h2>
-                                        <p class="text-slate-600 text-sm">
+                                        <p class="text-white/70 text-sm">
                                             Děkujeme za váš zájem o produkt <strong
+                                                class="text-white"
                                                 >{recommendation.title}</strong
                                             >.
                                         </p>
                                     </div>
                                 </div>
 
-                                <div class="border-t border-slate-200 pt-5">
+                                <div class="border-t border-white/20 pt-5">
                                     <h3
-                                        class="font-semibold text-slate-800 mb-3 text-sm"
+                                        class="font-semibold text-white/90 mb-3 text-sm"
                                     >
                                         Co dál:
                                     </h3>
                                     <ul class="space-y-3">
                                         <li class="flex items-center gap-3">
                                             <div
-                                                class="w-8 h-8 bg-green-50 border-2 border-green-600 flex items-center justify-center flex-shrink-0"
+                                                class="w-8 h-8 bg-white/10 border-2 border-futurol-green rounded flex items-center justify-center flex-shrink-0"
                                             >
                                                 <Check
-                                                    class="w-4 h-4 text-green-700"
+                                                    class="w-4 h-4 text-futurol-green"
                                                 />
                                             </div>
-                                            <span class="text-slate-700 text-sm"
+                                            <span class="text-white/80 text-sm"
                                                 >Ozveme se vám v pracovní dny do
                                                 24 hodin</span
                                             >
                                         </li>
                                         <li class="flex items-center gap-3">
                                             <div
-                                                class="w-8 h-8 bg-green-50 border-2 border-green-600 flex items-center justify-center flex-shrink-0"
+                                                class="w-8 h-8 bg-white/10 border-2 border-futurol-green rounded flex items-center justify-center flex-shrink-0"
                                             >
                                                 <Check
-                                                    class="w-4 h-4 text-green-700"
+                                                    class="w-4 h-4 text-futurol-green"
                                                 />
                                             </div>
-                                            <span class="text-slate-700 text-sm"
+                                            <span class="text-white/80 text-sm"
                                                 >Připravíme pro vás cenovou
                                                 nabídku na míru</span
                                             >
@@ -756,26 +757,27 @@
                                 <a
                                     href="/Podrobný průvodce rozhodováním při pořízení pergoly.pdf"
                                     download
-                                    class="block bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 p-4 transition-all duration-300 ease-out cursor-pointer hover:scale-105 hover:shadow-xl hover:shadow-green-300/40 hover:border-green-400 hover:-translate-y-1"
+                                    class="block glass-card bg-futurol-green/15 border border-futurol-green/40 p-4 transition-all duration-300 ease-out cursor-pointer hover:scale-105 hover:shadow-xl hover:shadow-futurol-green/20 hover:border-futurol-green hover:-translate-y-1"
                                 >
                                     <div class="flex items-start gap-3">
                                         <span class="text-2xl">🎁</span>
                                         <div>
                                             <p
-                                                class="text-sm font-semibold text-green-700 mb-1"
+                                                class="text-sm font-semibold text-futurol-green mb-1"
                                             >
                                                 Váš bonus je připraven ke
                                                 stažení!
                                             </p>
-                                            <p class="text-sm text-green-600">
+                                            <p class="text-sm text-white/80">
                                                 <strong
+                                                    class="text-futurol-green"
                                                     >15stránkový Průvodce
                                                     pořízením pergoly</strong
                                                 >
                                                 v PDF.<br />
                                                 Klikněte
                                                 <span
-                                                    class="underline font-bold text-green-700 hover:text-green-800"
+                                                    class="underline font-bold text-futurol-green hover:text-white"
                                                     >ZDE</span
                                                 > pro stažení.
                                             </p>
@@ -788,7 +790,7 @@
                             <button
                                 type="button"
                                 onclick={restart}
-                                class="inline-flex items-center gap-2 text-slate-500 hover:text-futurol-wine mt-4 text-sm transition-colors"
+                                class="ghost-btn inline-flex items-center gap-2 px-4 py-2 text-white/60 hover:text-white bg-transparent border border-white/20 hover:border-white/40 hover:bg-white/5 rounded mt-4 text-sm transition-all duration-200"
                             >
                                 <RotateCcw class="w-4 h-4" />
                                 Začít znovu
@@ -803,11 +805,11 @@
                             <!-- Recommendation card wrapper pro slide-up efekt -->
                             <div class="relative z-10">
                                 <div
-                                    class="bg-white border-2 border-green-600 p-6 shadow-lg relative z-20"
+                                    class="glass-card bg-white/10 border-2 border-futurol-green p-6 shadow-lg shadow-futurol-green/10 relative z-20"
                                 >
                                     <div class="flex items-start gap-4 mb-5">
                                         <div
-                                            class="w-14 h-14 bg-white flex items-center justify-center flex-shrink-0 overflow-hidden"
+                                            class="w-14 h-14 bg-white/20 border border-white/30 rounded flex items-center justify-center flex-shrink-0 overflow-hidden"
                                         >
                                             <img
                                                 src="/FUTUROL_logo F.jpg"
@@ -817,19 +819,19 @@
                                         </div>
                                         <div>
                                             <h2
-                                                class="text-xl font-bold text-slate-800 mb-1"
+                                                class="text-xl font-bold text-white mb-1"
                                             >
                                                 {recommendation.title}
                                             </h2>
-                                            <p class="text-slate-600 text-sm">
+                                            <p class="text-white/70 text-sm">
                                                 {recommendation.description}
                                             </p>
                                         </div>
                                     </div>
 
-                                    <div class="border-t border-slate-200 pt-5">
+                                    <div class="border-t border-white/20 pt-5">
                                         <h3
-                                            class="font-semibold text-slate-800 mb-3 text-sm"
+                                            class="font-semibold text-white/90 mb-3 text-sm"
                                         >
                                             Co zahrnuje:
                                         </h3>
@@ -844,14 +846,14 @@
                                                     class="flex items-center gap-3"
                                                 >
                                                     <div
-                                                        class="w-8 h-8 bg-green-50 border-2 border-green-600 flex items-center justify-center flex-shrink-0"
+                                                        class="w-8 h-8 bg-white/10 border-2 border-futurol-green rounded flex items-center justify-center flex-shrink-0"
                                                     >
                                                         <IconComponent
-                                                            class="w-4 h-4 text-green-700"
+                                                            class="w-4 h-4 text-futurol-green"
                                                         />
                                                     </div>
                                                     <span
-                                                        class="text-slate-700 text-sm"
+                                                        class="text-white/80 text-sm"
                                                         >{feature}</span
                                                     >
                                                 </li>
@@ -864,20 +866,21 @@
                             <!-- Lead Magnet Bonus - animovaný slide-up zpod karty -->
                             <div class="mt-2 pt-4">
                                 <div
-                                    class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 p-4 animate-bonus-slide-up transition-all duration-300 ease-out cursor-pointer hover:scale-105 hover:shadow-xl hover:shadow-green-300/40 hover:border-green-400 hover:-translate-y-1"
+                                    class="glass-card bg-futurol-green/15 border border-futurol-green/40 p-4 animate-bonus-slide-up transition-all duration-300 ease-out cursor-pointer hover:scale-105 hover:shadow-xl hover:shadow-futurol-green/20 hover:border-futurol-green hover:-translate-y-1"
                                 >
                                     <div class="flex items-start gap-3">
                                         <span class="text-2xl">🎁</span>
                                         <div>
                                             <p
-                                                class="text-sm font-semibold text-green-700 mb-1"
+                                                class="text-sm font-semibold text-futurol-green mb-1"
                                             >
                                                 Bonus zdarma!
                                             </p>
-                                            <p class="text-sm text-green-600">
+                                            <p class="text-sm text-white/80">
                                                 Odesláním nezávazné poptávky
                                                 získáte okamžitě
                                                 <strong
+                                                    class="text-futurol-green"
                                                     >15stránkového Průvodce
                                                     pořízením pergoly</strong
                                                 >
@@ -895,7 +898,7 @@
                             <button
                                 type="button"
                                 onclick={restart}
-                                class="inline-flex items-center gap-2 text-slate-500 hover:text-futurol-wine mt-4 text-sm transition-colors"
+                                class="ghost-btn inline-flex items-center gap-2 px-4 py-2 text-white/60 hover:text-white bg-transparent border border-white/20 hover:border-white/40 hover:bg-white/5 rounded mt-4 text-sm transition-all duration-200"
                             >
                                 <RotateCcw class="w-4 h-4" />
                                 Začít znovu
@@ -906,15 +909,15 @@
                         <div class="w-full lg:w-96 lg:sticky lg:top-8">
                             <!-- Inquiry Form -->
                             <div
-                                class="bg-white border-2 border-green-600 p-5 shadow-lg"
+                                class="glass-card bg-white/10 border-2 border-futurol-green p-5 shadow-lg shadow-futurol-green/10"
                             >
                                 <div class="text-center mb-4">
                                     <h3
-                                        class="text-lg font-bold text-slate-800 mb-0.5"
+                                        class="text-lg font-bold text-white mb-0.5"
                                     >
                                         Zašleme vám cenovou nabídku
                                     </h3>
-                                    <p class="text-slate-500 text-sm">
+                                    <p class="text-white/60 text-sm">
                                         Ozveme se vám v pracovní dny do 24 hodin
                                     </p>
                                 </div>
@@ -929,7 +932,7 @@
                                     <div>
                                         <label
                                             for="fullName"
-                                            class="block text-sm font-medium text-slate-700 mb-1"
+                                            class="block text-sm font-medium text-white/80 mb-1"
                                         >
                                             Jméno a příjmení *
                                         </label>
@@ -938,7 +941,7 @@
                                             id="fullName"
                                             bind:value={formData.fullName}
                                             required
-                                            class="w-full px-3 py-2.5 border border-slate-200 focus:ring-2 focus:ring-futurol-wine/20 focus:border-futurol-wine outline-none transition-all text-sm"
+                                            class="w-full px-3 py-2.5 bg-white/10 border border-white/20 text-white placeholder-white/40 focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green outline-none transition-all text-sm rounded"
                                             placeholder="Jan Novák"
                                         />
                                     </div>
@@ -946,7 +949,7 @@
                                     <div>
                                         <label
                                             for="email"
-                                            class="block text-sm font-medium text-slate-700 mb-1"
+                                            class="block text-sm font-medium text-white/80 mb-1"
                                         >
                                             E-mail *
                                         </label>
@@ -955,7 +958,7 @@
                                             id="email"
                                             bind:value={formData.email}
                                             required
-                                            class="w-full px-3 py-2.5 border border-slate-200 focus:ring-2 focus:ring-futurol-wine/20 focus:border-futurol-wine outline-none transition-all text-sm"
+                                            class="w-full px-3 py-2.5 bg-white/10 border border-white/20 text-white placeholder-white/40 focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green outline-none transition-all text-sm rounded"
                                             placeholder="jan@email.cz"
                                         />
                                     </div>
@@ -963,9 +966,9 @@
                                     <div>
                                         <label
                                             for="phone"
-                                            class="block text-sm font-medium text-slate-700 mb-1"
+                                            class="block text-sm font-medium text-white/80 mb-1"
                                         >
-                                            Telefon <span class="text-slate-400"
+                                            Telefon <span class="text-white/40"
                                                 >(nepovinné)</span
                                             >
                                         </label>
@@ -973,7 +976,7 @@
                                             type="tel"
                                             id="phone"
                                             bind:value={formData.phone}
-                                            class="w-full px-3 py-2.5 border border-slate-200 focus:ring-2 focus:ring-futurol-wine/20 focus:border-futurol-wine outline-none transition-all text-sm"
+                                            class="w-full px-3 py-2.5 bg-white/10 border border-white/20 text-white placeholder-white/40 focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green outline-none transition-all text-sm rounded"
                                             placeholder="+420 123 456 789"
                                         />
                                     </div>
@@ -981,10 +984,9 @@
                                     <div>
                                         <label
                                             for="note"
-                                            class="block text-sm font-medium text-slate-700 mb-1"
+                                            class="block text-sm font-medium text-white/80 mb-1"
                                         >
-                                            Poznámka <span
-                                                class="text-slate-400"
+                                            Poznámka <span class="text-white/40"
                                                 >(nepovinné)</span
                                             >
                                         </label>
@@ -992,14 +994,14 @@
                                             type="text"
                                             id="note"
                                             bind:value={formData.note}
-                                            class="w-full px-3 py-2.5 border border-slate-200 focus:ring-2 focus:ring-futurol-wine/20 focus:border-futurol-wine outline-none transition-all text-sm"
+                                            class="w-full px-3 py-2.5 bg-white/10 border border-white/20 text-white placeholder-white/40 focus:ring-2 focus:ring-futurol-green/30 focus:border-futurol-green outline-none transition-all text-sm rounded"
                                             placeholder="Speciální požadavky..."
                                         />
                                     </div>
 
                                     {#if submitError}
                                         <div
-                                            class="bg-red-50 text-red-600 text-sm p-3"
+                                            class="bg-red-500/20 border border-red-500/40 text-red-300 text-sm p-3 rounded"
                                         >
                                             {submitError}
                                         </div>
@@ -1008,7 +1010,7 @@
                                     <button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        class="w-full inline-flex items-center justify-center gap-2 bg-green-600 text-white px-6 py-3.5 font-bold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-green-600/20"
+                                        class="w-full inline-flex items-center justify-center gap-2 bg-futurol-green text-white px-6 py-3.5 font-bold rounded hover:bg-futurol-green/90 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-futurol-green/30"
                                     >
                                         {#if isSubmitting}
                                             <Loader2
@@ -1022,13 +1024,13 @@
                                     </button>
 
                                     <p
-                                        class="text-center text-slate-400 text-xs pt-1"
+                                        class="text-center text-white/40 text-xs pt-1"
                                     >
                                         Odesláním formuláře souhlasím se <a
                                             href="https://www.futurol.cz/zasady-o-zpracovani-osobnich-udaju"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            class="text-slate-500 hover:text-slate-600 underline"
+                                            class="text-white/60 hover:text-white underline"
                                             >Zásadami zpracování osobních údajů</a
                                         >.
                                     </p>
@@ -1043,6 +1045,19 @@
 </div>
 
 <style>
+    /* Glassmorphism karty */
+    .glass-card {
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 4px;
+    }
+
+    /* Ghost button styl */
+    .ghost-btn {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+
     /* Animace pro bonus sekci - vyjíždí zpod karty */
     @keyframes bonus-slide-up {
         0% {
