@@ -283,10 +283,10 @@
                 {#if hasAccess(item.roles, item.feature)}
                     <a
                         href={item.href}
-                        class="flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all
+                        class="flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all duration-200
 							{isActive(item.href)
-                            ? 'bg-futurol-green text-white shadow-soft'
-                            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}"
+                            ? 'bg-futurol-green/10 text-futurol-green border-l-4 border-futurol-green -ml-1 pl-4'
+                            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 hover:translate-x-1'}"
                         onclick={() => (sidebarOpen = false)}
                     >
                         <item.icon class="w-5 h-5" />
@@ -307,10 +307,10 @@
                         {#if !item.feature || data.license.features.includes(item.feature)}
                             <a
                                 href={item.href}
-                                class="flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all
+                                class="flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all duration-200
                                     {isActive(item.href)
-                                    ? 'bg-futurol-green text-white shadow-soft'
-                                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'}"
+                                    ? 'bg-futurol-green/10 text-futurol-green border-l-4 border-futurol-green -ml-1 pl-4'
+                                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 hover:translate-x-1'}"
                                 onclick={() => (sidebarOpen = false)}
                             >
                                 <item.icon class="w-5 h-5" />
@@ -326,10 +326,10 @@
         <div class="p-4 border-t border-slate-200">
             <a
                 href="/dashboard/my-profile"
-                class="flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all
+                class="flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all duration-200
                     {isActive('/dashboard/my-profile')
-                    ? 'bg-futurol-green text-white shadow-soft'
-                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'}"
+                    ? 'bg-futurol-green/10 text-futurol-green border-l-4 border-futurol-green -ml-1 pl-4'
+                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700 hover:translate-x-1'}"
             >
                 <KeyRound class="w-5 h-5" />
                 Můj profil

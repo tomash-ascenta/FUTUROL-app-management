@@ -116,7 +116,7 @@
 
 		<!-- Login Card -->
 		<div
-			class="bg-white/90 backdrop-blur-sm rounded-sm shadow-2xl p-6 border border-green-600"
+			class="glass-card bg-white/10 backdrop-blur-xl rounded shadow-2xl p-6 border-2 border-futurol-green"
 		>
 			<!-- Step indicator -->
 			<div class="flex items-center justify-center gap-3 mb-5">
@@ -129,35 +129,33 @@
 					>
 						1
 					</div>
-					<span class="text-xs text-slate-400">Číslo</span>
+					<span class="text-xs text-white/60">Číslo</span>
 				</div>
-				<div class="w-8 h-px bg-slate-300"></div>
+				<div class="w-8 h-px bg-white/30"></div>
 				<div class="flex items-center gap-1.5">
 					<div
 						class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium
-							{step === 'pin'
-							? 'bg-futurol-green text-white'
-							: 'bg-slate-200 text-slate-500'}"
+							{step === 'pin' ? 'bg-futurol-green text-white' : 'bg-white/20 text-white/60'}"
 					>
 						2
 					</div>
-					<span class="text-xs text-slate-400">PIN</span>
+					<span class="text-xs text-white/60">PIN</span>
 				</div>
 			</div>
 
 			<!-- Display -->
 			<div class="mb-5">
 				{#if step === "number"}
-					<p class="text-xs text-slate-400 text-center mb-2">
+					<p class="text-xs text-white/60 text-center mb-2">
 						Zadejte 4-místné osobní číslo
 					</p>
 					<div class="flex justify-center gap-2.5">
 						{#each [0, 1, 2, 3] as i}
 							<div
-								class="w-12 h-12 rounded-sm border-2 flex items-center justify-center text-xl font-semibold transition-all
+								class="w-12 h-12 rounded border-2 flex items-center justify-center text-xl font-semibold transition-all
 									{personalNumber[i]
-									? 'border-futurol-green bg-futurol-green/10 text-slate-800 shadow-sm shadow-futurol-green/20'
-									: 'border-slate-300 bg-white text-slate-800'}"
+									? 'border-futurol-green bg-white text-slate-800 shadow-md shadow-futurol-green/20'
+									: 'border-white/30 bg-white/10 text-white'}"
 							>
 								{personalNumber[i] || ""}
 							</div>
@@ -173,20 +171,20 @@
 							<ArrowLeft class="w-3 h-3" />
 							Zpět
 						</button>
-						<span class="text-xs text-slate-500 font-mono"
+						<span class="text-xs text-white/60 font-mono"
 							>{personalNumber}</span
 						>
 					</div>
-					<p class="text-xs text-slate-400 text-center mb-2">
+					<p class="text-xs text-white/60 text-center mb-2">
 						Zadejte 6-místný PIN
 					</p>
 					<div class="flex justify-center gap-2">
 						{#each [0, 1, 2, 3, 4, 5] as i}
 							<div
-								class="w-9 h-9 rounded-sm border-2 flex items-center justify-center text-lg transition-all
+								class="w-9 h-9 rounded border-2 flex items-center justify-center text-lg transition-all
 									{pin[i]
-									? 'border-futurol-green bg-futurol-green/10 text-slate-800 shadow-sm shadow-futurol-green/20'
-									: 'border-slate-300 bg-white text-slate-800'}"
+									? 'border-futurol-green bg-white text-slate-800 shadow-md shadow-futurol-green/20'
+									: 'border-white/30 bg-white/10 text-white'}"
 							>
 								{pin[i] ? "•" : ""}
 							</div>
@@ -199,14 +197,14 @@
 			{#if loading}
 				<div class="flex items-center justify-center gap-2 mb-4 py-2">
 					<Loader2 class="w-4 h-4 animate-spin text-futurol-green" />
-					<span class="text-sm text-slate-400">Přihlašuji...</span>
+					<span class="text-sm text-white/60">Přihlašuji...</span>
 				</div>
 			{/if}
 
 			<!-- Error -->
 			{#if error}
 				<div
-					class="mb-4 p-2 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-xs text-center"
+					class="mb-4 p-2 bg-red-500/20 border border-red-500/40 rounded text-red-300 text-xs text-center"
 				>
 					{error}
 				</div>
@@ -219,11 +217,11 @@
 						type="button"
 						onclick={() => handleDigit(digit)}
 						disabled={digit === "" || loading}
-						class="h-12 rounded-sm text-lg font-medium transition-all
+						class="h-12 rounded text-lg font-medium transition-all
 							{digit === ''
 							? 'invisible'
-							: 'bg-white hover:bg-slate-100 active:bg-futurol-green/20 border border-slate-300 shadow-sm'}
-							{digit === '←' ? 'text-slate-500' : 'text-slate-700'}
+							: 'bg-white/10 hover:bg-white/20 active:bg-futurol-green/30 border border-white/20 hover:border-white/40 text-white'}
+							{digit === '←' ? 'text-white/60' : ''}
 							{loading ? 'opacity-50 cursor-not-allowed' : ''}"
 					>
 						{digit}
@@ -236,7 +234,7 @@
 		<div class="text-center mt-4">
 			<a
 				href="/"
-				class="text-xs text-slate-600 hover:text-futurol-green transition-colors inline-flex items-center gap-1"
+				class="text-xs text-white/60 hover:text-white transition-colors inline-flex items-center gap-1"
 			>
 				<ArrowLeft class="w-3 h-3" />
 				Zpět na úvod
@@ -249,12 +247,12 @@
 				href="https://ascentalab.cz"
 				target="_blank"
 				rel="noopener noreferrer"
-				class="bg-white px-4 py-2 rounded-md shadow-sm hover:shadow-md transition-shadow"
+				class="glass-card bg-white/10 backdrop-blur-xl px-5 py-3 rounded border border-white/20 hover:border-futurol-wine/50 hover:bg-white/15 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 flex items-center"
 			>
 				<img
 					src="/Ascenta Lab logo web  300 x 50 px.svg"
-					alt="Powered by Ascenta Lab"
-					class="h-6"
+					alt="Ascenta Lab"
+					class="h-5 brightness-0 invert opacity-80"
 				/>
 			</a>
 		</div>

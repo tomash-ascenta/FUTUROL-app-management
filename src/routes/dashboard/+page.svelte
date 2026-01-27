@@ -232,11 +232,11 @@
         {#each stats as stat}
             {@const colors = getColorClasses(stat.color)}
             <div
-                class="bg-white rounded p-5 border border-slate-200 hover:shadow-md transition-shadow shadow-sm"
+                class="bg-white rounded p-5 border border-slate-200 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-slate-300 group cursor-default"
             >
                 <div class="flex items-center justify-between">
                     <div
-                        class={`w-10 h-10 rounded flex items-center justify-center ${colors.bg}`}
+                        class={`w-10 h-10 rounded flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${colors.bg}`}
                     >
                         <stat.icon class={`w-5 h-5 ${colors.icon}`} />
                     </div>
@@ -264,10 +264,14 @@
                 {#each data.pipeline as stage, i}
                     <div class="flex items-center gap-2 flex-shrink-0">
                         <div
-                            class={`px-4 py-3 rounded border text-center min-w-[100px] ${getPipelineColor(stage.color)}`}
+                            class={`px-3 py-2 rounded border-2 text-center min-w-[90px] transition-all duration-200 hover:shadow-md cursor-default ${getPipelineColor(stage.color)}`}
                         >
-                            <div class="text-2xl font-bold">{stage.count}</div>
-                            <div class="text-xs font-medium whitespace-nowrap">
+                            <div class="text-xl font-bold">
+                                {stage.count}
+                            </div>
+                            <div
+                                class="text-[10px] font-medium whitespace-nowrap"
+                            >
                                 {stage.label}
                             </div>
                         </div>
@@ -422,7 +426,7 @@
                     {#if data.user?.roles.some( (r) => ["admin", "manager", "sales"].includes(r), )}
                         <a
                             href="/dashboard/customers/new"
-                            class="block w-full p-3 text-left rounded border border-slate-200 hover:border-futurol-green hover:bg-futurol-green/5 transition-colors"
+                            class="block w-full p-3 text-left rounded border border-slate-200 hover:border-futurol-green hover:bg-futurol-green/5 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200"
                         >
                             <div class="flex items-center gap-3">
                                 <Users class="w-5 h-5 text-futurol-green" />
@@ -433,7 +437,7 @@
                         </a>
                         <a
                             href="/dashboard/orders/new"
-                            class="block w-full p-3 text-left rounded border border-slate-200 hover:border-futurol-green hover:bg-futurol-green/5 transition-colors"
+                            class="block w-full p-3 text-left rounded border border-slate-200 hover:border-futurol-green hover:bg-futurol-green/5 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200"
                         >
                             <div class="flex items-center gap-3">
                                 <ClipboardList
@@ -448,7 +452,7 @@
                     {#if data.user?.roles.includes("technician")}
                         <a
                             href="/dashboard/measurements/new"
-                            class="block w-full p-3 text-left rounded border border-slate-200 hover:border-futurol-green hover:bg-futurol-green/5 transition-colors"
+                            class="block w-full p-3 text-left rounded border border-slate-200 hover:border-futurol-green hover:bg-futurol-green/5 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200"
                         >
                             <div class="flex items-center gap-3">
                                 <Ruler class="w-5 h-5 text-futurol-green" />
@@ -460,7 +464,7 @@
                     {/if}
                     <a
                         href="/dashboard/service/new"
-                        class="block w-full p-3 text-left rounded border border-slate-200 hover:border-futurol-green hover:bg-futurol-green/5 transition-colors"
+                        class="block w-full p-3 text-left rounded border border-slate-200 hover:border-futurol-green hover:bg-futurol-green/5 hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200"
                     >
                         <div class="flex items-center gap-3">
                             <Wrench class="w-5 h-5 text-futurol-green" />

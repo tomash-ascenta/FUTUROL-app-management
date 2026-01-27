@@ -88,7 +88,7 @@
 
     // Handle visibility change - refresh when tab becomes visible
     function handleVisibilityChange() {
-        if (document.visibilityState === 'visible') {
+        if (document.visibilityState === "visible") {
             // Only refresh if more than 10 seconds since last refresh
             const timeSinceRefresh = Date.now() - lastRefresh.getTime();
             if (timeSinceRefresh > 10000) {
@@ -101,7 +101,7 @@
     function startPolling() {
         if (pollingInterval) return;
         pollingInterval = setInterval(() => {
-            if (document.visibilityState === 'visible') {
+            if (document.visibilityState === "visible") {
                 refreshData();
             }
         }, POLLING_INTERVAL);
@@ -117,14 +117,20 @@
     // Lifecycle
     onMount(() => {
         if (browser) {
-            document.addEventListener('visibilitychange', handleVisibilityChange);
+            document.addEventListener(
+                "visibilitychange",
+                handleVisibilityChange,
+            );
             startPolling();
         }
     });
 
     onDestroy(() => {
         if (browser) {
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            document.removeEventListener(
+                "visibilitychange",
+                handleVisibilityChange,
+            );
             stopPolling();
         }
     });
